@@ -1,0 +1,16 @@
+.page {
+  text-align: center;
+  height: 100%;
+}
+
+.loginLogo {
+  position: absolute;
+  top: 20%;
+  left: 25%;
+  width: 50%;
+}
+
+.loginButton {
+  position: absolute;
+  top: 40%;
+}

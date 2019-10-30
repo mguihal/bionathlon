@@ -10,6 +10,6 @@ const reducers = combineReducers({
   }
 });
 
-export default () => createStore(reducers, applyMiddleware());
+export default createStore(reducers, applyMiddleware());
 
 export type AppState = ReturnType<typeof reducers>

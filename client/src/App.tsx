@@ -1,73 +1,36 @@
 import React from 'react';
 import { Store } from 'redux';
-import { Provider, connect } from 'react-redux'
+import { Provider } from 'react-redux'
 import {
   BrowserRouter as Router,
   Switch,
   Route,
   Redirect,
-  RouteProps
 } from 'react-router-dom';
-
-import logo from './logo.svg';
-import './App.css';
 
 import { AppState } from './store';
 
-const Home: React.FunctionComponent = () => {
+import AuthRoute from './components/AuthRoute';
+import LoginPage from './components/LoginPage';
+import DashboardPage from './components/DashboardPage';
+
+interface Props {
+  store: Store<AppState>;
+};
+
+const App: React.FunctionComponent<Props> = (props) => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
-
-interface ConnectedProps {
-  isLogged: boolean;
-}
-
-const PrivateRoute: React.FunctionComponent<RouteProps & ConnectedProps> = ({ isLogged, children, ...rest }) => {
-  return (
-    <Route
-      {...rest}
-      render={({ location }) =>
-        isLogged ? (
-          children
-        ) : (
-          <Redirect to={{ pathname: "/login", state: { from: location } }} />
-        )
-      }
-    />
-  );
-}
-
-const ConnectedPrivateRoute = connect((state: AppState) => ({
-  isLogged: state.user.token !== '',
-}))(PrivateRoute);
-
-const App: React.FunctionComponent<{store: Store<AppState>}> = ({ store }) => {
-  return (
-    <Provider store={store}>
+    <Provider store={props.store}>
       <Router>
         <Switch>
-          <ConnectedPrivateRoute path="/protected">
-            <Home />
-          </ConnectedPrivateRoute>
-          <Route path="/">
-            <Home />
+          <AuthRoute path="/protected">
+            <DashboardPage />
+          </AuthRoute>
+          <Route exact path="/login">
+            <LoginPage />
+          </Route>
+          <Route path = "/">
+            <Redirect to="/login" />
           </Route>
         </Switch>
       </Router>
