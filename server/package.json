@@ -3,9 +3,6 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "author": "Maxime GUIHAL <maxime.guihal@iadvize.com>",
   "license": "ISC",
   "dependencies": {
@@ -14,6 +11,15 @@
     "express": "^4.17.1",
     "jsonwebtoken": "^8.5.1",
     "knex": "^0.19.5",
-    "lodash": "^4.17.15"
+    "lodash": "^4.17.15",
+    "pg": "^7.12.1",
+    "sqlite3": "^4.1.0"
+  },
+  "scripts": {
+    "install": "knex migrate:up --env=default",
+    "deploy": "now -A now.server.json --prod"
+  },
+  "devDependencies": {
+    "now": "^16.4.4"
   }
 }
