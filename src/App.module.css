@@ -1,0 +1,165 @@
+.page {
+  text-align: center;
+  height: 100%;
+  margin-top: 20px;
+}
+
+.loginBox {
+  position: absolute;
+  top: 30%;
+  width: 100%;
+  height: 300px;
+  left: 0;
+}
+
+.loginLogo {
+  position: absolute;
+  top: 0%;
+  left: 0%;
+  width: 100%;
+}
+
+.loginButton {
+  position: absolute;
+  top: 60%;
+}
+
+.topNavigation {
+  display: none;
+}
+
+.bottomNavigation {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  border-top: 1px solid #CCC;
+}
+
+.bottomNavigation .MuiBottomNavigationAction-root {
+  max-width: auto;
+  min-width: auto;
+  background: red;
+}
+
+.tableContainer {
+  margin: auto;
+  width: 90%;
+  margin-top: 30px;
+  margin-bottom: 80px;
+}
+
+.tableContainer th {
+  font-weight: bold;
+}
+
+.tableContainer .tableNote {
+  color: #999;
+  font-size: 0.9em;
+}
+
+.tableContainer .emptyTable {
+  margin-top: 30px;
+}
+
+.topActionButtons {
+  display: none;
+}
+
+.floatingActionButtons {
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+}
+
+.floatingActionButtonsExtended {
+  position: fixed;
+  bottom: 84px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.floatingActionButtonsExtended a {
+  margin-top: 20px;
+}
+
+.floatingActionButtonsExtended svg {
+  margin-right: 5px;
+}
+
+.addPlayerForm {
+  display: flex;
+  flex-direction: column;
+  width: 90%;
+  margin: auto;
+  margin-bottom: 80px;
+}
+
+.addPlayerForm > div, .addPlayerForm > button, .addPlayerForm > a {
+  margin-top: 30px;
+}
+
+.profileTitle {
+  position: fixed;
+  margin: auto;
+  width: 90%;
+  left: 5%;
+  top: 0px;
+  background: white;
+  padding-top: 30px;
+  padding-bottom: 30px;
+}
+
+.profileTable {
+  margin-top: 150px;
+}
+
+@media screen and (min-width: 768px) {
+  .page {
+    margin-top: 80px;
+  }
+
+  .loginBox {
+    width: 50%;
+    left: 25%;
+  }
+
+  .topNavigation {
+    display: block;
+  }
+
+  .bottomNavigation {
+    display: none;
+  }
+
+  .tableContainer {
+    width: 25%;
+  }
+
+  .topActionButtons {
+    display: block;
+  }
+
+  .floatingActionButtons {
+    display: none;
+  }
+
+  .addPlayerForm {
+    width: 30%;
+  }
+
+  .profileTitle {
+    width: 25%;
+    left: 37.5%;
+  }
+
+  .profileTitle {
+    width: 25%;
+    left: 37.5%;
+    padding-top: 80px;
+  }
+
+  .profileTable {
+    margin-top: 200px;
+  }
+}

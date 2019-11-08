@@ -1,0 +1,59 @@
+@host = ...
+@token = ...
+
+POST {{host}}/api/login
+Content-type: 'application/json'
+
+{
+  "data": {
+    "googleToken": "..."
+  }
+}
+
+###
+
+GET {{host}}/api/player
+Authorization: {{token}}
+
+###
+
+POST {{host}}/api/player
+Authorization: {{token}}
+Content-type: 'application/json'
+
+{
+  "data": {
+    "email": "test3@email.com",
+    "name": "Test3"
+  }
+}
+
+###
+
+GET {{host}}/api/game
+Authorization: {{token}}
+
+###
+
+GET {{host}}/api/game?playerId=1
+Authorization: {{token}}
+
+###
+
+GET {{host}}/api/game?date=2019-11-18
+Authorization: {{token}}
+
+###
+
+POST {{host}}/api/game
+Authorization: {{token}}
+Content-type: 'application/json'
+
+{
+  "data": {
+    "date": "2019-11-19T13:00:00",
+    "playerId": 1,
+    "score": -3,
+    "note": "moche"
+  }
+}

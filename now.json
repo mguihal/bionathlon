@@ -1,0 +1,14 @@
+{
+  "name": "bionathlon",
+  "build": {
+    "env": {
+      "DATABASE_URL": "@bionathlon_db",
+      "REACT_APP_API_HOST": "https://bionathlon.now.sh"
+    }
+  },
+  "env": {
+    "DATABASE_URL": "@bionathlon_db",
+    "SECRET": "@bionathlon_secret",
+    "REACT_APP_API_HOST": "https://bionathlon.now.sh"
+  }
+}
