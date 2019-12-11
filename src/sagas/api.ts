@@ -83,7 +83,7 @@ export function* getGames(
     filtersQuery.push(`date=${filters.date}`);
   }
 
-  if (filters && filters.playerId) {
+  if (filters && filters.playerId !== undefined) {
     filtersQuery.push(`playerId=${filters.playerId}`);
   }
 

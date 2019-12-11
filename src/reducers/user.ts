@@ -33,7 +33,7 @@ export default function(
     case LOGIN_ERROR_UPDATED:
       return { ...state, loginError: action.error };
     case LOGIN_SUCCEEDED:
-      return { ...state, token: action.token, player: action.user };
+      return { ...state, token: action.token, user: action.user };
     case LOGIN_LOGOUT:
       return { ...state, token: '', loginError: action.error };
     default:

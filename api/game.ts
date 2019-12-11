@@ -41,7 +41,7 @@ const routeConfig: RouteConfig = {
             'name as playerName',
           );
 
-        if (query.playerId) {
+        if (query.playerId !== undefined) {
           gamesQuery.where('playerId', query.playerId);
         }
 
