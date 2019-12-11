@@ -37,7 +37,7 @@ function formatDate(date: string) {
 
 function groupByDateTime(games: GamesResponse) {
   return games.reduce<{[key: string]: GamesResponse}>(function(groups, game) {
-    const groupKey = `${formatDate(game.date)} - ${game.time === 'midday' ? 'midi' : 'soir'}`;
+    const groupKey = `${game.date} - ${game.time === 'midday' ? 'midi' : 'soir'}`;
     (groups[groupKey] = groups[groupKey] || []).push(game);
 
     return groups;
@@ -73,9 +73,9 @@ const HistoryPage: React.FunctionComponent<ConnectedProps & DispatchedProps> = (
 
     return (
       <>
-        {Object.keys(groupedGames).reverse().map(key => (
+        {Object.keys(groupedGames).sort().reverse().map(key => (
           <div className={styles.tableContainer} key={key}>
-            <Typography variant="h6">{key}</Typography>
+            <Typography variant="h6">{formatDate(groupedGames[key][0].date)} - {groupedGames[key][0].time === 'midday' ? 'midi' : 'soir'}</Typography>
             <Table aria-label="simple table">
               <TableBody>
                 {groupedGames[key].sort(byScoreDesc).map(game => (
