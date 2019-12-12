@@ -24,7 +24,9 @@ import { AppState } from '../store';
 import { fetchToday } from '../actionCreators/game';
 
 import styles from '../App.module.css';
-import { GamesResponse, GameResponse } from '../sagas/api';
+import { GamesResponse } from '../sagas/api';
+
+import { formatDate, isMidDayGame, byScoreDesc } from '../helpers';
 
 interface ConnectedProps {
   games: Dataway<string, GamesResponse>;
@@ -32,31 +34,6 @@ interface ConnectedProps {
 
 interface DispatchedProps {
   fetchToday: () => {type: string};
-}
-
-function formatDate() {
-  const date = new Date();
-  const day = date.getDate();
-  const month = date.getMonth() + 1;
-  const year = date.getFullYear();
-
-  const pad = (n: number) => n < 10 ? `0${n}` : n;
-
-  return `${pad(day)}/${pad(month)}/${year}`;
-}
-
-function isMidDayGame(game: GameResponse) {
-  return game.time === 'midday';
-}
-
-function byScoreDesc(a: GameResponse, b: GameResponse) {
-  if (a.score < b.score) {
-    return 1;
-  } else if (a.score > b.score) {
-    return -1;
-  } else {
-    return 0;
-  }
 }
 
 const TodayPage: React.FunctionComponent<ConnectedProps & DispatchedProps> = (props) => {

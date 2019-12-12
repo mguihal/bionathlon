@@ -16,6 +16,8 @@ import { fetchPlayerGames } from '../actionCreators/game';
 import styles from '../App.module.css';
 import { GamesResponse } from '../sagas/api';
 
+import { formatDate, round2, byDateTimeDesc } from '../helpers';
+
 interface ConnectedProps {
   playerGames: Dataway<string, GamesResponse>;
   currentUserId: number;
@@ -23,21 +25,6 @@ interface ConnectedProps {
 
 interface DispatchedProps {
   fetchPlayerGames: (playerId: number) => {type: string};
-}
-
-function formatDate(date: string) {
-  const dateObject = new Date(date);
-  const day = dateObject.getDate();
-  const month = dateObject.getMonth() + 1;
-  const year = dateObject.getFullYear();
-
-  const pad = (n: number) => n < 10 ? `0${n}` : n;
-
-  return `${pad(day)}/${pad(month)}/${year}`;
-}
-
-function round2(nb: number) {
-  return Math.round(nb*100) / 100;
 }
 
 const ProfilePage: React.FunctionComponent<ConnectedProps & DispatchedProps> = (props) => {
@@ -103,7 +90,7 @@ const ProfilePage: React.FunctionComponent<ConnectedProps & DispatchedProps> = (
               <ErrorMessage message="Aucun score" /> :
               <Table aria-label="simple table">
                 <TableBody>
-                  {games.reverse().map(game => (
+                  {games.sort(byDateTimeDesc).map(game => (
                     <TableRow key={game.id}>
                       <TableCell component="th" scope="row" align="right" style={{width: '50%'}}>
                         {formatDate(game.date)} - {game.time === 'midday' ? 'midi' : 'soir'}

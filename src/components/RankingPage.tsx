@@ -18,6 +18,8 @@ import { fetchAllGames } from '../actionCreators/game';
 import styles from '../App.module.css';
 import { GamesResponse } from '../sagas/api';
 
+import { groupByPlayer, round2, byScore } from '../helpers';
+
 interface ConnectedProps {
   games: Dataway<string, GamesResponse>;
   currentUserId: number;
@@ -31,27 +33,6 @@ interface Rank {
   id: number;
   name: string;
   score: number;
-}
-
-function groupByPlayer(games: GamesResponse) {
-  return games.reduce<{[key: string]: GamesResponse}>(function(groups, game) {
-    (groups[game.playerId] = groups[game.playerId] || []).push(game);
-    return groups;
-  }, {});
-};
-
-function round2(nb: number) {
-  return Math.round(nb*100) / 100;
-}
-
-function byScore(a: Rank, b: Rank) {
-  if (a.score < b.score) {
-    return 1;
-  } else if (a.score > b.score) {
-    return -1;
-  } else {
-    return 0;
-  }
 }
 
 function getRanking(games: GamesResponse, rankingType: string) {
@@ -73,12 +54,20 @@ function getRanking(games: GamesResponse, rankingType: string) {
         score: playerGames[player].reduce((acc, cur) => acc + cur.score, 0)
       };
     }).sort(byScore);
-  } else {
+  } else if (rankingType === 'avgPoints') {
     return Object.keys(playerGames).map<Rank>(player => {
       return {
         id: Number(player),
         name: playerGames[player][0].playerName,
         score: round2((playerGames[player].reduce((acc, cur) => acc + cur.score, 0) / playerGames[player].length))
+      };
+    }).sort(byScore);
+  } else {
+    return Object.keys(playerGames).map<Rank>(player => {
+      return {
+        id: Number(player),
+        name: playerGames[player][0].playerName,
+        score: playerGames[player].reduce((acc, cur) => cur.score > acc ? cur.score : acc, -999)
       };
     }).sort(byScore);
   }
@@ -115,6 +104,7 @@ const RankingPage: React.FunctionComponent<ConnectedProps & DispatchedProps> = (
           <MenuItem value={'nbMatchs'}>Nombre de matchs joués</MenuItem>
           <MenuItem value={'nbPoints'}>Cumul des points</MenuItem>
           <MenuItem value={'avgPoints'}>Moyenne par match</MenuItem>
+          <MenuItem value={'topScore'}>Meilleur score</MenuItem>
         </Select>
       </div>
       <div className={`${styles.tableContainer} ${styles.profileTable}`}>

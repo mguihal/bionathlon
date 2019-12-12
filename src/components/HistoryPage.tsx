@@ -14,7 +14,9 @@ import { AppState } from '../store';
 import { fetchAllGames } from '../actionCreators/game';
 
 import styles from '../App.module.css';
-import { GamesResponse, GameResponse } from '../sagas/api';
+import { GamesResponse } from '../sagas/api';
+
+import { formatDate, groupByDateTime, byScoreDesc } from '../helpers';
 
 interface ConnectedProps {
   games: Dataway<string, GamesResponse>;
@@ -22,36 +24,6 @@ interface ConnectedProps {
 
 interface DispatchedProps {
   fetchAllGames: () => {type: string};
-}
-
-function formatDate(date: string) {
-  const dateObject = new Date(date);
-  const day = dateObject.getDate();
-  const month = dateObject.getMonth() + 1;
-  const year = dateObject.getFullYear();
-
-  const pad = (n: number) => n < 10 ? `0${n}` : n;
-
-  return `${pad(day)}/${pad(month)}/${year}`;
-}
-
-function groupByDateTime(games: GamesResponse) {
-  return games.reduce<{[key: string]: GamesResponse}>(function(groups, game) {
-    const groupKey = `${game.date} - ${game.time === 'midday' ? 'midi' : 'soir'}`;
-    (groups[groupKey] = groups[groupKey] || []).push(game);
-
-    return groups;
-  }, {});
-};
-
-function byScoreDesc(a: GameResponse, b: GameResponse) {
-  if (a.score < b.score) {
-    return 1;
-  } else if (a.score > b.score) {
-    return -1;
-  } else {
-    return 0;
-  }
 }
 
 const HistoryPage: React.FunctionComponent<ConnectedProps & DispatchedProps> = (props) => {
