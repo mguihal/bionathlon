@@ -22,6 +22,7 @@
     "dataway": "^3.0.4",
     "date-fns": "^2.0.0-beta.5",
     "dotenv": "^8.2.0",
+    "google-auth-library": "^5.7.0",
     "jsonwebtoken": "^8.5.1",
     "knex": "^0.20.2",
     "pg": "^7.12.1",

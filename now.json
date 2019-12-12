@@ -9,6 +9,7 @@
   "env": {
     "DATABASE_URL": "@bionathlon_db",
     "SECRET": "@bionathlon_secret",
-    "REACT_APP_API_HOST": "https://bionathlon.now.sh"
+    "REACT_APP_API_HOST": "https://bionathlon.now.sh",
+    "CHATSPACE": "@bionathlon_chatspace"
   }
 }

@@ -3,7 +3,9 @@ import joi from '@hapi/joi';
 
 import { RouteConfig, routeWrapper, withDb } from './_common';
 
-interface GamePayload {
+import { sendScoreOnChat } from './_bot';
+
+export interface GamePayload {
   data: {
     date: string;
     time: 'midday' | 'evening';
@@ -104,6 +106,12 @@ const routeConfig: RouteConfig = {
               note: payload.data.note,
             })
             .returning('*');
+
+          try {
+            await sendScoreOnChat(db, payload);
+          } catch (error) {
+            console.error(error);
+          }
 
           return res.send(game);
         } catch (error) {
