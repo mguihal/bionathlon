@@ -79,6 +79,14 @@ const ProfilePage: React.FunctionComponent<ConnectedProps & DispatchedProps> = (
             (games) => round2((games.reduce((acc, cur) => acc + cur.score, 0) / games.length)).toString()
           )(playerGames)}
         </Typography>
+        <Typography variant="subtitle2">
+          Meilleur score : {fold<string, GamesResponse, string>(
+            () => 'N/A',
+            () => 'Chargement...',
+            () => 'N/A',
+            (games) => games.reduce((acc, cur) => cur.score > acc ? cur.score : acc, -999).toString()
+          )(playerGames)}
+        </Typography>
       </div>
       <div className={`${styles.tableContainer} ${styles.profileTable}`}>
         {

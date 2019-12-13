@@ -111,7 +111,7 @@
 }
 
 .profileTable {
-  margin-top: 150px;
+  margin-top: 170px;
 }
 
 @media screen and (min-width: 768px) {
@@ -133,7 +133,7 @@
   }
 
   .tableContainer {
-    width: 25%;
+    width: 35%;
   }
 
   .topActionButtons {
@@ -149,17 +149,12 @@
   }
 
   .profileTitle {
-    width: 25%;
-    left: 37.5%;
-  }
-
-  .profileTitle {
-    width: 25%;
-    left: 37.5%;
+    width: 35%;
+    left: 32.5%;
     padding-top: 80px;
   }
 
   .profileTable {
-    margin-top: 200px;
+    margin-top: 220px;
   }
 }

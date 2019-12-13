@@ -18,7 +18,7 @@ import { fetchAllGames } from '../actionCreators/game';
 import styles from '../App.module.css';
 import { GamesResponse } from '../sagas/api';
 
-import { groupByPlayer, round2, byScore } from '../helpers';
+import { groupByPlayer, groupByDateTime, round2, byScore, getWinner } from '../helpers';
 
 interface ConnectedProps {
   games: Dataway<string, GamesResponse>;
@@ -37,6 +37,7 @@ interface Rank {
 
 function getRanking(games: GamesResponse, rankingType: string) {
   const playerGames = groupByPlayer(games);
+  const sessionGames = groupByDateTime(games);
 
   if (rankingType === 'nbMatchs') {
     return Object.keys(playerGames).map<Rank>(player => {
@@ -44,6 +45,18 @@ function getRanking(games: GamesResponse, rankingType: string) {
         id: Number(player),
         name: playerGames[player][0].playerName,
         score: playerGames[player].length
+      };
+    }).sort(byScore);
+  } else if (rankingType === 'nbWonMatchs') {
+    const winnerPlayerIds = Object.keys(sessionGames).map(session => {
+      return getWinner(sessionGames[session]);
+    });
+
+    return Object.keys(playerGames).map<Rank>(player => {
+      return {
+        id: Number(player),
+        name: playerGames[player][0].playerName,
+        score: winnerPlayerIds.reduce<number>((acc, cur) => acc + (cur === Number(player) ? 1 : 0), 0)
       };
     }).sort(byScore);
   } else if (rankingType === 'nbPoints') {
@@ -62,7 +75,7 @@ function getRanking(games: GamesResponse, rankingType: string) {
         score: round2((playerGames[player].reduce((acc, cur) => acc + cur.score, 0) / playerGames[player].length))
       };
     }).sort(byScore);
-  } else {
+  } else if (rankingType === 'topScore') {
     return Object.keys(playerGames).map<Rank>(player => {
       return {
         id: Number(player),
@@ -71,6 +84,8 @@ function getRanking(games: GamesResponse, rankingType: string) {
       };
     }).sort(byScore);
   }
+
+  return [];
 }
 
 const RankingPage: React.FunctionComponent<ConnectedProps & DispatchedProps> = (props) => {
@@ -102,6 +117,7 @@ const RankingPage: React.FunctionComponent<ConnectedProps & DispatchedProps> = (
           style={{marginTop: 20}}
         >
           <MenuItem value={'nbMatchs'}>Nombre de matchs joués</MenuItem>
+          <MenuItem value={'nbWonMatchs'}>Nombre de matchs gagnés</MenuItem>
           <MenuItem value={'nbPoints'}>Cumul des points</MenuItem>
           <MenuItem value={'avgPoints'}>Moyenne par match</MenuItem>
           <MenuItem value={'topScore'}>Meilleur score</MenuItem>

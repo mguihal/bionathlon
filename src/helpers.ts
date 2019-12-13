@@ -73,3 +73,19 @@ export function round2(nb: number) {
 export function isMidDayGame(game: GameResponse) {
   return game.time === 'midday';
 }
+
+export function isWinner(game: GameResponse, games: GamesResponse) {
+   return games.every(otherGame => {
+     return otherGame.playerId === game.playerId || otherGame.score < game.score;
+   });
+ }
+
+export function getWinner(games: GamesResponse) {
+  const sorted = games.sort(byScoreDesc);
+
+  if (sorted.length === 0 || (sorted.length > 1 && sorted[0].score === sorted[1].score)) {
+    return null;
+  } else {
+    return sorted[0].playerId;
+  }
+}

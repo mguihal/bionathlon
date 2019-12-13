@@ -16,7 +16,7 @@ import { fetchAllGames } from '../actionCreators/game';
 import styles from '../App.module.css';
 import { GamesResponse } from '../sagas/api';
 
-import { formatDate, groupByDateTime, byScoreDesc } from '../helpers';
+import { formatDate, groupByDateTime, byScoreDesc, isWinner } from '../helpers';
 
 interface ConnectedProps {
   games: Dataway<string, GamesResponse>;
@@ -53,7 +53,7 @@ const HistoryPage: React.FunctionComponent<ConnectedProps & DispatchedProps> = (
                 {groupedGames[key].sort(byScoreDesc).map(game => (
                   <TableRow key={game.id}>
                     <TableCell component="th" scope="row" align="right" style={{width: '50%'}}>
-                      <MLink href={`/profile/${game.playerId}`}>{game.playerName}</MLink>
+                      <MLink href={`/profile/${game.playerId}`}>{game.playerName}</MLink> { isWinner(game, groupedGames[key]) ? ' 👑' : ''}
                     </TableCell>
                     <TableCell>
                       {game.score}

@@ -26,7 +26,7 @@ import { fetchToday } from '../actionCreators/game';
 import styles from '../App.module.css';
 import { GamesResponse } from '../sagas/api';
 
-import { formatDate, isMidDayGame, byScoreDesc } from '../helpers';
+import { formatDate, isMidDayGame, byScoreDesc, isWinner } from '../helpers';
 
 interface ConnectedProps {
   games: Dataway<string, GamesResponse>;
@@ -106,7 +106,7 @@ const TodayPage: React.FunctionComponent<ConnectedProps & DispatchedProps> = (pr
                   {games.filter(isMidDayGame).sort(byScoreDesc).map(game => (
                     <TableRow key={game.id}>
                       <TableCell component="th" scope="row" align="right" style={{width: '50%'}}>
-                        <MLink href={`/profile/${game.playerId}`}>{game.playerName}</MLink>
+                        <MLink href={`/profile/${game.playerId}`}>{game.playerName}</MLink> { isWinner(game, games.filter(isMidDayGame)) ? ' 👑' : ''}
                       </TableCell>
                       <TableCell>
                         {game.score}
@@ -137,7 +137,7 @@ const TodayPage: React.FunctionComponent<ConnectedProps & DispatchedProps> = (pr
                   {games.filter((e) => !isMidDayGame(e)).sort(byScoreDesc).map(game => (
                     <TableRow key={game.id}>
                       <TableCell component="th" scope="row" align="right" style={{width: '50%'}}>
-                        <MLink href={`/profile/${game.playerId}`}>{game.playerName}</MLink>
+                        <MLink href={`/profile/${game.playerId}`}>{game.playerName}</MLink> { isWinner(game, games.filter((e) => !isMidDayGame(e))) ? ' 👑' : ''}
                       </TableCell>
                       <TableCell>
                         {game.score}
