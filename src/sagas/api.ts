@@ -70,6 +70,7 @@ export interface GameResponse {
   playerName: string;
   score: number;
   note: string;
+  suddenDeath: boolean;
 }
 
 export type GamesResponse = GameResponse[];
@@ -130,6 +131,15 @@ export function* addGame(
       playerId,
       score,
       note,
+    },
+  });
+}
+
+export function* setSuddenDeathWinner(gameId: number) {
+  return yield call(doRequest, '/suddenDeath', 'PUT', true, {
+    data: {
+      gameId,
+      won: true,
     },
   });
 }

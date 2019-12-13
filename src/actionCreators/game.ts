@@ -13,6 +13,7 @@ export const GAME_ADD = 'GAME_ADD';
 export const GAME_ADD_RESET = 'GAME_ADD_RESET';
 export const GAME_ADDED = 'GAME_ADDED';
 export const GAME_ADDED_ERROR = 'GAME_ADDED_ERROR';
+export const SUDDEN_DEATH_SET = 'SUDDEN_DEATH_SET';
 
 export interface TodayFetch {
   type: typeof TODAY_FETCH;
@@ -79,6 +80,12 @@ export interface GameAddedError {
   error: string;
 }
 
+export interface SuddenDeathSet {
+  type: typeof SUDDEN_DEATH_SET;
+  gameId: number;
+  context: string;
+}
+
 export type GameAction =
   | TodayFetch
   | TodayFetched
@@ -92,7 +99,8 @@ export type GameAction =
   | GameAdd
   | GameAddReset
   | GameAdded
-  | GameAddedError;
+  | GameAddedError
+  | SuddenDeathSet;
 
 export function fetchToday(): TodayFetch {
   return {
@@ -188,5 +196,16 @@ export function gameAddedError(error: string): GameAddedError {
   return {
     type: GAME_ADDED_ERROR,
     error,
+  };
+}
+
+export function setSuddenDeathWinner(
+  gameId: number,
+  context: string
+): SuddenDeathSet {
+  return {
+    type: SUDDEN_DEATH_SET,
+    gameId,
+    context,
   };
 }

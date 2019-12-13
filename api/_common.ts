@@ -23,6 +23,7 @@ export interface MethodConfig {
 export interface RouteConfig {
   get?: MethodConfig;
   post?: MethodConfig;
+  put?: MethodConfig;
 }
 
 function withBody(req: NowRequest) {
@@ -89,6 +90,11 @@ export async function routeWrapper(
     case 'POST':
       if (config.post) {
         return validationWrapper(req, res, config.post);
+      }
+      break;
+    case 'PUT':
+      if (config.put) {
+        return validationWrapper(req, res, config.put);
       }
       break;
     case 'OPTIONS':

@@ -16,9 +16,13 @@ import {
   gameAdded,
   gameAddedError,
   gameAddReset,
+  SuddenDeathSet,
+  SUDDEN_DEATH_SET,
+  fetchAllGames,
+  fetchToday,
 } from '../actionCreators/game';
 
-import { getGames, GamesResponse, addGame } from './api';
+import { getGames, GamesResponse, addGame, setSuddenDeathWinner } from './api';
 
 function getTZToday() {
   const date = new Date();
@@ -55,7 +59,7 @@ function* fetchPlayerGames() {
   });
 }
 
-function* fetchAllGames() {
+function* fetchAllGamesSaga() {
   yield takeLatest(ALLGAMES_FETCH, function*() {
     try {
       const response: GamesResponse = yield call(getGames);
@@ -83,12 +87,29 @@ function* addGameSaga() {
   });
 }
 
+function* setSuddenDeathWinnerSaga() {
+  yield takeLatest<SuddenDeathSet>(SUDDEN_DEATH_SET, function*(action) {
+    try {
+      yield call(setSuddenDeathWinner, action.gameId);
+
+      if (action.context === 'today') {
+        yield put(fetchToday());
+      } else {
+        yield put(fetchAllGames());
+      }
+    } catch (error) {
+      console.log({error});
+    }
+  });
+}
+
 function* gameSaga() {
   yield all([
     fetchTodaySaga(),
     fetchPlayerGames(),
-    fetchAllGames(),
+    fetchAllGamesSaga(),
     addGameSaga(),
+    setSuddenDeathWinnerSaga(),
   ]);
 }
 

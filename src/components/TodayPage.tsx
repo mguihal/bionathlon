@@ -3,11 +3,6 @@ import { connect } from 'react-redux'
 import { Dataway, fold } from 'dataway';
 import { Link } from 'react-router-dom';
 
-import MLink from '@material-ui/core/Link';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import ButtonGroup from '@material-ui/core/ButtonGroup';
@@ -19,6 +14,8 @@ import SpeedDial from '@material-ui/lab/SpeedDial';
 import SpeedDialIcon from '@material-ui/lab/SpeedDialIcon';
 import SpeedDialAction from '@material-ui/lab/SpeedDialAction';
 
+import SessionTable from './SessionTable';
+
 import { AppState } from '../store';
 
 import { fetchToday } from '../actionCreators/game';
@@ -26,7 +23,7 @@ import { fetchToday } from '../actionCreators/game';
 import styles from '../App.module.css';
 import { GamesResponse } from '../sagas/api';
 
-import { formatDate, isMidDayGame, byScoreDesc, isWinner } from '../helpers';
+import { formatDate, isMidDayGame } from '../helpers';
 
 interface ConnectedProps {
   games: Dataway<string, GamesResponse>;
@@ -100,23 +97,7 @@ const TodayPage: React.FunctionComponent<ConnectedProps & DispatchedProps> = (pr
             () => <ErrorMessage message="Chargement..." />,
             (error) => <ErrorMessage message={error} />,
             (games) => games.filter(isMidDayGame).length === 0 ?
-              <ErrorMessage message="Aucun score" /> :
-              <Table aria-label="simple table">
-                <TableBody>
-                  {games.filter(isMidDayGame).sort(byScoreDesc).map(game => (
-                    <TableRow key={game.id}>
-                      <TableCell component="th" scope="row" align="right" style={{width: '50%'}}>
-                        <MLink href={`/profile/${game.playerId}`}>{game.playerName}</MLink> { isWinner(game, games.filter(isMidDayGame)) ? ' 👑' : ''}
-                      </TableCell>
-                      <TableCell>
-                        {game.score}
-                        {game.note && <br/>}
-                        {game.note && <span className={styles.tableNote}>({game.note})</span>}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+              <ErrorMessage message="Aucun score" /> : <SessionTable games={games.filter(isMidDayGame)} context={'today'} />
           )(games)
         }
       </div>
@@ -131,23 +112,7 @@ const TodayPage: React.FunctionComponent<ConnectedProps & DispatchedProps> = (pr
             () => <ErrorMessage message="Chargement..." />,
             (error) => <ErrorMessage message={error} />,
             (games) => games.filter((e) => !isMidDayGame(e)).length === 0 ?
-              <ErrorMessage message="Aucun score" /> :
-              <Table aria-label="simple table">
-                <TableBody>
-                  {games.filter((e) => !isMidDayGame(e)).sort(byScoreDesc).map(game => (
-                    <TableRow key={game.id}>
-                      <TableCell component="th" scope="row" align="right" style={{width: '50%'}}>
-                        <MLink href={`/profile/${game.playerId}`}>{game.playerName}</MLink> { isWinner(game, games.filter((e) => !isMidDayGame(e))) ? ' 👑' : ''}
-                      </TableCell>
-                      <TableCell>
-                        {game.score}
-                        {game.note && <br/>}
-                        {game.note && <span className={styles.tableNote}>({game.note})</span>}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+              <ErrorMessage message="Aucun score" /> : <SessionTable games={games.filter((e) => !isMidDayGame(e))} context={'today'} />
           )(games)
         }
       </div>

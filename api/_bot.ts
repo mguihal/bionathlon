@@ -1,6 +1,7 @@
 import knex from 'knex';
 import { GoogleAuth } from 'google-auth-library';
 import { GamePayload } from './game';
+import { SuddenDeathPayload } from './suddenDeath';
 
 process.env.GOOGLE_APPLICATION_CREDENTIALS = __dirname + '/../BionathlonBot.privatekey.json';
 
@@ -51,7 +52,7 @@ export async function sendScoreOnChat(db: knex, payload: GamePayload) {
 
   if (otherGames.length === 0) {
     const welcomeMessage = `*Match du ${formatDate(payload.data.date)} - ${payload.data.time === 'midday' ? 'midi' : 'soir'}*
-      N'oubliez pas d'ajouter vos scores sur https://bionathlon.now.sh !
+N'oubliez pas d'ajouter vos scores sur https://bionathlon.now.sh !
     `;
     await sendChatMessage(process.env.CHATSPACE || null, threadKey, welcomeMessage);
   }
@@ -59,6 +60,24 @@ export async function sendScoreOnChat(db: knex, payload: GamePayload) {
   const chatScore = payload.data.score === 0 ? '⭕️' : payload.data.score;
   const chatNote = payload.data.note ? '(' + payload.data.note + ')' : '';
   const message = `- ${player.name} : ${chatScore} ${chatNote}`;
+
+  await sendChatMessage(process.env.CHATSPACE || null, threadKey, message);
+}
+
+export async function sendSuddenDeathOnChat(db: knex, payload: SuddenDeathPayload) {
+  const game = await db('game')
+    .first()
+    .join('player', 'game.playerId', 'player.id')
+    .where('game.id', payload.data.gameId);
+
+  if (!game) {
+    return;
+  }
+
+  const gameDate = (new Date(game.date)).toISOString().split('T')[0];
+  const threadKey = gameDate + game.time;
+
+  const message = `${game.name} gagne la mort subite`;
 
   await sendChatMessage(process.env.CHATSPACE || null, threadKey, message);
 }

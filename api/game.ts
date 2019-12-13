@@ -41,6 +41,7 @@ const routeConfig: RouteConfig = {
             'score',
             'note',
             'name as playerName',
+            'suddenDeath',
           );
 
         if (query.playerId !== undefined) {

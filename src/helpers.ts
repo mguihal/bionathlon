@@ -33,7 +33,7 @@ export function byScoreDesc(a: GameResponse, b: GameResponse) {
   } else if (a.score > b.score) {
     return -1;
   } else {
-    return 0;
+    return a.suddenDeath ? -1 : 1;
   }
 }
 
@@ -75,17 +75,44 @@ export function isMidDayGame(game: GameResponse) {
 }
 
 export function isWinner(game: GameResponse, games: GamesResponse) {
-   return games.every(otherGame => {
-     return otherGame.playerId === game.playerId || otherGame.score < game.score;
-   });
- }
+  return games.every(otherGame => {
+    if (otherGame.playerId === game.playerId) {
+      return true;
+    } else if (otherGame.score < game.score) {
+      return true;
+    } else if (otherGame.score === game.score && game.suddenDeath) {
+      return true;
+    }
+
+    return false;
+  });
+}
 
 export function getWinner(games: GamesResponse) {
   const sorted = games.sort(byScoreDesc);
 
-  if (sorted.length === 0 || (sorted.length > 1 && sorted[0].score === sorted[1].score)) {
+  if (sorted.length === 0 || (sorted.length > 1 && sorted[0].score === sorted[1].score && !sorted[0].suddenDeath)) {
     return null;
   } else {
     return sorted[0].playerId;
   }
+}
+
+export function getSuddenDeathGames(games: GamesResponse) {
+  if (games.length === 0) {
+    return [];
+  }
+
+  const sorted = games.sort(byScoreDesc);
+  let isSuddenDeathDone = false;
+  let suddenDeathGames: GamesResponse = [];
+
+  games.forEach(game => {
+    if (game.score === sorted[0].score) {
+      suddenDeathGames.push(game);
+      isSuddenDeathDone = isSuddenDeathDone || game.suddenDeath;
+    }
+  });
+
+  return isSuddenDeathDone || suddenDeathGames.length === 1 ? [] : suddenDeathGames;
 }
