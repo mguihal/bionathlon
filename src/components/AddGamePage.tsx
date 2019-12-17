@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
 import { Dataway, isSuccess, isFailure, fold } from 'dataway';
 
 import TextField from '@material-ui/core/TextField';
@@ -58,6 +58,10 @@ const AddGamePage: React.FunctionComponent<ConnectedProps & DispatchedProps> = (
     if (score !== '') {
       props.addGame(date.toISOString(), time, playerId, score, note);
     }
+  }
+
+  if (isSuccess(addResponse)) {
+    return <Redirect to={'/'} />;
   }
 
   return (
