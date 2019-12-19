@@ -33,6 +33,7 @@ interface Rank {
   id: number;
   name: string;
   score: number;
+  suffix?: string;
 }
 
 function getRanking(games: GamesResponse, rankingType: string) {
@@ -57,6 +58,19 @@ function getRanking(games: GamesResponse, rankingType: string) {
         id: Number(player),
         name: playerGames[player][0].playerName,
         score: winnerPlayerIds.reduce<number>((acc, cur) => acc + (cur === Number(player) ? 1 : 0), 0)
+      };
+    }).sort(byScore);
+  } else if (rankingType === 'pctWonMatchs') {
+    const winnerPlayerIds = Object.keys(sessionGames).map(session => {
+      return getWinner(sessionGames[session]);
+    });
+
+    return Object.keys(playerGames).map<Rank>(player => {
+      return {
+        id: Number(player),
+        name: playerGames[player][0].playerName,
+        score: round2(winnerPlayerIds.reduce<number>((acc, cur) => acc + (cur === Number(player) ? 1 : 0), 0) / playerGames[player].length * 100),
+        suffix: '%'
       };
     }).sort(byScore);
   } else if (rankingType === 'nbPoints') {
@@ -118,6 +132,7 @@ const RankingPage: React.FunctionComponent<ConnectedProps & DispatchedProps> = (
         >
           <MenuItem value={'nbMatchs'}>Nombre de matchs joués</MenuItem>
           <MenuItem value={'nbWonMatchs'}>Nombre de matchs gagnés</MenuItem>
+          <MenuItem value={'pctWonMatchs'}>% de matchs gagnés</MenuItem>
           <MenuItem value={'nbPoints'}>Cumul des points</MenuItem>
           <MenuItem value={'avgPoints'}>Moyenne par match</MenuItem>
           <MenuItem value={'topScore'}>Meilleur score</MenuItem>
@@ -142,7 +157,7 @@ const RankingPage: React.FunctionComponent<ConnectedProps & DispatchedProps> = (
                         <MLink href={`/profile/${player.id}`}>{player.name}</MLink>
                       </TableCell>
                       <TableCell>
-                        {player.score}
+                        {player.score}{player.suffix ? player.suffix : ''}
                       </TableCell>
                     </TableRow>
                   ))}
