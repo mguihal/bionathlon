@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux'
 import { Dataway, fold } from 'dataway';
 
-import MLink from '@material-ui/core/Link';
+import Link from '@material-ui/core/Link';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -36,9 +36,16 @@ interface Rank {
   suffix?: string;
 }
 
-function getRanking(games: GamesResponse, rankingType: string) {
-  const playerGames = groupByPlayer(games);
-  const sessionGames = groupByDateTime(games);
+function getRanking(games: GamesResponse, rankingType: string, rankingFilter: string) {
+  const filteredGames = rankingFilter === 'all' ? games : games.filter(game => {
+    const date = new Date(game.date);
+    const value = `${date.getFullYear()}-${date.getMonth()}`;
+
+    return value === rankingFilter;
+  });
+
+  const playerGames = groupByPlayer(filteredGames);
+  const sessionGames = groupByDateTime(filteredGames);
 
   if (rankingType === 'nbMatchs') {
     return Object.keys(playerGames).map<Rank>(player => {
@@ -102,15 +109,47 @@ function getRanking(games: GamesResponse, rankingType: string) {
   return [];
 }
 
+function getFilterOptions(games: GamesResponse) {
+  const list: {value: string, label: string}[] = [];
+  const values: string[] = [];
+  const months = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
+
+  games.forEach(game => {
+    const date = new Date(game.date);
+    const value = `${date.getFullYear()}-${date.getMonth()}`;
+    const label = `${months[date.getMonth()]} ${date.getFullYear()}`;
+
+    if (!values.includes(value)) {
+      values.push(value);
+      list.unshift({value, label});
+    }
+  });
+
+  return list;
+}
+
 const RankingPage: React.FunctionComponent<ConnectedProps & DispatchedProps> = (props) => {
 
   const { games, fetchAllGames } = props;
 
   const [rankingType, setRankingType] = useState('nbPoints');
+  const [rankingFilter, setRankingFilter] = useState('all');
 
   useEffect(() => {
     fetchAllGames();
   }, [fetchAllGames]);
+
+  useEffect(() => {
+    fold<string, GamesResponse, void>(() => {}, () => {}, (error) => {},
+      (games) => {
+        const options = getFilterOptions(games);
+
+        if (options.length > 0) {
+          setRankingFilter(options[0].value);
+        }
+      }
+    )(games)
+  }, [games]);
 
   const ErrorMessage = (props: {message: string}) => (
     <Typography variant="body2" className={styles.emptyTable}>
@@ -124,19 +163,39 @@ const RankingPage: React.FunctionComponent<ConnectedProps & DispatchedProps> = (
         <Typography variant="h6">
           Classement
         </Typography>
-        <Select
-          id="rankingType"
-          value={rankingType}
-          onChange={e => setRankingType(e.target.value as string)}
-          style={{marginTop: 20}}
-        >
-          <MenuItem value={'nbMatchs'}>Nombre de matchs joués</MenuItem>
-          <MenuItem value={'nbWonMatchs'}>Nombre de matchs gagnés</MenuItem>
-          <MenuItem value={'pctWonMatchs'}>% de matchs gagnés</MenuItem>
-          <MenuItem value={'nbPoints'}>Cumul des points</MenuItem>
-          <MenuItem value={'avgPoints'}>Moyenne par match</MenuItem>
-          <MenuItem value={'topScore'}>Meilleur score</MenuItem>
-        </Select>
+        <div className={styles.rankingFilters}>
+          <Select
+            id="rankingType"
+            value={rankingType}
+            onChange={e => setRankingType(e.target.value as string)}
+          >
+            <MenuItem value={'nbMatchs'}>Nombre de matchs joués</MenuItem>
+            <MenuItem value={'nbWonMatchs'}>Nombre de matchs gagnés</MenuItem>
+            <MenuItem value={'pctWonMatchs'}>% de matchs gagnés</MenuItem>
+            <MenuItem value={'nbPoints'}>Cumul des points</MenuItem>
+            <MenuItem value={'avgPoints'}>Moyenne par match</MenuItem>
+            <MenuItem value={'topScore'}>Meilleur score</MenuItem>
+          </Select>
+          <Select
+            id="rankingFilter"
+            value={rankingFilter}
+            onChange={e => setRankingFilter(e.target.value as string)}
+          >
+            <MenuItem value={'all'}>Global</MenuItem>
+            {
+              fold<string, GamesResponse, JSX.Element[]>(
+                () => [<MenuItem key={'nodata'} value={'nodata'} disabled>Aucune donnée</MenuItem>],
+                () => [<MenuItem key={'loading'} value={'loading'} disabled>Chargement...</MenuItem>],
+                (error) => [<MenuItem key={'error'} value={'error'} disabled>Erreur de chargement</MenuItem>],
+                (games) => {
+                  return getFilterOptions(games).map(option => (
+                    <MenuItem key={option.value} value={option.value}>{option.label}</MenuItem>
+                  ))
+                }
+              )(games)
+            }
+          </Select>
+        </div>
       </div>
       <div className={`${styles.tableContainer} ${styles.profileTable}`}>
         {
@@ -148,13 +207,13 @@ const RankingPage: React.FunctionComponent<ConnectedProps & DispatchedProps> = (
               <ErrorMessage message="Aucun score" /> :
               <Table aria-label="simple table">
                 <TableBody>
-                  {getRanking(games, rankingType).map((player, i) => (
+                  {getRanking(games, rankingType, rankingFilter).map((player, i) => (
                     <TableRow key={player.id}>
                       <TableCell component="th" scope="row" align="right">
                         #{i+1}
                       </TableCell>
                       <TableCell component="th" scope="row">
-                        <MLink href={`/profile/${player.id}`}>{player.name}</MLink>
+                        <Link href={`/profile/${player.id}`}>{player.name}</Link>
                       </TableCell>
                       <TableCell>
                         {player.score}{player.suffix ? player.suffix : ''}

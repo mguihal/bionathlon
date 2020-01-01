@@ -114,6 +114,16 @@
   margin-top: 170px;
 }
 
+.rankingFilters {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.rankingFilters > div {
+  margin: 10px 10px 0 10px;
+}
+
 @media screen and (min-width: 768px) {
   .page {
     margin-top: 80px;
@@ -156,5 +166,10 @@
 
   .profileTable {
     margin-top: 220px;
+  }
+
+  .rankingFilters {
+    flex-direction: row;
+    margin-top: 20px;
   }
 }
