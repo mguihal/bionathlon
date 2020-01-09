@@ -35,6 +35,8 @@ interface DispatchedProps {
 const SessionTable: React.FunctionComponent<Props & DispatchedProps> = (props) => {
 
   const { games, setSuddenDeathWinner, context } = props;
+  
+  const urlRegexp = /^((http[s]?|ftp):\/)?\/?([^:\/\s]+)((\/\w+)*\/)([\w\-\.]+[^#?\s]+)(.*)?(#[\w\-]+)?$/
 
   const [open, setOpen] = React.useState(false);
   const [winner, setWinner] = React.useState(0);
@@ -68,7 +70,7 @@ const SessionTable: React.FunctionComponent<Props & DispatchedProps> = (props) =
                 { game.suddenDeath ? ' + Mort subite' : '' }
                 { suddenDeathGames.includes(game) && <Button size="small" onClick={handleClickOpen} style={{marginLeft: 20}}>Mort subite ?</Button> }
                 {game.note && <br/>}
-                {game.note && <span className={styles.tableNote}>({game.note})</span>}
+                {game.note && <span className={styles.tableNote}>({game.note.replace(urlRegexp, <img src="\\$1">)})</span>}
               </TableCell>
             </TableRow>
           ))}
