@@ -5,7 +5,7 @@ import { SuddenDeathPayload } from './suddenDeath';
 import { existsSync, writeFileSync } from 'fs';
 import atob from 'atob';
 
-const googlePrivateKeyPath = __dirname + '/../BionathlonBot.privatekey.json';
+const googlePrivateKeyPath = '/tmp/BionathlonBot.privatekey.json';
 
 if (!existsSync(googlePrivateKeyPath)) {
   writeFileSync(googlePrivateKeyPath, atob(process.env.GOOGLE_PRIVATE_KEY || ''));
