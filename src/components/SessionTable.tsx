@@ -16,6 +16,8 @@ import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 
+import processString from 'react-process-string';
+
 import { GamesResponse } from '../sagas/api';
 import { byScoreDesc, isWinner, getSuddenDeathGames } from '../helpers';
 
@@ -54,6 +56,17 @@ const SessionTable: React.FunctionComponent<Props & DispatchedProps> = (props) =
     setSuddenDeathWinner(winner, context);
   };
 
+  const renderNote = (note: string) => {
+    return processString([{
+      regex: /(http(s?):)([/|.|\w|\s|-])*\.(?:jpg|gif|png)/,
+      fn: (key: string, result: string[]) => (
+        <span key={key}>
+          <img alt={'no alternative text'} src={result[0]} />
+        </span>
+      )
+    }])(note);
+  }
+
   return (
     <>
       <Table aria-label="simple table">
@@ -68,7 +81,7 @@ const SessionTable: React.FunctionComponent<Props & DispatchedProps> = (props) =
                 { game.suddenDeath ? ' + Mort subite' : '' }
                 { suddenDeathGames.includes(game) && <Button size="small" onClick={handleClickOpen} style={{marginLeft: 20}}>Mort subite ?</Button> }
                 {game.note && <br/>}
-                {game.note && <span className={styles.tableNote}>({game.note})</span>}
+                {game.note && <span className={styles.tableNote}>({renderNote(game.note)})</span>}
               </TableCell>
             </TableRow>
           ))}
