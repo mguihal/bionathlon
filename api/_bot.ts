@@ -2,8 +2,16 @@ import knex from 'knex';
 import { GoogleAuth } from 'google-auth-library';
 import { GamePayload } from './game';
 import { SuddenDeathPayload } from './suddenDeath';
+import { existsSync, writeFileSync } from 'fs';
+import atob from 'atob';
 
-process.env.GOOGLE_APPLICATION_CREDENTIALS = __dirname + '/../BionathlonBot.privatekey.json';
+const googlePrivateKeyPath = __dirname + '/../BionathlonBot.privatekey.json';
+
+if (!existsSync(googlePrivateKeyPath)) {
+  writeFileSync(googlePrivateKeyPath, atob(process.env.GOOGLE_PRIVATE_KEY || ''));
+}
+
+process.env.GOOGLE_APPLICATION_CREDENTIALS = googlePrivateKeyPath;
 
 function formatDate(date: string) {
   const dateObject = new Date(date);

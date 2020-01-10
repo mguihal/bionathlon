@@ -10,6 +10,7 @@
   "env": {
     "DATABASE_URL": "@bionathlon_db",
     "SECRET": "@bionathlon_secret",
-    "CHATSPACE": "@bionathlon_chatspace"
+    "CHATSPACE": "@bionathlon_chatspace",
+    "GOOGLE_PRIVATE_KEY": "@bionathlon_googleprivatekey"
   }
 }
