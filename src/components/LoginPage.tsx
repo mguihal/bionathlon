@@ -34,11 +34,6 @@ const LoginPage: React.FunctionComponent<ConnectedProps & DispatchedProps> = (pr
   const queryToken = queryParams.get('token');
   const queryRedirect = queryParams.get('redirect');
 
-  if (window.location.origin !== process.env.REACT_APP_LOGIN_ORIGIN) {
-    window.location.href = `${process.env.REACT_APP_LOGIN_ORIGIN}/login?redirect=${window.location.href}`;
-    return null;
-  }
-
   if (queryToken) {
     const tokenObject = JSON.parse(atob(queryToken));
 
@@ -46,6 +41,11 @@ const LoginPage: React.FunctionComponent<ConnectedProps & DispatchedProps> = (pr
     localStorage.setItem('user', JSON.stringify(tokenObject.user));
 
     props.onExternalLoginSuccess(tokenObject.token, tokenObject.user);
+  }
+
+  if (!queryToken && window.location.origin !== process.env.REACT_APP_LOGIN_ORIGIN) {
+    window.location.href = `${process.env.REACT_APP_LOGIN_ORIGIN}/login?redirect=${window.location.href}`;
+    return null;
   }
 
   if (props.isLogged) {
