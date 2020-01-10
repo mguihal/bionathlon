@@ -87,34 +87,36 @@ const TodayPage: React.FunctionComponent<ConnectedProps & DispatchedProps> = (pr
           />
         </SpeedDial>
       </div>
-      <div className={styles.tableContainer}>
-        <Typography variant="h6">
-          {formatDate()} - Midi
-        </Typography>
-        {
-          fold<string, GamesResponse, JSX.Element>(
-            () => <ErrorMessage message="Aucune donnée" />,
-            () => <ErrorMessage message="Chargement..." />,
-            (error) => <ErrorMessage message={error} />,
-            (games) => games.filter(isMidDayGame).length === 0 ?
-              <ErrorMessage message="Aucun score" /> : <SessionTable games={games.filter(isMidDayGame)} context={'today'} />
-          )(games)
-        }
-      </div>
+      <div className={styles.todayContainer}>
+        <div className={styles.tableContainer}>
+          <Typography variant="h6">
+            {formatDate()} - Midi
+          </Typography>
+          {
+            fold<string, GamesResponse, JSX.Element>(
+              () => <ErrorMessage message="Aucune donnée" />,
+              () => <ErrorMessage message="Chargement..." />,
+              (error) => <ErrorMessage message={error} />,
+              (games) => games.filter(isMidDayGame).length === 0 ?
+                <ErrorMessage message="Aucun score" /> : <SessionTable games={games.filter(isMidDayGame)} context={'today'} />
+            )(games)
+          }
+        </div>
 
-      <div className={styles.tableContainer}>
-        <Typography variant="h6">
-          {formatDate()} - Soir
-        </Typography>
-        {
-          fold<string, GamesResponse, JSX.Element>(
-            () => <ErrorMessage message="Aucune donnée" />,
-            () => <ErrorMessage message="Chargement..." />,
-            (error) => <ErrorMessage message={error} />,
-            (games) => games.filter((e) => !isMidDayGame(e)).length === 0 ?
-              <ErrorMessage message="Aucun score" /> : <SessionTable games={games.filter((e) => !isMidDayGame(e))} context={'today'} />
-          )(games)
-        }
+        <div className={styles.tableContainer}>
+          <Typography variant="h6">
+            {formatDate()} - Soir
+          </Typography>
+          {
+            fold<string, GamesResponse, JSX.Element>(
+              () => <ErrorMessage message="Aucune donnée" />,
+              () => <ErrorMessage message="Chargement..." />,
+              (error) => <ErrorMessage message={error} />,
+              (games) => games.filter((e) => !isMidDayGame(e)).length === 0 ?
+                <ErrorMessage message="Aucun score" /> : <SessionTable games={games.filter((e) => !isMidDayGame(e))} context={'today'} />
+            )(games)
+          }
+        </div>
       </div>
     </>
   );

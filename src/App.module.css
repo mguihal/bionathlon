@@ -172,4 +172,8 @@
     flex-direction: row;
     margin-top: 20px;
   }
+
+  .todayContainer {
+    display: flex;
+  }
 }
