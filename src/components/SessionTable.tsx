@@ -81,7 +81,7 @@ const SessionTable: React.FunctionComponent<Props & DispatchedProps> = (props) =
                 { game.suddenDeath ? ' + Mort subite' : '' }
                 { suddenDeathGames.includes(game) && <Button size="small" onClick={handleClickOpen} style={{marginLeft: 20}}>Mort subite ?</Button> }
                 {game.note && <br/>}
-                {game.note && <span className={styles.tableNote}>({renderNote(game.note)})</span>}
+                {game.note && <span className={styles.tableNote}>{renderNote(game.note)}</span>}
               </TableCell>
             </TableRow>
           ))}

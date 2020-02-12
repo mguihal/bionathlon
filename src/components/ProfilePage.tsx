@@ -106,7 +106,7 @@ const ProfilePage: React.FunctionComponent<ConnectedProps & DispatchedProps> = (
                       <TableCell>
                         {game.score}
                         {game.note && <br/>}
-                        {game.note && <span className={styles.tableNote}>({game.note})</span>}
+                        {game.note && <span className={styles.tableNote}>{game.note}</span>}
                       </TableCell>
                     </TableRow>
                   ))}
