@@ -61,7 +61,7 @@ const SessionTable: React.FunctionComponent<Props & DispatchedProps> = (props) =
       regex: /(http(s?):)([/|.|\w|\s|-])*\.(?:jpg|gif|png)/,
       fn: (key: string, result: string[]) => (
         <span key={key}>
-          <img alt={'no alternative text'} src={result[0]} />
+          <img alt={'no alternative text'} src={result[0]} style={{maxWidth: 500}} />
         </span>
       )
     }])(note);
