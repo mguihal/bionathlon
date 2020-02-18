@@ -46,6 +46,17 @@ const ProfilePage: React.FunctionComponent<ConnectedProps & DispatchedProps> = (
     </Typography>
   );
 
+  const smoothData = (games: GamesResponse) => {
+    return games.map(cur => cur.score).reduce<number[]>((data, score, index, scores) => {
+      const smoothOn = scores.slice(Math.max(index - 4, 0), index);
+      const smoothedScore = smoothOn
+        .reduce((prev, cur) => prev + cur, 0) / smoothOn.length;
+
+      data.push(smoothedScore);
+      return data;
+    }, []);
+  };
+
   const options = fold<string, GamesResponse, Highcharts.Options>(
     () => ({}),
     () => ({}),
@@ -64,8 +75,13 @@ const ProfilePage: React.FunctionComponent<ConnectedProps & DispatchedProps> = (
         },
         series: [{
           type: 'line',
-          data: games.map(cur => cur.score)
-        }]
+          data: smoothData(games)
+        },
+          {
+            type: 'line',
+            data: games.map(cur => cur.score),
+            lineWidth: 0
+          }]
       }
     }
   )(playerGames);
