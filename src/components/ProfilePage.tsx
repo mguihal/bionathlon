@@ -18,6 +18,10 @@ import { GamesResponse } from '../sagas/api';
 
 import { formatDate, round2, byDateTimeDesc } from '../helpers';
 
+import * as Highcharts from 'highcharts';
+import HighchartsReact from 'highcharts-react-official';
+
+
 interface ConnectedProps {
   playerGames: Dataway<string, GamesResponse>;
   currentUserId: number;
@@ -41,6 +45,30 @@ const ProfilePage: React.FunctionComponent<ConnectedProps & DispatchedProps> = (
        {props.message}
     </Typography>
   );
+
+  const options = fold<string, GamesResponse, Highcharts.Options>(
+    () => ({}),
+    () => ({}),
+    () => ({}),
+    (games) => {
+      return {
+        title: {
+          text: ''
+        },
+        legend: {
+          enabled: false
+        },
+        xAxis: {
+          categories: games.map(cur => formatDate(cur.date) + '- ' + (cur.time === 'midday' ? 'midi' : 'soir')),
+          visible: false
+        },
+        series: [{
+          type: 'line',
+          data: games.map(cur => cur.score)
+        }]
+      }
+    }
+  )(playerGames);
 
   return (
     <>
@@ -88,6 +116,14 @@ const ProfilePage: React.FunctionComponent<ConnectedProps & DispatchedProps> = (
           )(playerGames)}
         </Typography>
       </div>
+        <div>
+            <HighchartsReact
+                highcharts={Highcharts}
+                options={options}
+                {...props}
+            />
+        </div>
+
       <div className={`${styles.tableContainer} ${styles.profileTable}`}>
         {
           fold<string, GamesResponse, JSX.Element>(

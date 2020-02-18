@@ -25,6 +25,8 @@
     "date-fns": "^2.9.0",
     "dotenv": "^8.2.0",
     "google-auth-library": "^5.8.0",
+    "highcharts": "^8.0.0",
+    "highcharts-react-official": "^2.2.2",
     "jsonwebtoken": "^8.5.1",
     "knex": "^0.20.7",
     "pg": "^7.17.0",
