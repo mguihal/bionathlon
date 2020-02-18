@@ -46,6 +46,17 @@ const ProfilePage: React.FunctionComponent<ConnectedProps & DispatchedProps> = (
     </Typography>
   );
 
+  const smoothData = (games: GamesResponse) => {
+    return games.map(cur => cur.score).reduce<number[]>((data, score, index, scores) => {
+      const smoothOn = scores.slice(Math.max(index - 10, 0), index);
+      const smoothedScore = smoothOn
+        .reduce((prev, cur) => prev + cur, 0) / smoothOn.length;
+
+      data.push(smoothedScore);
+      return data;
+    }, []);
+  };
+
   const options = fold<string, GamesResponse, Highcharts.Options>(
     () => ({}),
     () => ({}),
@@ -56,16 +67,24 @@ const ProfilePage: React.FunctionComponent<ConnectedProps & DispatchedProps> = (
           text: ''
         },
         legend: {
-          enabled: false
+          enabled: true,
+          align: 'right'
         },
         xAxis: {
           categories: games.map(cur => formatDate(cur.date) + '- ' + (cur.time === 'midday' ? 'midi' : 'soir')),
           visible: false
         },
         series: [{
+          name: 'moyenne glissante',
           type: 'line',
-          data: games.map(cur => cur.score)
-        }]
+          data: smoothData(games)
+        },
+          {
+            name: 'score exact',
+            type: 'line',
+            data: games.map(cur => cur.score),
+            lineWidth: 0
+          }]
       }
     }
   )(playerGames);
