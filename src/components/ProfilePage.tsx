@@ -18,6 +18,8 @@ import { GamesResponse } from '../sagas/api';
 
 import { formatDate, round2, byDateTimeDesc } from '../helpers';
 
+import ProfileChart from './ProfileChart';
+
 interface ConnectedProps {
   playerGames: Dataway<string, GamesResponse>;
   currentUserId: number;
@@ -88,6 +90,14 @@ const ProfilePage: React.FunctionComponent<ConnectedProps & DispatchedProps> = (
           )(playerGames)}
         </Typography>
       </div>
+
+      {fold<string, GamesResponse, JSX.Element>(
+        () => <ErrorMessage message="Aucune donnée" />,
+        () => <ErrorMessage message="Chargement..." />,
+        (error) => <ErrorMessage message={error} />,
+        (games) => <ProfileChart playerGames={games} />
+      )(playerGames)}
+
       <div className={`${styles.tableContainer} ${styles.profileTable}`}>
         {
           fold<string, GamesResponse, JSX.Element>(
