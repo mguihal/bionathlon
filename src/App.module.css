@@ -100,18 +100,15 @@
 }
 
 .profileTitle {
-  position: fixed;
   margin: auto;
   width: 90%;
-  left: 5%;
-  top: 0px;
   background: white;
-  padding-top: 30px;
-  padding-bottom: 30px;
 }
 
-.profileTable {
-  margin-top: 170px;
+.profileChart {
+  width: 75%;
+  margin: auto;
+  margin-top: 20px;
 }
 
 .rankingFilters {
@@ -161,11 +158,6 @@
   .profileTitle {
     width: 35%;
     left: 32.5%;
-    padding-top: 80px;
-  }
-
-  .profileTable {
-    margin-top: 220px;
   }
 
   .rankingFilters {

@@ -18,9 +18,7 @@ import { GamesResponse } from '../sagas/api';
 
 import { formatDate, round2, byDateTimeDesc } from '../helpers';
 
-import * as Highcharts from 'highcharts';
-import HighchartsReact from 'highcharts-react-official';
-
+import ProfileChart from './ProfileChart';
 
 interface ConnectedProps {
   playerGames: Dataway<string, GamesResponse>;
@@ -45,49 +43,6 @@ const ProfilePage: React.FunctionComponent<ConnectedProps & DispatchedProps> = (
        {props.message}
     </Typography>
   );
-
-  const smoothData = (games: GamesResponse) => {
-    return games.map(cur => cur.score).reduce<number[]>((data, score, index, scores) => {
-      const smoothOn = scores.slice(Math.max(index - 10, 0), index);
-      const smoothedScore = smoothOn
-        .reduce((prev, cur) => prev + cur, 0) / smoothOn.length;
-
-      data.push(smoothedScore);
-      return data;
-    }, []);
-  };
-
-  const options = fold<string, GamesResponse, Highcharts.Options>(
-    () => ({}),
-    () => ({}),
-    () => ({}),
-    (games) => {
-      return {
-        title: {
-          text: ''
-        },
-        legend: {
-          enabled: true,
-          align: 'right'
-        },
-        xAxis: {
-          categories: games.map(cur => formatDate(cur.date) + '- ' + (cur.time === 'midday' ? 'midi' : 'soir')),
-          visible: false
-        },
-        series: [{
-          name: 'moyenne glissante',
-          type: 'line',
-          data: smoothData(games)
-        },
-          {
-            name: 'score exact',
-            type: 'line',
-            data: games.map(cur => cur.score),
-            lineWidth: 0
-          }]
-      }
-    }
-  )(playerGames);
 
   return (
     <>
@@ -135,13 +90,13 @@ const ProfilePage: React.FunctionComponent<ConnectedProps & DispatchedProps> = (
           )(playerGames)}
         </Typography>
       </div>
-        <div>
-            <HighchartsReact
-                highcharts={Highcharts}
-                options={options}
-                {...props}
-            />
-        </div>
+
+      {fold<string, GamesResponse, JSX.Element>(
+        () => <ErrorMessage message="Aucune donnée" />,
+        () => <ErrorMessage message="Chargement..." />,
+        (error) => <ErrorMessage message={error} />,
+        (games) => <ProfileChart playerGames={games} />
+      )(playerGames)}
 
       <div className={`${styles.tableContainer} ${styles.profileTable}`}>
         {
