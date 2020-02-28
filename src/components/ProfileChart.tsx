@@ -17,6 +17,8 @@ const ProfileChart: React.FunctionComponent<ConnectedProps> = (props) => {
 
   const { playerGames } = props;
 
+  const reversedPlayerGames = playerGames.reverse();
+
   const smoothData = (games: GamesResponse) => {
     return games.map(cur => cur.score).reduce<number[]>((data, score, index, scores) => {
       const smoothOn = scores.slice(Math.max(index - 10, 0), index);
@@ -40,7 +42,7 @@ const ProfileChart: React.FunctionComponent<ConnectedProps> = (props) => {
       align: 'right'
     },
     xAxis: {
-      categories: playerGames.map(cur => formatDate(cur.date) + ' - ' + (cur.time === 'midday' ? 'midi' : 'soir')),
+      categories: reversedPlayerGames.map(cur => formatDate(cur.date) + ' - ' + (cur.time === 'midday' ? 'midi' : 'soir')),
       visible: false
     },
     yAxis: {
@@ -51,12 +53,12 @@ const ProfileChart: React.FunctionComponent<ConnectedProps> = (props) => {
     series: [{
       name: 'Moyenne glissante',
       type: 'line',
-      data: smoothData(playerGames)
+      data: smoothData(reversedPlayerGames)
     },
       {
         name: 'Score exact',
         type: 'line',
-        data: playerGames.map(cur => cur.score),
+        data: reversedPlayerGames.map(cur => cur.score),
         lineWidth: 0
       }]
   };
