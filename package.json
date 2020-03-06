@@ -42,11 +42,12 @@
     "typescript": "3.7.4"
   },
   "scripts": {
-    "dev": "PORT=3001 ts-node-dev --project=tsconfig.db.json  --respawn --clear api/_dev-server.ts",
+    "backend": "PORT=3001 ts-node-dev --project=tsconfig.db.json  --respawn --clear api/_dev-server.ts",
     "lint": "prettier --write './**/*.ts'",
     "db:up": "TS_NODE_PROJECT=tsconfig.db.json knex migrate:up --env=master",
     "build": "react-scripts build && npm run db:up",
-    "start": "react-scripts start",
+    "frontend": "react-scripts start",
+    "start": "npm run backend & npm run frontend",
     "test": "react-scripts test",
     "deploy": "now --prod"
   },
