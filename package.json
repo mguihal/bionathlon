@@ -46,8 +46,8 @@
     "lint": "prettier --write './**/*.ts'",
     "db:up": "TS_NODE_PROJECT=tsconfig.db.json knex migrate:up --env=master",
     "build": "react-scripts build && npm run db:up",
-    "frontend": "react-scripts start",
-    "start": "npm run backend & npm run frontend",
+    "start": "react-scripts start",
+    "dev": "npm run backend & npm run start",
     "test": "react-scripts test",
     "deploy": "now --prod"
   },

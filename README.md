@@ -14,7 +14,7 @@ Replace .env file content with correct values
 ## Run
 
 ```
-yarn start
+yarn dev
 ```
 
 Go to http://localhost:3000
