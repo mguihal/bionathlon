@@ -19,7 +19,7 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import processString from 'react-process-string';
 
 import { GamesResponse } from '../sagas/api';
-import { byScoreDesc, isWinner, getSuddenDeathGames } from '../helpers';
+import { byScoreDesc, isWinner, getSuddenDeathGames, computeScore } from '../helpers';
 
 import { setSuddenDeathWinner } from '../actionCreators/game';
 
@@ -77,7 +77,7 @@ const SessionTable: React.FunctionComponent<Props & DispatchedProps> = (props) =
                 <Link href={`/profile/${game.playerId}`}>{game.playerName}</Link> { isWinner(game, games) ? ' 👑' : ''}
               </TableCell>
               <TableCell>
-                {game.score}
+                {computeScore(game)}
                 { game.suddenDeath ? ' + Mort subite' : '' }
                 { suddenDeathGames.includes(game) && <Button size="small" onClick={handleClickOpen} style={{marginLeft: 20}}>Mort subite ?</Button> }
                 {game.note && <br/>}

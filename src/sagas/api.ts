@@ -68,7 +68,11 @@ export interface GameResponse {
   time: string;
   playerId: number;
   playerName: string;
-  score: number;
+  score?: number;
+  scoreLeftBottle?: number;
+  scoreMiddleBottle?: number;
+  scoreRightBottle?: number;
+  scoreMalusBottle?: number;
   note: string;
   suddenDeath: boolean;
 }

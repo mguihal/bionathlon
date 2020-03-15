@@ -18,7 +18,7 @@ import { fetchAllGames } from '../actionCreators/game';
 import styles from '../App.module.css';
 import { GamesResponse } from '../sagas/api';
 
-import { groupByPlayer, groupByDateTime, round2, byScore, getWinner } from '../helpers';
+import { groupByPlayer, groupByDateTime, round2, byScore, getWinner, computeScore } from '../helpers';
 
 interface ConnectedProps {
   games: Dataway<string, GamesResponse>;
@@ -85,7 +85,7 @@ function getRanking(games: GamesResponse, rankingType: string, rankingFilter: st
       return {
         id: Number(player),
         name: playerGames[player][0].playerName,
-        score: playerGames[player].reduce((acc, cur) => acc + cur.score, 0)
+        score: playerGames[player].reduce((acc, cur) => acc + computeScore(cur), 0)
       };
     }).sort(byScore);
   } else if (rankingType === 'avgPoints') {
@@ -93,7 +93,7 @@ function getRanking(games: GamesResponse, rankingType: string, rankingFilter: st
       return {
         id: Number(player),
         name: playerGames[player][0].playerName,
-        score: round2((playerGames[player].reduce((acc, cur) => acc + cur.score, 0) / playerGames[player].length))
+        score: round2((playerGames[player].reduce((acc, cur) => acc + computeScore(cur), 0) / playerGames[player].length))
       };
     }).sort(byScore);
   } else if (rankingType === 'topScore') {
@@ -101,7 +101,7 @@ function getRanking(games: GamesResponse, rankingType: string, rankingFilter: st
       return {
         id: Number(player),
         name: playerGames[player][0].playerName,
-        score: playerGames[player].reduce((acc, cur) => cur.score > acc ? cur.score : acc, -999)
+        score: playerGames[player].reduce((acc, cur) => computeScore(cur) > acc ? computeScore(cur) : acc, -999)
       };
     }).sort(byScore);
   }

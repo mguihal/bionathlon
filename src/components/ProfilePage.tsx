@@ -16,7 +16,7 @@ import { fetchPlayerGames } from '../actionCreators/game';
 import styles from '../App.module.css';
 import { GamesResponse } from '../sagas/api';
 
-import { formatDate, round2, byDateTimeDesc } from '../helpers';
+import { formatDate, round2, byDateTimeDesc, computeScore } from '../helpers';
 
 import ProfileChart from './ProfileChart';
 
@@ -70,7 +70,7 @@ const ProfilePage: React.FunctionComponent<ConnectedProps & DispatchedProps> = (
             () => 'N/A',
             () => 'Chargement...',
             () => 'N/A',
-            (games) => games.reduce((acc, cur) => acc + cur.score, 0).toString()
+            (games) => games.reduce((acc, cur) => acc + computeScore(cur), 0).toString()
           )(playerGames)}
         </Typography>
         <Typography variant="subtitle2">
@@ -78,7 +78,7 @@ const ProfilePage: React.FunctionComponent<ConnectedProps & DispatchedProps> = (
             () => 'N/A',
             () => 'Chargement...',
             () => 'N/A',
-            (games) => round2((games.reduce((acc, cur) => acc + cur.score, 0) / games.length)).toString()
+            (games) => round2((games.reduce((acc, cur) => acc + computeScore(cur), 0) / games.length)).toString()
           )(playerGames)}
         </Typography>
         <Typography variant="subtitle2">
@@ -86,7 +86,7 @@ const ProfilePage: React.FunctionComponent<ConnectedProps & DispatchedProps> = (
             () => 'N/A',
             () => 'Chargement...',
             () => 'N/A',
-            (games) => games.reduce((acc, cur) => cur.score > acc ? cur.score : acc, -999).toString()
+            (games) => games.reduce((acc, cur) => computeScore(cur) > acc ? computeScore(cur) : acc, -999).toString()
           )(playerGames)}
         </Typography>
       </div>
