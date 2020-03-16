@@ -8,11 +8,13 @@ import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
 import Snackbar from '@material-ui/core/Snackbar';
 import SnackbarContent from '@material-ui/core/SnackbarContent';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
+import UpdateIcon from '@material-ui/icons/Update';
 
 import DateFnsUtils from '@date-io/date-fns';
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
@@ -22,6 +24,8 @@ import { fetchPlayers } from '../actionCreators/player';
 import { addGame } from '../actionCreators/game';
 
 import { PlayersResponse } from '../sagas/api';
+
+import { formatDate } from '../helpers';
 
 import styles from '../App.module.css';
 
@@ -47,6 +51,7 @@ const AddGamePage: React.FunctionComponent<ConnectedProps & DispatchedProps> = (
   const [note, setNote] = useState<string>('');
   const [time, setTime] = useState<string>(currentTime.getHours() < 15 ? 'midday' : 'evening');
   const [date, setDate] = useState<Date>(currentTime);
+  const [showDateFields, setShowDateFields] = useState<boolean>(false);
 
   useEffect(() => {
     fetchPlayers();
@@ -70,8 +75,17 @@ const AddGamePage: React.FunctionComponent<ConnectedProps & DispatchedProps> = (
         <Typography variant="h6">
           Ajout d'un score
         </Typography>
+
+        <Typography style={{ display: showDateFields ? 'none': 'auto' }}>
+          {formatDate(date.toISOString())} - {time === 'midday' ? 'Midi' : 'Soir'}
+          <IconButton size="small" onClick={() => setShowDateFields(val => !val)}>
+            <UpdateIcon />
+          </IconButton>
+        </Typography>
+
         <MuiPickersUtilsProvider utils={DateFnsUtils}>
           <KeyboardDatePicker
+            style={{ display: showDateFields ? 'flex': 'none' }}
             margin="normal"
             id="date"
             label="Date"
@@ -85,6 +99,7 @@ const AddGamePage: React.FunctionComponent<ConnectedProps & DispatchedProps> = (
         <RadioGroup name="time2" value={time} onChange={e => setTime(e.target.value as string)} row style={{
           marginLeft: 'auto',
           marginRight: 'auto',
+          display: showDateFields ? 'flex': 'none',
         }}>
           <FormControlLabel
             value="midday"
