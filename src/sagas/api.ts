@@ -125,18 +125,28 @@ export function* addGame(
   date: string,
   time: 'midday' | 'evening',
   playerId: number,
-  score: number,
+  score: number | null,
+  scoreLeftBottle: number | null,
+  scoreMiddleBottle: number | null,
+  scoreRightBottle: number | null,
+  scoreMalusBottle: number | null,
   note: string,
 ) {
-  return yield call(doRequest, '/game', 'POST', true, {
-    data: {
-      date,
-      time,
-      playerId,
-      score,
-      note,
-    },
-  });
+  const data: {[key: string]: any} = {
+    date,
+    time,
+    playerId,
+    score,
+    scoreLeftBottle,
+    scoreMiddleBottle,
+    scoreRightBottle,
+    scoreMalusBottle,
+    note,
+  };
+
+  const filteredData = Object.fromEntries(Object.entries(data).filter(([key, value]) => value !== null));
+
+  return yield call(doRequest, '/game', 'POST', true, { data: filteredData });
 }
 
 export function* setSuddenDeathWinner(gameId: number) {

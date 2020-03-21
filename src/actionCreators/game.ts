@@ -63,7 +63,11 @@ export interface GameAdd {
   date: string;
   time: 'midday' | 'evening';
   playerId: number;
-  score: number;
+  score: number | null;
+  scoreLeftBottle: number | null;
+  scoreMiddleBottle: number | null;
+  scoreRightBottle: number | null;
+  scoreMalusBottle: number | null;
   note: string;
 }
 
@@ -167,7 +171,11 @@ export function addGame(
   date: string,
   time: string,
   playerId: number,
-  score: number,
+  score: number | null,
+  scoreLeftBottle: number | null,
+  scoreMiddleBottle: number | null,
+  scoreRightBottle: number | null,
+  scoreMalusBottle: number | null,
   note: string,
 ): GameAdd {
   return {
@@ -176,6 +184,10 @@ export function addGame(
     time: time as GameAdd['time'],
     playerId,
     score,
+    scoreLeftBottle,
+    scoreMiddleBottle,
+    scoreRightBottle,
+    scoreMalusBottle,
     note,
   };
 }

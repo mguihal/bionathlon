@@ -74,7 +74,18 @@ function* fetchAllGamesSaga() {
 function* addGameSaga() {
   yield takeLatest<GameAdd>(GAME_ADD, function*(action) {
     try {
-      yield call(addGame, action.date, action.time, action.playerId, action.score, action.note);
+      yield call(
+        addGame,
+        action.date,
+        action.time,
+        action.playerId,
+        action.score,
+        action.scoreLeftBottle,
+        action.scoreMiddleBottle,
+        action.scoreRightBottle,
+        action.scoreMalusBottle,
+        action.note
+      );
       yield put(gameAdded());
     } catch (error) {
       yield put(gameAddedError(error.message));
