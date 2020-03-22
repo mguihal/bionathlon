@@ -7,16 +7,17 @@ import bottle from './malusBottle.svg';
 import styles from '../App.module.css';
 
 interface Props {
-  onChange: (score: number) => void;
+  staticScore?: number;
+  onChange?: (score: number) => void;
 }
 
 const MalusBottleScore: React.FunctionComponent<Props> = (props) => {
 
-  const { onChange } = props;
-  const [ score, setScore ] = useState(0);
+  const { staticScore, onChange } = props;
+  const [ score, setScore ] = useState(staticScore || 0);
 
   useEffect(() => {
-    onChange(score);
+    onChange && onChange(score);
   }, [score, onChange]);
 
   return (
@@ -27,7 +28,7 @@ const MalusBottleScore: React.FunctionComponent<Props> = (props) => {
           { Array(score).fill(score).map((v, i) => (<div key={i} className={styles.rondelle} />)) }
         </div>
       </div>
-      <div className={styles.bottleButtons}>
+      <div className={styles.bottleButtons} style={{ visibility: staticScore === undefined ? 'visible' : 'hidden' }}>
         <button className={styles.bottleButton} onClick={() => setScore(currentScore => Math.max(0, currentScore - 1))}>
           <span>-</span>
         </button>

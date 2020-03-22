@@ -6,6 +6,7 @@ import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
+import MLink from '@material-ui/core/Link';
 
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
@@ -16,9 +17,12 @@ import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 
+import BottleScore from './BottleScore';
+import MalusBottleScore from './MalusBottleScore';
+
 import processString from 'react-process-string';
 
-import { GamesResponse } from '../sagas/api';
+import { GamesResponse, GameResponse } from '../sagas/api';
 import { byScoreDesc, isWinner, getSuddenDeathGames, computeScore } from '../helpers';
 
 import { setSuddenDeathWinner } from '../actionCreators/game';
@@ -39,6 +43,7 @@ const SessionTable: React.FunctionComponent<Props & DispatchedProps> = (props) =
   const { games, setSuddenDeathWinner, context } = props;
 
   const [open, setOpen] = React.useState(false);
+  const [openDetails, setOpenDetails] = React.useState<GameResponse | null>(null);
   const [winner, setWinner] = React.useState(0);
 
   const suddenDeathGames = getSuddenDeathGames(games);
@@ -77,7 +82,10 @@ const SessionTable: React.FunctionComponent<Props & DispatchedProps> = (props) =
                 <Link href={`/profile/${game.playerId}`}>{game.playerName}</Link> { isWinner(game, games) ? ' 👑' : ''}
               </TableCell>
               <TableCell>
-                {computeScore(game)}
+                { game.scoreLeftBottle !== null ?
+                  <MLink onClick={() => setOpenDetails(game)}>{computeScore(game)}</MLink>
+                  : computeScore(game)
+                }
                 { game.suddenDeath ? ' + Mort subite' : '' }
                 { suddenDeathGames.includes(game) && <Button size="small" onClick={handleClickOpen} style={{marginLeft: 20}}>Mort subite ?</Button> }
                 {game.note && <br/>}
@@ -106,6 +114,18 @@ const SessionTable: React.FunctionComponent<Props & DispatchedProps> = (props) =
             Valider
           </Button>
         </DialogActions>
+      </Dialog>
+      <Dialog open={openDetails !== null} onClose={() => setOpenDetails(null)} aria-labelledby="form-dialog-title">
+        <DialogContent>
+          <div className={styles.bottlesContainer}>
+            <BottleScore staticScore={openDetails !== null ? openDetails.scoreLeftBottle : undefined} />
+            <div>
+              <MalusBottleScore staticScore={openDetails !== null ? openDetails.scoreMalusBottle : undefined} />
+              <BottleScore staticScore={openDetails !== null ? openDetails.scoreMiddleBottle : undefined} />
+            </div>
+            <BottleScore staticScore={openDetails !== null ? openDetails.scoreRightBottle : undefined} />
+          </div>
+        </DialogContent>
       </Dialog>
     </>
   );

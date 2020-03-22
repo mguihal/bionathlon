@@ -125,6 +125,7 @@
   display: flex;
   justify-content: space-around;
   align-items: center;
+  text-align: center;
 }
 
 .bottleScore {
@@ -181,7 +182,7 @@ h6.bottlesScoreLabel {
 
 .bottleScore .rondelle {
   width: 100%;
-  height: 10px;
+  height: 8px;
   border-radius: 5px;
   background-color: #DA6345;
   margin-top: 5px;
@@ -251,5 +252,9 @@ h6.bottlesScoreLabel {
 
   .bottleScore .bottleButton span {
     vertical-align: super;
+  }
+
+  .bottleScore .rondelle {
+    height: 10px;
   }
 }
