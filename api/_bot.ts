@@ -48,6 +48,22 @@ async function sendChatMessage(spaceId: string | null, thread: string, message: 
   }
 }
 
+function computeScore(game: GamePayload['data']) {
+  const { score, scoreLeftBottle, scoreMiddleBottle, scoreRightBottle, scoreMalusBottle } = game;
+
+  if (score !== null && score !== undefined) {
+    return score;
+  }
+
+  const bonus = Math.min(scoreLeftBottle || 0, scoreMiddleBottle || 0, scoreRightBottle || 0) * 3;
+
+  return bonus +
+    (scoreLeftBottle || 0) +
+    (scoreMiddleBottle || 0) +
+    (scoreRightBottle || 0) -
+    (scoreMalusBottle || 0);
+}
+
 export async function sendScoreOnChat(db: knex, payload: GamePayload) {
   const payloadDate = (new Date(payload.data.date)).toISOString().split('T')[0];
   const threadKey = payloadDate + payload.data.time;
@@ -65,9 +81,9 @@ N'oubliez pas d'ajouter vos scores sur https://bionathlon.now.sh !
     await sendChatMessage(process.env.CHATSPACE || null, threadKey, welcomeMessage);
   }
 
-  const chatScore = payload.data.score === 0 ? '⭕️' : payload.data.score;
+  const score = computeScore(payload.data);
   const chatNote = payload.data.note ? '(' + payload.data.note + ')' : '';
-  const message = `- ${player.name} : ${chatScore} ${chatNote}`;
+  const message = `- ${player.name} : ${score === 0 ? '⭕️' : score} ${chatNote}`;
 
   await sendChatMessage(process.env.CHATSPACE || null, threadKey, message);
 }

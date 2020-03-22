@@ -28,9 +28,12 @@ export function groupByPlayer(games: GamesResponse) {
 };
 
 export function byScoreDesc(a: GameResponse, b: GameResponse) {
-  if (a.score < b.score) {
+  const scoreA = computeScore(a);
+  const scoreB = computeScore(b);
+
+  if (scoreA < scoreB) {
     return 1;
-  } else if (a.score > b.score) {
+  } else if (scoreA > scoreB) {
     return -1;
   } else {
     return a.suddenDeath ? -1 : 1;
@@ -78,7 +81,7 @@ export function isWinner(game: GameResponse, games: GamesResponse) {
   return games.every(otherGame => {
     if (otherGame.playerId === game.playerId) {
       return true;
-    } else if (otherGame.score < game.score) {
+    } else if (computeScore(otherGame) < computeScore(game)) {
       return true;
     } else if (otherGame.score === game.score && game.suddenDeath) {
       return true;
@@ -115,4 +118,20 @@ export function getSuddenDeathGames(games: GamesResponse) {
   });
 
   return isSuddenDeathDone || suddenDeathGames.length === 1 ? [] : suddenDeathGames;
+}
+
+export function computeScore(game: GameResponse) {
+  const { score, scoreLeftBottle, scoreMiddleBottle, scoreRightBottle, scoreMalusBottle } = game;
+
+  if (score !== null && score !== undefined) {
+    return score;
+  }
+
+  const bonus = Math.min(scoreLeftBottle || 0, scoreMiddleBottle || 0, scoreRightBottle || 0) * 3;
+
+  return bonus +
+    (scoreLeftBottle || 0) +
+    (scoreMiddleBottle || 0) +
+    (scoreRightBottle || 0) -
+    (scoreMalusBottle || 0);
 }

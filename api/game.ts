@@ -10,7 +10,11 @@ export interface GamePayload {
     date: string;
     time: 'midday' | 'evening';
     playerId: number;
-    score: number;
+    score?: number;
+    scoreLeftBottle?: number;
+    scoreMiddleBottle?: number;
+    scoreRightBottle?: number;
+    scoreMalusBottle?: number;
     note: string;
   };
 }
@@ -39,6 +43,10 @@ const routeConfig: RouteConfig = {
             'time',
             'playerId',
             'score',
+            'scoreLeftBottle',
+            'scoreMiddleBottle',
+            'scoreRightBottle',
+            'scoreMalusBottle',
             'note',
             'name as playerName',
             'suddenDeath',
@@ -82,14 +90,27 @@ const routeConfig: RouteConfig = {
                 .description('Id du joueur'),
               score: joi
                 .number()
-                .required()
-                .description('Score du joueur'),
+                .description('Score total du joueur'),
+              scoreLeftBottle: joi
+                .number().min(0)
+                .description('Score de la bouteille gauche'),
+              scoreMiddleBottle: joi
+                .number().min(0)
+                .description('Score de la bouteille centrale'),
+              scoreRightBottle: joi
+                .number().min(0)
+                .description('Score de la bouteille droite'),
+              scoreMalusBottle: joi
+                .number().min(0)
+                .description('Score de la bouteille malus'),
               note: joi
                 .string()
                 .required()
                 .allow('')
                 .description('Note pour ce score'),
             })
+            .and('scoreLeftBottle', 'scoreMiddleBottle', 'scoreRightBottle', 'scoreMalusBottle')
+            .oxor('score', 'scoreLeftBottle')
             .required(),
         })
         .required(),
@@ -104,6 +125,10 @@ const routeConfig: RouteConfig = {
               time: payload.data.time,
               playerId: payload.data.playerId,
               score: payload.data.score,
+              scoreLeftBottle: payload.data.scoreLeftBottle,
+              scoreMiddleBottle: payload.data.scoreMiddleBottle,
+              scoreRightBottle: payload.data.scoreRightBottle,
+              scoreMalusBottle: payload.data.scoreMalusBottle,
               note: payload.data.note,
             })
             .returning('*');

@@ -3,7 +3,7 @@ import React from 'react';
 import styles from '../App.module.css';
 import { GamesResponse } from '../sagas/api';
 
-import { formatDate } from '../helpers';
+import { formatDate, computeScore } from '../helpers';
 
 import * as Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
@@ -20,7 +20,7 @@ const ProfileChart: React.FunctionComponent<ConnectedProps> = (props) => {
   const reversedPlayerGames = playerGames.reverse();
 
   const smoothData = (games: GamesResponse) => {
-    return games.map(cur => cur.score).reduce<number[]>((data, score, index, scores) => {
+    return games.map(cur => computeScore(cur)).reduce<number[]>((data, score, index, scores) => {
       const smoothOn = scores.slice(Math.max(index - 10, 0), index);
       const smoothedScore = smoothOn
         .reduce((prev, cur) => prev + cur, 0) / smoothOn.length;
@@ -58,7 +58,7 @@ const ProfileChart: React.FunctionComponent<ConnectedProps> = (props) => {
       {
         name: 'Score exact',
         type: 'line',
-        data: reversedPlayerGames.map(cur => cur.score),
+        data: reversedPlayerGames.map(cur => computeScore(cur)),
         lineWidth: 0
       }]
   };
