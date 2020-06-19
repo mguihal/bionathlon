@@ -111,7 +111,7 @@ export function getSuddenDeathGames(games: GamesResponse) {
   let suddenDeathGames: GamesResponse = [];
 
   games.forEach(game => {
-    if (game.score === sorted[0].score) {
+    if (computeScore(game) === computeScore(sorted[0])) {
       suddenDeathGames.push(game);
       isSuddenDeathDone = isSuddenDeathDone || game.suddenDeath;
     }
