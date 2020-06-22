@@ -114,7 +114,7 @@ const ProfilePage: React.FunctionComponent<ConnectedProps & DispatchedProps> = (
                         {formatDate(game.date)} - {game.time === 'midday' ? 'midi' : 'soir'}
                       </TableCell>
                       <TableCell>
-                        {game.score}
+                        {computeScore(game)}
                         {game.note && <br/>}
                         {game.note && <span className={styles.tableNote}>({game.note})</span>}
                       </TableCell>
