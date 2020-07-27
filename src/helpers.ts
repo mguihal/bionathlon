@@ -94,7 +94,7 @@ export function isWinner(game: GameResponse, games: GamesResponse) {
 export function getWinner(games: GamesResponse) {
   const sorted = games.sort(byScoreDesc);
 
-  if (sorted.length === 0 || (sorted.length > 1 && sorted[0].score === sorted[1].score && !sorted[0].suddenDeath)) {
+  if (sorted.length === 0 || (sorted.length > 1 && computeScore(sorted[0]) === computeScore(sorted[1]) && !sorted[0].suddenDeath)) {
     return null;
   } else {
     return sorted[0].playerId;
