@@ -18,7 +18,7 @@ import { fetchAllGames } from '../actionCreators/game';
 import styles from '../App.module.css';
 import { GamesResponse } from '../sagas/api';
 
-import { groupByPlayer, groupByDateTime, round2, byScore, getWinner, computeScore } from '../helpers';
+import { groupByPlayer, groupByDateTime, round2, byScore, getWinner, computeScore, computeRondelles } from '../helpers';
 
 interface ConnectedProps {
   games: Dataway<string, GamesResponse>;
@@ -86,6 +86,26 @@ function getRanking(games: GamesResponse, rankingType: string, rankingFilter: st
         id: Number(player),
         name: playerGames[player][0].playerName,
         score: playerGames[player].reduce((acc, cur) => acc + computeScore(cur), 0)
+      };
+    }).sort(byScore);
+  } else if (rankingType === 'nbRondelles') {
+    return Object.keys(playerGames).map<Rank>(player => {
+      return {
+        id: Number(player),
+        name: playerGames[player][0].playerName,
+        score: playerGames[player].reduce((acc, cur) => acc + computeRondelles(cur), 0)
+      };
+    }).sort(byScore);
+  } else if (rankingType === 'efficiency') {
+    return Object.keys(playerGames).map<Rank>(player => {
+
+      const pts = playerGames[player].reduce((acc, cur) => acc + computeScore(cur), 0);
+      const rondelles = playerGames[player].reduce((acc, cur) => acc + computeRondelles(cur), 0);
+
+      return {
+        id: Number(player),
+        name: playerGames[player][0].playerName,
+        score: rondelles > 0 ? round2(pts / rondelles) : 0,
       };
     }).sort(byScore);
   } else if (rankingType === 'avgPoints') {
@@ -173,7 +193,9 @@ const RankingPage: React.FunctionComponent<ConnectedProps & DispatchedProps> = (
             <MenuItem value={'nbWonMatchs'}>Nombre de matchs gagnés</MenuItem>
             <MenuItem value={'pctWonMatchs'}>% de matchs gagnés</MenuItem>
             <MenuItem value={'nbPoints'}>Cumul des points</MenuItem>
+            <MenuItem value={'nbRondelles'}>Cumul des rondelles</MenuItem>
             <MenuItem value={'avgPoints'}>Moyenne par match</MenuItem>
+            <MenuItem value={'efficiency'}>Efficacité</MenuItem>
             <MenuItem value={'topScore'}>Meilleur score</MenuItem>
           </Select>
           <Select
