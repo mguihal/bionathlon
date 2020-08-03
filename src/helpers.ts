@@ -135,3 +135,16 @@ export function computeScore(game: GameResponse) {
     (scoreRightBottle || 0) -
     (scoreMalusBottle || 0);
 }
+
+export function computeRondelles(game: GameResponse) {
+  const { score, scoreLeftBottle, scoreMiddleBottle, scoreRightBottle, scoreMalusBottle } = game;
+
+  if (score !== null && score !== undefined) {
+    return 0;
+  }
+
+  return (scoreLeftBottle || 0) +
+    (scoreMiddleBottle || 0) +
+    (scoreRightBottle || 0) +
+    (scoreMalusBottle || 0);
+}
