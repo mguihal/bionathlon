@@ -76,7 +76,7 @@ export async function sendScoreOnChat(db: knex, payload: GamePayload) {
 
   if (otherGames.length === 0) {
     const welcomeMessage = `*Match du ${formatDate(payload.data.date)} - ${payload.data.time === 'midday' ? 'midi' : 'soir'}*
-N'oubliez pas d'ajouter vos scores sur https://bionathlon.now.sh !
+N'oubliez pas d'ajouter vos scores sur https://bionathlon.com !
     `;
     await sendChatMessage(process.env.CHATSPACE || null, threadKey, welcomeMessage);
   }

@@ -68,7 +68,7 @@ const LoginPage: React.FunctionComponent<ConnectedProps & DispatchedProps> = (pr
       <div className={styles.loginBox}>
         <img src={logo} className={styles.loginLogo} alt="logo" />
         <GoogleLogin
-          clientId="579427653293-meckkd7sqrgu4niut1qf29moqhhk58qp.apps.googleusercontent.com"
+          clientId="459868567762-0roa3b365fl7d9hv63pd1hauoi0ohkmd.apps.googleusercontent.com"
           buttonText="Se connecter"
           onSuccess={props.onGoogleLoginSuccess}
           onFailure={props.onGoogleLoginFailure}
@@ -99,7 +99,7 @@ export default connect<ConnectedProps, DispatchedProps, {}, AppState>(
     user: state.user.user,
   }),
   dispatch => ({
-    onGoogleLoginSuccess: (payload) => dispatch(googleLoginSucceeded(payload.accessToken)),
+    onGoogleLoginSuccess: (payload) => dispatch(googleLoginSucceeded(payload.tokenId)),
     onGoogleLoginFailure: (payload) => dispatch(googleLoginFailed(payload.error, payload.details)),
     onExternalLoginSuccess: (token, user) => dispatch(loginSucceeded(token, user)),
   })

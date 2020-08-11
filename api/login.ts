@@ -26,7 +26,7 @@ async function loginHandler(res: NowResponse, payload: LoginPayload) {
   try {
     const googleToken = payload.data.googleToken;
     const response = await axios.get<GoogleResponse>(
-      `https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${googleToken}`,
+      `https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=${googleToken}`,
     );
 
     const player = await withDb(async db => {
