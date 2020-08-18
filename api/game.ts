@@ -22,15 +22,18 @@ export interface GamePayload {
 interface GameFilters {
   date?: string;
   playerId?: number;
+  month?: string;
 }
 
 const routeConfig: RouteConfig = {
   get: {
+    authenticated: false,
     validate: {
       payload: joi.any(),
       query: joi.object().keys({
         date: joi.string().description('Filtre par date'),
         playerId: joi.number().description('Filtre par joueur'),
+        month: joi.string().description('Filtre par mois (ex: 2020-08)'),
       }),
     },
     handler: async (res, _, query: GameFilters) => {
@@ -58,6 +61,11 @@ const routeConfig: RouteConfig = {
 
         if (query.date) {
           gamesQuery.whereRaw(`CAST(date AS DATE) = ?`, [query.date]);
+        }
+
+        if (query.month) {
+          gamesQuery.whereRaw(`CAST(date AS TEXT) >= ?`, [`${query.month}-01`]);
+          gamesQuery.whereRaw(`CAST(date AS TEXT) <= ?`, [`${query.month}-31`]);
         }
 
         const games = await gamesQuery;

@@ -1,4 +1,4 @@
-import { GamesResponse } from '../sagas/api';
+import { GamesResponse, MonthsResponse } from '../sagas/api';
 
 export const TODAY_FETCH = 'TODAY_FETCH';
 export const TODAY_FETCHED = 'TODAY_FETCHED';
@@ -9,6 +9,13 @@ export const PLAYERGAMES_FETCHED_ERROR = 'PLAYERGAMES_FETCHED_ERROR';
 export const ALLGAMES_FETCH = 'ALLGAMES_FETCH';
 export const ALLGAMES_FETCHED = 'ALLGAMES_FETCHED';
 export const ALLGAMES_FETCHED_ERROR = 'ALLGAMES_FETCHED_ERROR';
+
+export const GAMES_FETCH = 'GAMES_FETCH';
+export const GAMES_FETCHED = 'GAMES_FETCHED';
+export const GAMES_FETCHED_ERROR = 'GAMES_FETCHED_ERROR';
+export const GAMES_MONTHS_FETCH = 'GAMES_MONTHS_FETCH';
+export const GAMES_MONTHS_FETCHED = 'GAMES_MONTHS_FETCHED';
+export const GAMES_MONTHS_FETCHED_ERROR = 'GAMES_MONTHS_FETCHED_ERROR';
 export const GAME_ADD = 'GAME_ADD';
 export const GAME_ADD_RESET = 'GAME_ADD_RESET';
 export const GAME_ADDED = 'GAME_ADDED';
@@ -58,6 +65,41 @@ export interface AllGamesFetchedError {
   error: string;
 }
 
+export interface GamesFilters {
+  date?: string;
+  playerId?: number;
+  month?: string;
+}
+
+export interface GamesFetch {
+  type: typeof GAMES_FETCH;
+  filters: GamesFilters;
+}
+
+export interface GamesFetched {
+  type: typeof GAMES_FETCHED;
+  games: GamesResponse;
+}
+
+export interface GamesFetchedError {
+  type: typeof GAMES_FETCHED_ERROR;
+  error: string;
+}
+
+export interface GamesMonthsFetch {
+  type: typeof GAMES_MONTHS_FETCH;
+}
+
+export interface GamesMonthsFetched {
+  type: typeof GAMES_MONTHS_FETCHED;
+  months: MonthsResponse;
+}
+
+export interface GamesMonthsFetchedError {
+  type: typeof GAMES_MONTHS_FETCHED_ERROR;
+  error: string;
+}
+
 export interface GameAdd {
   type: typeof GAME_ADD;
   date: string;
@@ -100,6 +142,12 @@ export type GameAction =
   | AllGamesFetch
   | AllGamesFetched
   | AllGamesFetchedError
+  | GamesFetch
+  | GamesFetched
+  | GamesFetchedError
+  | GamesMonthsFetch
+  | GamesMonthsFetched
+  | GamesMonthsFetchedError
   | GameAdd
   | GameAddReset
   | GameAdded
@@ -163,6 +211,47 @@ export function allGamesFetched(games: GamesResponse): AllGamesFetched {
 export function allGamesFetchedError(error: string): AllGamesFetchedError {
   return {
     type: ALLGAMES_FETCHED_ERROR,
+    error,
+  };
+}
+
+export function fetchGames(filters: GamesFilters): GamesFetch {
+  return {
+    type: GAMES_FETCH,
+    filters,
+  };
+}
+
+export function gamesFetched(games: GamesResponse): GamesFetched {
+  return {
+    type: GAMES_FETCHED,
+    games,
+  };
+}
+
+export function gamesFetchedError(error: string): GamesFetchedError {
+  return {
+    type: GAMES_FETCHED_ERROR,
+    error,
+  };
+}
+
+export function fetchGamesMonths(): GamesMonthsFetch {
+  return {
+    type: GAMES_MONTHS_FETCH,
+  };
+}
+
+export function gamesMonthsFetched(months: MonthsResponse): GamesMonthsFetched {
+  return {
+    type: GAMES_MONTHS_FETCHED,
+    months,
+  };
+}
+
+export function gamesMonthsFetchedError(error: string): GamesMonthsFetchedError {
+  return {
+    type: GAMES_MONTHS_FETCHED_ERROR,
     error,
   };
 }

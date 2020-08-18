@@ -2,6 +2,7 @@ import { select, call, put } from 'redux-saga/effects';
 
 import { logout } from '../actionCreators/user';
 import { AppState } from '../store';
+import { GamesFilters } from '../actionCreators/game';
 
 const HOST = process.env.REACT_APP_API_HOST;
 
@@ -80,7 +81,7 @@ export interface GameResponse {
 export type GamesResponse = GameResponse[];
 
 export function* getGames(
-  filters?: Partial<{ date: string; playerId: number }>,
+  filters?: GamesFilters,
 ) {
   let filtersQuery = [];
 
@@ -92,12 +93,22 @@ export function* getGames(
     filtersQuery.push(`playerId=${filters.playerId}`);
   }
 
+  if (filters && filters.month !== undefined) {
+    filtersQuery.push(`month=${filters.month}`);
+  }
+
   return yield call(
     doRequest,
     `/game${filtersQuery ? '?' + filtersQuery.join('&') : ''}`,
     'GET',
     true,
   );
+}
+
+export type MonthsResponse = string[];
+
+export function* getGamesMonths() {
+  return yield call(doRequest, `/month`, 'GET', true);
 }
 
 export interface PlayerResponse {

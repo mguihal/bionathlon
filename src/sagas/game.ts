@@ -11,6 +11,10 @@ import {
   ALLGAMES_FETCH,
   allGamesFetched,
   allGamesFetchedError,
+  GAMES_FETCH,
+  GamesFetch,
+  gamesFetched,
+  gamesFetchedError,
   GAME_ADD,
   GameAdd,
   gameAdded,
@@ -20,9 +24,19 @@ import {
   SUDDEN_DEATH_SET,
   fetchAllGames,
   fetchToday,
+  GAMES_MONTHS_FETCH,
+  gamesMonthsFetched,
+  gamesMonthsFetchedError,
 } from '../actionCreators/game';
 
-import { getGames, GamesResponse, addGame, setSuddenDeathWinner } from './api';
+import {
+  getGames,
+  GamesResponse,
+  getGamesMonths,
+  MonthsResponse,
+  addGame,
+  setSuddenDeathWinner,
+} from './api';
 
 function getTZToday() {
   const date = new Date();
@@ -67,6 +81,32 @@ function* fetchAllGamesSaga() {
       yield put(allGamesFetched(response));
     } catch (error) {
       yield put(allGamesFetchedError(error.message));
+    }
+  });
+}
+
+function* fetchGamesSaga() {
+  yield takeLatest<GamesFetch>(GAMES_FETCH, function*(action) {
+    try {
+      const response: GamesResponse = yield call(getGames, {
+        ...action.filters,
+      });
+
+      yield put(gamesFetched(response));
+    } catch (error) {
+      yield put(gamesFetchedError(error.message));
+    }
+  });
+}
+
+function* fetchGamesMonthsSaga() {
+  yield takeLatest(GAMES_MONTHS_FETCH, function*() {
+    try {
+      const response: MonthsResponse = yield call(getGamesMonths);
+
+      yield put(gamesMonthsFetched(response));
+    } catch (error) {
+      yield put(gamesMonthsFetchedError(error.message));
     }
   });
 }
@@ -119,6 +159,8 @@ function* gameSaga() {
     fetchTodaySaga(),
     fetchPlayerGames(),
     fetchAllGamesSaga(),
+    fetchGamesSaga(),
+    fetchGamesMonthsSaga(),
     addGameSaga(),
     setSuddenDeathWinnerSaga(),
   ]);
