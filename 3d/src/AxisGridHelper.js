@@ -7,9 +7,9 @@ import * as THREE from 'three';
 // to look at.
 export default class AxisGridHelper {
   constructor(node, units = 10) {
-    const axes = new THREE.AxesHelper();
+    const axes = new THREE.AxesHelper(units);
     axes.material['depthTest'] = false;
-    axes.renderOrder = 2;  // after the grid
+    axes.renderOrder = 2; // after the grid
     node.add(axes);
 
     const grid = new THREE.GridHelper(units, units);
@@ -20,6 +20,7 @@ export default class AxisGridHelper {
     this.grid = grid;
     this.axes = axes;
     this.visible = false;
+    this.name = node.name;
   }
   get visible() {
     return this._visible;
@@ -28,5 +29,9 @@ export default class AxisGridHelper {
     this._visible = v;
     this.grid.visible = v;
     this.axes.visible = v;
+  }
+
+  get nodeName() {
+    return this.name;
   }
 }

@@ -12,6 +12,7 @@
     "ammojs-typed": "^1.0.2",
     "dat.gui": "^0.7.6",
     "three": "^0.114.0",
+    "vercel": "^20.1.2",
     "webpack": "^4.42.0"
   },
   "devDependencies": {
@@ -19,5 +20,10 @@
     "typescript": "^3.8.3",
     "webpack-cli": "^3.3.11",
     "webpack-dev-server": "^3.10.3"
+  },
+  "prettier": {
+    "singleQuote": true,
+    "trailingComma": "all",
+    "printWidth": 120
   }
 }

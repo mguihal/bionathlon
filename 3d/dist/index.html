@@ -1,22 +1,57 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <meta charset="utf-8">
-  <title>My first three.js app</title>
-  <style>
-    html, body {
-      margin: 0;
-      height: 100%;
-    }
-    canvas {
-      width: 100%;
-      height: 100%;
-      display: block;
-    }
-  </style>
-</head>
-<body>
-  <script src="vendor.js"></script>
-  <script src="main.js"></script>
-</body>
+  <head>
+    <meta charset="utf-8" />
+    <title>Bionathlon 3D</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+      }
+      canvas {
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+
+      #remainingThrows {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        width: 60px;
+        height: 60px;
+        background-image: url('bif_icon_transparent.png');
+        background-size: cover;
+        color: white;
+        text-align: center;
+        line-height: 65px;
+        font-size: 24px;
+        font-family: sans-serif;
+      }
+
+      #cameraName {
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        color: white;
+        font-size: 30px;
+        font-family: sans-serif;
+      }
+
+      #cameraName::after {
+        content: '[Space to toggle]';
+        margin-left: 10px;
+        font-size: 0.5em;
+        color: #555;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="remainingThrows">33</div>
+    <div id="cameraName"></div>
+
+    <script src="vendor.js"></script>
+    <script src="main.js"></script>
+  </body>
 </html>
