@@ -146,7 +146,7 @@ function animate(time: number) {
       new THREE.Vector3(0, 120, 0),
       -arrow.getVerticalAngle() + Math.PI / 2,
       arrow.getHorizontalAngle(),
-      60 + arrow.getPower() * 20,
+      40 + arrow.getPower() * 40,
     );
 
     currentThrow += 1;
