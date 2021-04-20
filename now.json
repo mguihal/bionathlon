@@ -1,10 +1,9 @@
 {
-  "name": "bionathlon",
   "build": {
     "env": {
       "DATABASE_URL": "@bionathlon_db",
       "REACT_APP_API_HOST": "",
-      "REACT_APP_LOGIN_ORIGIN": "https://bionathlon.now.sh"
+      "REACT_APP_LOGIN_ORIGIN": "https://bionathlon.com"
     }
   },
   "env": {

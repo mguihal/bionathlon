@@ -27,3 +27,5 @@ yarn-error.log*
 *.sql
 3d
 *.privatekey.json
+
+.vercel
