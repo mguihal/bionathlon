@@ -45,6 +45,11 @@ Authorization: {{token}}
 
 ###
 
+GET {{host}}/api/month
+Authorization: {{token}}
+
+###
+
 POST {{host}}/api/game
 Authorization: {{token}}
 Content-type: 'application/json'

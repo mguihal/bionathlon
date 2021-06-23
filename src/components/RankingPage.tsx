@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { connect } from 'react-redux'
+import { connect, useDispatch } from 'react-redux'
 import { Dataway, fold } from 'dataway';
 
 import Link from '@material-ui/core/Link';
@@ -13,20 +13,17 @@ import MenuItem from '@material-ui/core/MenuItem';
 
 import { AppState } from '../store';
 
-import { fetchAllGames } from '../actionCreators/game';
+import { fetchGames, fetchGamesMonths } from '../actionCreators/game';
 
 import styles from '../App.module.css';
-import { GamesResponse } from '../sagas/api';
+import { GamesResponse, MonthsResponse } from '../sagas/api';
 
 import { groupByPlayer, groupByDateTime, round2, byScore, getWinner, computeScore, computeRondelles } from '../helpers';
 
 interface ConnectedProps {
+  months: Dataway<string, MonthsResponse>;
   games: Dataway<string, GamesResponse>;
   currentUserId: number;
-}
-
-interface DispatchedProps {
-  fetchAllGames: () => {type: string};
 }
 
 interface Rank {
@@ -37,15 +34,9 @@ interface Rank {
 }
 
 function getRanking(games: GamesResponse, rankingType: string, rankingFilter: string) {
-  const filteredGames = rankingFilter === 'all' ? games : games.filter(game => {
-    const date = new Date(game.date);
-    const value = `${date.getFullYear()}-${date.getMonth()}`;
 
-    return value === rankingFilter;
-  });
-
-  const playerGames = groupByPlayer(filteredGames);
-  const sessionGames = groupByDateTime(filteredGames);
+  const playerGames = groupByPlayer(games);
+  const sessionGames = groupByDateTime(games);
 
   if (rankingType === 'nbMatchs') {
     return Object.keys(playerGames).map<Rank>(player => {
@@ -129,47 +120,45 @@ function getRanking(games: GamesResponse, rankingType: string, rankingFilter: st
   return [];
 }
 
-function getFilterOptions(games: GamesResponse) {
-  const list: {value: string, label: string}[] = [];
-  const values: string[] = [];
-  const months = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
+function getMonthsFilter(months: MonthsResponse) {
+  const monthsLabel = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
 
-  games.forEach(game => {
-    const date = new Date(game.date);
-    const value = `${date.getFullYear()}-${date.getMonth()}`;
-    const label = `${months[date.getMonth()]} ${date.getFullYear()}`;
+  return months.map(yearMonth => {
+    const parts = yearMonth.split('-');
+    const label = `${monthsLabel[parseInt(parts[1]) - 1]} ${parts[0]}`;
 
-    if (!values.includes(value)) {
-      values.push(value);
-      list.unshift({value, label});
-    }
+    return <MenuItem key={yearMonth} value={yearMonth}>{label}</MenuItem>;
   });
-
-  return list;
 }
 
-const RankingPage: React.FunctionComponent<ConnectedProps & DispatchedProps> = (props) => {
+const RankingPage: React.FunctionComponent<ConnectedProps> = (props) => {
 
-  const { games, fetchAllGames } = props;
+  const { months, games } = props;
 
   const [rankingType, setRankingType] = useState('nbPoints');
-  const [rankingFilter, setRankingFilter] = useState('all');
+  const [rankingFilter, setRankingFilter] = useState('');
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    fetchAllGames();
-  }, [fetchAllGames]);
+    dispatch(fetchGamesMonths());
+  }, [dispatch]);
 
   useEffect(() => {
-    fold<string, GamesResponse, void>(() => {}, () => {}, (error) => {},
-      (games) => {
-        const options = getFilterOptions(games);
-
-        if (options.length > 0) {
-          setRankingFilter(options[0].value);
+    fold<string, MonthsResponse, void>(() => {}, () => {}, (error) => {},
+      (months) => {
+        if (months.length > 0) {
+          setRankingFilter(months[0]);
         }
       }
-    )(games)
-  }, [games]);
+    )(months)
+  }, [months]);
+
+  useEffect(() => {
+    if (rankingFilter !== '') {
+      const filters = (rankingFilter !== 'all') ? { month: rankingFilter } : {};
+      dispatch(fetchGames(filters));
+    }
+  }, [rankingFilter, dispatch]);
 
   const ErrorMessage = (props: {message: string}) => (
     <Typography variant="body2" className={styles.emptyTable}>
@@ -205,16 +194,12 @@ const RankingPage: React.FunctionComponent<ConnectedProps & DispatchedProps> = (
           >
             <MenuItem value={'all'}>Global</MenuItem>
             {
-              fold<string, GamesResponse, JSX.Element[]>(
+              fold<string, MonthsResponse, JSX.Element[]>(
                 () => [<MenuItem key={'nodata'} value={'nodata'} disabled>Aucune donnée</MenuItem>],
                 () => [<MenuItem key={'loading'} value={'loading'} disabled>Chargement...</MenuItem>],
                 (error) => [<MenuItem key={'error'} value={'error'} disabled>Erreur de chargement</MenuItem>],
-                (games) => {
-                  return getFilterOptions(games).map(option => (
-                    <MenuItem key={option.value} value={option.value}>{option.label}</MenuItem>
-                  ))
-                }
-              )(games)
+                (months) => getMonthsFilter(months)
+              )(months)
             }
           </Select>
         </div>
@@ -251,12 +236,10 @@ const RankingPage: React.FunctionComponent<ConnectedProps & DispatchedProps> = (
   );
 }
 
-export default connect<ConnectedProps, DispatchedProps, {}, AppState>(
+export default connect<ConnectedProps, {}, {}, AppState>(
   state => ({
-    games: state.game.allGames,
+    months: state.game.months,
+    games: state.game.games,
     currentUserId: state.user.user.id,
   }),
-  dispatch => ({
-    fetchAllGames: () => dispatch(fetchAllGames()),
-  })
 )(RankingPage);

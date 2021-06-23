@@ -9,25 +9,35 @@ import {
   ALLGAMES_FETCH,
   ALLGAMES_FETCHED,
   ALLGAMES_FETCHED_ERROR,
+  GAMES_FETCH,
+  GAMES_FETCHED,
+  GAMES_FETCHED_ERROR,
+  GAMES_MONTHS_FETCH,
+  GAMES_MONTHS_FETCHED,
+  GAMES_MONTHS_FETCHED_ERROR,
   GAME_ADD,
   GAME_ADD_RESET,
   GAME_ADDED,
   GAME_ADDED_ERROR,
 } from '../actionCreators/game';
-import { GamesResponse } from '../sagas/api';
+import { GamesResponse, MonthsResponse } from '../sagas/api';
 import { Dataway, notAsked, success, loading, failure } from 'dataway';
 
 interface GameState {
   today: Dataway<string, GamesResponse>;
   playerGames: Dataway<string, GamesResponse>;
+  months: Dataway<string, MonthsResponse>;
   allGames: Dataway<string, GamesResponse>;
+  games: Dataway<string, GamesResponse>;
   addResponse: Dataway<string, any>;
 }
 
 const gameInitialState: GameState = {
   today: notAsked,
   playerGames: notAsked,
+  months: notAsked,
   allGames: notAsked,
+  games: notAsked,
   addResponse: notAsked,
 };
 
@@ -54,6 +64,18 @@ export default function(
       return { ...state, allGames: success(action.games) };
     case ALLGAMES_FETCHED_ERROR:
       return { ...state, allGames: failure(action.error) };
+    case GAMES_FETCH:
+      return { ...state, games: loading };
+    case GAMES_FETCHED:
+      return { ...state, games: success(action.games) };
+    case GAMES_FETCHED_ERROR:
+      return { ...state, games: failure(action.error) };
+    case GAMES_MONTHS_FETCH:
+      return { ...state, months: loading };
+    case GAMES_MONTHS_FETCHED:
+      return { ...state, months: success(action.months) };
+    case GAMES_MONTHS_FETCHED_ERROR:
+      return { ...state, months: failure(action.error) };
     case GAME_ADD:
       return { ...state, addResponse: loading };
     case GAME_ADD_RESET:
