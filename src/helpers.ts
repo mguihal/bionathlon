@@ -1,31 +1,33 @@
-import { GamesResponse, GameResponse } from './sagas/api';
+import { GameResponse, GamesResponse } from './sagas/api';
 
-export function formatDate(date: string = (new Date()).toISOString()) {
+export function formatDate(date: string = new Date().toISOString()) {
   const dateObject = new Date(date);
   const day = dateObject.getDate();
   const month = dateObject.getMonth() + 1;
   const year = dateObject.getFullYear();
 
-  const pad = (n: number) => n < 10 ? `0${n}` : n;
+  const pad = (n: number) => (n < 10 ? `0${n}` : n);
 
   return `${pad(day)}/${pad(month)}/${year}`;
 }
 
 export function groupByDateTime(games: GamesResponse) {
-  return games.reduce<{[key: string]: GamesResponse}>(function(groups, game) {
-    const groupKey = `${game.date} - ${game.time === 'midday' ? 'midi' : 'soir'}`;
+  return games.reduce<{ [key: string]: GamesResponse }>(function(groups, game) {
+    const groupKey = `${game.date} - ${
+      game.time === 'midday' ? 'midi' : 'soir'
+    }`;
     (groups[groupKey] = groups[groupKey] || []).push(game);
 
     return groups;
   }, {});
-};
+}
 
 export function groupByPlayer(games: GamesResponse) {
-  return games.reduce<{[key: string]: GamesResponse}>(function(groups, game) {
+  return games.reduce<{ [key: string]: GamesResponse }>(function(groups, game) {
     (groups[game.playerId] = groups[game.playerId] || []).push(game);
     return groups;
   }, {});
-};
+}
 
 export function byScoreDesc(a: GameResponse, b: GameResponse) {
   const scoreA = computeScore(a);
@@ -70,7 +72,7 @@ export function byScore(a: Rank, b: Rank) {
 }
 
 export function round2(nb: number) {
-  return Math.round(nb*100) / 100;
+  return Math.round(nb * 100) / 100;
 }
 
 export function isMidDayGame(game: GameResponse) {
@@ -94,7 +96,12 @@ export function isWinner(game: GameResponse, games: GamesResponse) {
 export function getWinner(games: GamesResponse) {
   const sorted = games.sort(byScoreDesc);
 
-  if (sorted.length === 0 || (sorted.length > 1 && computeScore(sorted[0]) === computeScore(sorted[1]) && !sorted[0].suddenDeath)) {
+  if (
+    sorted.length === 0 ||
+    (sorted.length > 1 &&
+      computeScore(sorted[0]) === computeScore(sorted[1]) &&
+      !sorted[0].suddenDeath)
+  ) {
     return null;
   } else {
     return sorted[0].playerId;
@@ -117,34 +124,60 @@ export function getSuddenDeathGames(games: GamesResponse) {
     }
   });
 
-  return isSuddenDeathDone || suddenDeathGames.length === 1 ? [] : suddenDeathGames;
+  return isSuddenDeathDone || suddenDeathGames.length === 1
+    ? []
+    : suddenDeathGames;
 }
 
-export function computeScore(game: GameResponse) {
-  const { score, scoreLeftBottle, scoreMiddleBottle, scoreRightBottle, scoreMalusBottle } = game;
+export function computeScore(
+  game: GameResponse,
+  onlyScoreWithBottles: boolean = false,
+) {
+  const {
+    score,
+    scoreLeftBottle,
+    scoreMiddleBottle,
+    scoreRightBottle,
+    scoreMalusBottle,
+  } = game;
 
   if (score !== null && score !== undefined) {
-    return score;
+    return onlyScoreWithBottles ? 0 : score;
   }
 
-  const bonus = Math.min(scoreLeftBottle || 0, scoreMiddleBottle || 0, scoreRightBottle || 0) * 3;
+  const bonus =
+    Math.min(
+      scoreLeftBottle || 0,
+      scoreMiddleBottle || 0,
+      scoreRightBottle || 0,
+    ) * 3;
 
-  return bonus +
+  return (
+    bonus +
     (scoreLeftBottle || 0) +
     (scoreMiddleBottle || 0) +
     (scoreRightBottle || 0) -
-    (scoreMalusBottle || 0);
+    (scoreMalusBottle || 0)
+  );
 }
 
 export function computeRondelles(game: GameResponse) {
-  const { score, scoreLeftBottle, scoreMiddleBottle, scoreRightBottle, scoreMalusBottle } = game;
+  const {
+    score,
+    scoreLeftBottle,
+    scoreMiddleBottle,
+    scoreRightBottle,
+    scoreMalusBottle,
+  } = game;
 
   if (score !== null && score !== undefined) {
     return 0;
   }
 
-  return (scoreLeftBottle || 0) +
+  return (
+    (scoreLeftBottle || 0) +
     (scoreMiddleBottle || 0) +
     (scoreRightBottle || 0) +
-    (scoreMalusBottle || 0);
+    (scoreMalusBottle || 0)
+  );
 }
