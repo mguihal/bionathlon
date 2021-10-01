@@ -10,27 +10,18 @@ import Alert from '@material-ui/lab/Alert';
 import { Dataway, fold } from 'dataway';
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
-import { fetchAllGames } from '../actionCreators/game';
+import { fetchStats } from '../actionCreators/stats';
 import styles from '../App.module.css';
-import {
-  byScore,
-  computeRondelles,
-  computeScore,
-  getWinner,
-  groupByDateTime,
-  groupByPlayer,
-  round2,
-} from '../helpers';
-import { GamesResponse } from '../sagas/api';
+import { StatsResponse } from '../sagas/api';
 import { AppState } from '../store';
 
 interface ConnectedProps {
-  games: Dataway<string, GamesResponse>;
+  stats: Dataway<string, StatsResponse>;
   currentUserId: number;
 }
 
 interface DispatchedProps {
-  fetchAllGames: () => { type: string };
+  fetchStats: (month?: string) => { type: string };
 }
 
 interface Rank {
@@ -40,154 +31,24 @@ interface Rank {
   suffix?: string;
 }
 
-function getRanking(
-  games: GamesResponse,
-  rankingType: string,
-  rankingFilter: string,
-) {
-  const filteredGames =
-    rankingFilter === 'all'
-      ? games
-      : games.filter(game => {
-          const date = new Date(game.date);
-          const value = `${date.getFullYear()}-${date.getMonth()}`;
+type RankingType =
+  | 'nbMatchs'
+  | 'nbWonMatchs'
+  | 'pctWonMatchs'
+  | 'nbPoints'
+  | 'nbRondelles'
+  | 'efficiency'
+  | 'avgPoints'
+  | 'topScore';
 
-          return value === rankingFilter;
-        });
-
-  const playerGames = groupByPlayer(filteredGames);
-  const sessionGames = groupByDateTime(filteredGames);
-
-  if (rankingType === 'nbMatchs') {
-    return Object.keys(playerGames)
-      .map<Rank>(player => {
-        return {
-          id: Number(player),
-          name: playerGames[player][0].playerName,
-          score: playerGames[player].length,
-        };
-      })
-      .sort(byScore);
-  } else if (rankingType === 'nbWonMatchs') {
-    const winnerPlayerIds = Object.keys(sessionGames).map(session => {
-      return getWinner(sessionGames[session]);
-    });
-
-    return Object.keys(playerGames)
-      .map<Rank>(player => {
-        return {
-          id: Number(player),
-          name: playerGames[player][0].playerName,
-          score: winnerPlayerIds.reduce<number>(
-            (acc, cur) => acc + (cur === Number(player) ? 1 : 0),
-            0,
-          ),
-        };
-      })
-      .sort(byScore);
-  } else if (rankingType === 'pctWonMatchs') {
-    const winnerPlayerIds = Object.keys(sessionGames).map(session => {
-      return getWinner(sessionGames[session]);
-    });
-
-    return Object.keys(playerGames)
-      .map<Rank>(player => {
-        return {
-          id: Number(player),
-          name: playerGames[player][0].playerName,
-          score: round2(
-            (winnerPlayerIds.reduce<number>(
-              (acc, cur) => acc + (cur === Number(player) ? 1 : 0),
-              0,
-            ) /
-              playerGames[player].length) *
-              100,
-          ),
-          suffix: '%',
-        };
-      })
-      .sort(byScore);
-  } else if (rankingType === 'nbPoints') {
-    return Object.keys(playerGames)
-      .map<Rank>(player => {
-        return {
-          id: Number(player),
-          name: playerGames[player][0].playerName,
-          score: playerGames[player].reduce(
-            (acc, cur) => acc + computeScore(cur),
-            0,
-          ),
-        };
-      })
-      .sort(byScore);
-  } else if (rankingType === 'nbRondelles') {
-    return Object.keys(playerGames)
-      .map<Rank>(player => {
-        return {
-          id: Number(player),
-          name: playerGames[player][0].playerName,
-          score: playerGames[player].reduce(
-            (acc, cur) => acc + computeRondelles(cur),
-            0,
-          ),
-        };
-      })
-      .sort(byScore);
-  } else if (rankingType === 'efficiency') {
-    return Object.keys(playerGames)
-      .map<Rank>(player => {
-        const pts = playerGames[player].reduce(
-          (acc, cur) => acc + computeScore(cur, true),
-          0,
-        );
-        const rondelles = playerGames[player].reduce(
-          (acc, cur) => acc + computeRondelles(cur),
-          0,
-        );
-
-        return {
-          id: Number(player),
-          name: playerGames[player][0].playerName,
-          score: rondelles > 0 ? round2(pts / rondelles) : 0,
-        };
-      })
-      .sort(byScore);
-  } else if (rankingType === 'avgPoints') {
-    return Object.keys(playerGames)
-      .map<Rank>(player => {
-        return {
-          id: Number(player),
-          name: playerGames[player][0].playerName,
-          score: round2(
-            playerGames[player].reduce(
-              (acc, cur) => acc + computeScore(cur),
-              0,
-            ) / playerGames[player].length,
-          ),
-        };
-      })
-      .sort(byScore);
-  } else if (rankingType === 'topScore') {
-    return Object.keys(playerGames)
-      .map<Rank>(player => {
-        return {
-          id: Number(player),
-          name: playerGames[player][0].playerName,
-          score: playerGames[player].reduce(
-            (acc, cur) => (computeScore(cur) > acc ? computeScore(cur) : acc),
-            -999,
-          ),
-        };
-      })
-      .sort(byScore);
-  }
-
-  return [];
+function formatDate(date: Date) {
+  return `${date.getFullYear()}-${
+    date.getMonth() + 1 < 10 ? `0${date.getMonth() + 1}` : date.getMonth() + 1
+  }`;
 }
 
-function getFilterOptions(games: GamesResponse) {
+function getFilterOptions() {
   const list: { value: string; label: string }[] = [];
-  const values: string[] = [];
   const months = [
     'Janvier',
     'Février',
@@ -203,45 +64,40 @@ function getFilterOptions(games: GamesResponse) {
     'Décembre',
   ];
 
-  games.forEach(game => {
-    const date = new Date(game.date);
-    const value = `${date.getFullYear()}-${date.getMonth()}`;
-    const label = `${months[date.getMonth()]} ${date.getFullYear()}`;
+  let year = 2019;
+  let month = 9;
 
-    if (!values.includes(value)) {
-      values.push(value);
-      list.unshift({ value, label });
+  const now = new Date();
+
+  while (`${year}-${month < 10 ? `0${month}` : month}` <= formatDate(now)) {
+    const value = `${year}-${month < 10 ? `0${month}` : month}`;
+    const label = `${months[month - 1]} ${year}`;
+    list.unshift({ value, label });
+
+    month += 1;
+    if (month === 13) {
+      month = 1;
+      year += 1;
     }
-  });
+  }
 
   return list;
 }
 
 const RankingPage: React.FunctionComponent<ConnectedProps &
   DispatchedProps> = props => {
-  const { games, fetchAllGames } = props;
+  const { stats, fetchStats } = props;
 
-  const [rankingType, setRankingType] = useState('nbPoints');
-  const [rankingFilter, setRankingFilter] = useState('all');
+  const now = new Date();
+
+  const [rankingType, setRankingType] = useState<RankingType>('nbPoints');
+  const [rankingFilter, setRankingFilter] = useState(
+    `${now.getFullYear()}-${now.getMonth() + 1}`,
+  );
 
   useEffect(() => {
-    fetchAllGames();
-  }, [fetchAllGames]);
-
-  useEffect(() => {
-    fold<string, GamesResponse, void>(
-      () => {},
-      () => {},
-      error => {},
-      games => {
-        const options = getFilterOptions(games);
-
-        if (options.length > 0) {
-          setRankingFilter(options[0].value);
-        }
-      },
-    )(games);
-  }, [games]);
+    fetchStats(rankingFilter === 'all' ? undefined : rankingFilter);
+  }, [rankingFilter, fetchStats]);
 
   const ErrorMessage = (props: { message: string }) => (
     <Typography variant="body2" className={styles.emptyTable}>
@@ -257,7 +113,7 @@ const RankingPage: React.FunctionComponent<ConnectedProps &
           <Select
             id="rankingType"
             value={rankingType}
-            onChange={e => setRankingType(e.target.value as string)}
+            onChange={e => setRankingType(e.target.value as RankingType)}
           >
             <MenuItem value={'nbMatchs'}>Nombre de matchs joués</MenuItem>
             <MenuItem value={'nbWonMatchs'}>Nombre de matchs gagnés</MenuItem>
@@ -274,40 +130,21 @@ const RankingPage: React.FunctionComponent<ConnectedProps &
             onChange={e => setRankingFilter(e.target.value as string)}
           >
             <MenuItem value={'all'}>Global</MenuItem>
-            {fold<string, GamesResponse, JSX.Element[]>(
-              () => [
-                <MenuItem key={'nodata'} value={'nodata'} disabled>
-                  Aucune donnée
-                </MenuItem>,
-              ],
-              () => [
-                <MenuItem key={'loading'} value={'loading'} disabled>
-                  Chargement...
-                </MenuItem>,
-              ],
-              error => [
-                <MenuItem key={'error'} value={'error'} disabled>
-                  Erreur de chargement
-                </MenuItem>,
-              ],
-              games => {
-                return getFilterOptions(games).map(option => (
-                  <MenuItem key={option.value} value={option.value}>
-                    {option.label}
-                  </MenuItem>
-                ));
-              },
-            )(games)}
+            {getFilterOptions().map(option => (
+              <MenuItem key={option.value} value={option.value}>
+                {option.label}
+              </MenuItem>
+            ))}
           </Select>
         </div>
       </div>
       <div className={`${styles.tableContainer} ${styles.profileTable}`}>
-        {fold<string, GamesResponse, JSX.Element>(
+        {fold<string, StatsResponse, JSX.Element>(
           () => <ErrorMessage message="Aucune donnée" />,
           () => <ErrorMessage message="Chargement..." />,
           error => <ErrorMessage message={error} />,
-          games =>
-            games.length === 0 ? (
+          stats =>
+            !stats[rankingType] ? (
               <ErrorMessage message="Aucun score" />
             ) : (
               <>
@@ -320,29 +157,27 @@ const RankingPage: React.FunctionComponent<ConnectedProps &
                 )}
                 <Table aria-label="simple table">
                   <TableBody>
-                    {getRanking(games, rankingType, rankingFilter).map(
-                      (player, i) => (
-                        <TableRow key={player.id}>
-                          <TableCell component="th" scope="row" align="right">
-                            #{i + 1}
-                          </TableCell>
-                          <TableCell component="th" scope="row">
-                            <Link href={`/profile/${player.id}`}>
-                              {player.name}
-                            </Link>
-                          </TableCell>
-                          <TableCell>
-                            {player.score}
-                            {player.suffix ? player.suffix : ''}
-                          </TableCell>
-                        </TableRow>
-                      ),
-                    )}
+                    {stats[rankingType].map((player, i) => (
+                      <TableRow key={player.id}>
+                        <TableCell component="th" scope="row" align="right">
+                          #{i + 1}
+                        </TableCell>
+                        <TableCell component="th" scope="row">
+                          <Link href={`/profile/${player.id}`}>
+                            {player.name}
+                          </Link>
+                        </TableCell>
+                        <TableCell>
+                          {player.score}
+                          {player.suffix ? player.suffix : ''}
+                        </TableCell>
+                      </TableRow>
+                    ))}
                   </TableBody>
                 </Table>
               </>
             ),
-        )(games)}
+        )(stats)}
       </div>
     </>
   );
@@ -350,10 +185,10 @@ const RankingPage: React.FunctionComponent<ConnectedProps &
 
 export default connect<ConnectedProps, DispatchedProps, {}, AppState>(
   state => ({
-    games: state.game.allGames,
     currentUserId: state.user.user.id,
+    stats: state.stats.data,
   }),
   dispatch => ({
-    fetchAllGames: () => dispatch(fetchAllGames()),
+    fetchStats: (month?: string) => dispatch(fetchStats(month)),
   }),
 )(RankingPage);

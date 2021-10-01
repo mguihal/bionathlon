@@ -1,5 +1,4 @@
-import { select, call, put } from 'redux-saga/effects';
-
+import { call, put, select } from 'redux-saga/effects';
 import { logout } from '../actionCreators/user';
 import { AppState } from '../store';
 
@@ -132,7 +131,7 @@ export function* addGame(
   scoreMalusBottle: number | null,
   note: string,
 ) {
-  const data: {[key: string]: any} = {
+  const data: { [key: string]: any } = {
     date,
     time,
     playerId,
@@ -144,7 +143,9 @@ export function* addGame(
     note,
   };
 
-  const filteredData = Object.fromEntries(Object.entries(data).filter(([key, value]) => value !== null));
+  const filteredData = Object.fromEntries(
+    Object.entries(data).filter(([key, value]) => value !== null),
+  );
 
   return yield call(doRequest, '/game', 'POST', true, { data: filteredData });
 }
@@ -156,4 +157,37 @@ export function* setSuddenDeathWinner(gameId: number) {
       won: true,
     },
   });
+}
+
+interface Rank {
+  id: number;
+  name: string;
+  score: number;
+  suffix?: string;
+}
+
+export interface StatsResponse {
+  nbMatchs: Rank[];
+  nbWonMatchs: Rank[];
+  pctWonMatchs: Rank[];
+  nbPoints: Rank[];
+  nbRondelles: Rank[];
+  efficiency: Rank[];
+  avgPoints: Rank[];
+  topScore: Rank[];
+}
+
+export function* getStats(filters?: Partial<{ month: string }>) {
+  let filtersQuery = [];
+
+  if (filters && filters.month) {
+    filtersQuery.push(`month=${filters.month}`);
+  }
+
+  return yield call(
+    doRequest,
+    `/stats${filtersQuery ? '?' + filtersQuery.join('&') : ''}`,
+    'GET',
+    true,
+  );
 }

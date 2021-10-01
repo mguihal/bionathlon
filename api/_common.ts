@@ -53,7 +53,7 @@ export async function validationWrapper(
     const payload = await config.validate.payload.validateAsync(req.body);
     const query = await config.validate.query.validateAsync(req.query);
 
-    if (config.authenticated !== false || process.env.LOCAL) {
+    if (config.authenticated !== false && process.env.LOCAL !== 'true') {
       try {
         const decoded = jwt.verify(req.headers.authorization || '', JWT_SECRET);
       } catch (err) {

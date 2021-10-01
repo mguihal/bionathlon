@@ -1,9 +1,7 @@
-import { NowRequest, NowResponse } from '@now/node';
 import joi from '@hapi/joi';
-
-import { RouteConfig, routeWrapper, withDb } from './_common';
-
+import { NowRequest, NowResponse } from '@now/node';
 import { sendScoreOnChat } from './_bot';
+import { RouteConfig, routeWrapper, withDb } from './_common';
 
 export interface GamePayload {
   data: {
@@ -88,20 +86,22 @@ const routeConfig: RouteConfig = {
                 .number()
                 .required()
                 .description('Id du joueur'),
-              score: joi
-                .number()
-                .description('Score total du joueur'),
+              score: joi.number().description('Score total du joueur'),
               scoreLeftBottle: joi
-                .number().min(0)
+                .number()
+                .min(0)
                 .description('Score de la bouteille gauche'),
               scoreMiddleBottle: joi
-                .number().min(0)
+                .number()
+                .min(0)
                 .description('Score de la bouteille centrale'),
               scoreRightBottle: joi
-                .number().min(0)
+                .number()
+                .min(0)
                 .description('Score de la bouteille droite'),
               scoreMalusBottle: joi
-                .number().min(0)
+                .number()
+                .min(0)
                 .description('Score de la bouteille malus'),
               note: joi
                 .string()
@@ -109,7 +109,12 @@ const routeConfig: RouteConfig = {
                 .allow('')
                 .description('Note pour ce score'),
             })
-            .and('scoreLeftBottle', 'scoreMiddleBottle', 'scoreRightBottle', 'scoreMalusBottle')
+            .and(
+              'scoreLeftBottle',
+              'scoreMiddleBottle',
+              'scoreRightBottle',
+              'scoreMalusBottle',
+            )
             .oxor('score', 'scoreLeftBottle')
             .required(),
         })
