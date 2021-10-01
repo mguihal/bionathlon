@@ -1,6 +1,5 @@
-import { NowRequest, NowResponse } from '@now/node';
 import joi from '@hapi/joi';
-
+import { NowRequest, NowResponse } from '@now/node';
 import { RouteConfig, routeWrapper, withDb } from './_common';
 
 interface PlayerPayload {
@@ -18,7 +17,9 @@ const routeConfig: RouteConfig = {
     },
     handler: async res => {
       return withDb(async db => {
-        const players = await db('player').select();
+        const players = await db('player')
+          .orderBy('id')
+          .select();
         return res.send(players);
       });
     },
