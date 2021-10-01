@@ -1,5 +1,5 @@
-import { NowRequest, NowResponse } from '@now/node';
 import joi from '@hapi/joi';
+import { NowRequest, NowResponse } from '@now/node';
 import jwt, { JsonWebTokenError } from 'jsonwebtoken';
 import knex from 'knex';
 
@@ -53,7 +53,7 @@ export async function validationWrapper(
     const payload = await config.validate.payload.validateAsync(req.body);
     const query = await config.validate.query.validateAsync(req.query);
 
-    if (config.authenticated !== false) {
+    if (config.authenticated !== false || process.env.LOCAL) {
       try {
         const decoded = jwt.verify(req.headers.authorization || '', JWT_SECRET);
       } catch (err) {

@@ -1,13 +1,19 @@
+import dotenv from 'dotenv';
 import express from 'express';
 import fs from 'fs';
-import dotenv from 'dotenv';
+import https from 'https';
 
 dotenv.config();
 
 const PORT = process.env.PORT;
 
 (async () => {
+  const privateKey = fs.readFileSync(__dirname + '/../key.pem', 'utf8');
+  const certificate = fs.readFileSync(__dirname + '/../cert.pem', 'utf8');
+  const credentials = { key: privateKey, cert: certificate };
+
   const app = express();
+  const server = https.createServer(credentials, app);
 
   app.use(function(req, res, next) {
     res.header('Access-Control-Allow-Origin', '*');
@@ -42,5 +48,5 @@ const PORT = process.env.PORT;
   );
 
   console.log(`Listening on port ${PORT}`);
-  app.listen(PORT);
+  server.listen(PORT);
 })();
