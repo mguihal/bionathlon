@@ -46,6 +46,8 @@ export interface PlayerGamesFetchedError {
 
 export interface AllGamesFetch {
   type: typeof ALLGAMES_FETCH;
+  limit: number;
+  offset: number;
 }
 
 export interface AllGamesFetched {
@@ -140,16 +142,20 @@ export function playerGamesFetched(games: GamesResponse): PlayerGamesFetched {
   };
 }
 
-export function playerGamesFetchedError(error: string): PlayerGamesFetchedError {
+export function playerGamesFetchedError(
+  error: string,
+): PlayerGamesFetchedError {
   return {
     type: PLAYERGAMES_FETCHED_ERROR,
     error,
   };
 }
 
-export function fetchAllGames(): AllGamesFetch {
+export function fetchAllGames(limit: number, offset: number): AllGamesFetch {
   return {
     type: ALLGAMES_FETCH,
+    limit,
+    offset,
   };
 }
 
@@ -213,7 +219,7 @@ export function gameAddedError(error: string): GameAddedError {
 
 export function setSuddenDeathWinner(
   gameId: number,
-  context: string
+  context: string,
 ): SuddenDeathSet {
   return {
     type: SUDDEN_DEATH_SET,

@@ -1,5 +1,6 @@
 import joi from '@hapi/joi';
 import { NowRequest, NowResponse } from '@now/node';
+import { groupByDateTime } from '../src/helpers';
 import { sendScoreOnChat } from './_bot';
 import { RouteConfig, routeWrapper, withDb } from './_common';
 
@@ -20,6 +21,9 @@ export interface GamePayload {
 interface GameFilters {
   date?: string;
   playerId?: number;
+  month?: string;
+  offset?: number;
+  limit?: number;
 }
 
 const routeConfig: RouteConfig = {
@@ -29,6 +33,11 @@ const routeConfig: RouteConfig = {
       query: joi.object().keys({
         date: joi.string().description('Filtre par date'),
         playerId: joi.number().description('Filtre par joueur'),
+        month: joi.string().description('Filtre par mois (ex: 2021-09)'),
+        offset: joi.number().description('Nombre de sessions omises'),
+        limit: joi
+          .number()
+          .description('Nombre maximal de sessions retournées'),
       }),
     },
     handler: async (res, _, query: GameFilters) => {
@@ -58,7 +67,30 @@ const routeConfig: RouteConfig = {
           gamesQuery.whereRaw(`CAST(date AS DATE) = ?`, [query.date]);
         }
 
-        const games = await gamesQuery;
+        if (query.month) {
+          gamesQuery.whereRaw(`CAST(date AS TEXT) >= ?`, [`${query.month}-01`]);
+          gamesQuery.whereRaw(`CAST(date AS TEXT) <= ?`, [`${query.month}-31`]);
+        }
+
+        gamesQuery.orderBy('game.id', 'desc');
+
+        let games = await gamesQuery;
+
+        if (query.limit) {
+          const groupedGames = groupByDateTime(games);
+          const sessions = Object.keys(groupedGames)
+            .sort()
+            .reverse()
+            .slice(query.offset || 0, (query.offset || 0) + query.limit);
+
+          games = games.filter(game => {
+            const groupKey = `${new Date(game.date).toISOString()} - ${
+              game.time === 'midday' ? 'midi' : 'soir'
+            }`;
+
+            return sessions.includes(groupKey);
+          });
+        }
 
         return res.send(games);
       });

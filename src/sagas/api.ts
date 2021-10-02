@@ -79,7 +79,12 @@ export interface GameResponse {
 export type GamesResponse = GameResponse[];
 
 export function* getGames(
-  filters?: Partial<{ date: string; playerId: number }>,
+  filters?: Partial<{
+    date: string;
+    playerId: number;
+    limit: number;
+    offset: number;
+  }>,
 ) {
   let filtersQuery = [];
 
@@ -89,6 +94,14 @@ export function* getGames(
 
   if (filters && filters.playerId !== undefined) {
     filtersQuery.push(`playerId=${filters.playerId}`);
+  }
+
+  if (filters && filters.limit !== undefined) {
+    filtersQuery.push(`limit=${filters.limit}`);
+  }
+
+  if (filters && filters.offset !== undefined) {
+    filtersQuery.push(`offset=${filters.offset}`);
   }
 
   return yield call(

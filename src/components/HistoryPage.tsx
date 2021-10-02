@@ -15,7 +15,7 @@ interface ConnectedProps {
 }
 
 interface DispatchedProps {
-  fetchAllGames: () => { type: string };
+  fetchAllGames: (limit: number, offset: number) => { type: string };
 }
 
 const PAGE_COUNT = 10;
@@ -24,15 +24,21 @@ const HistoryPage: React.FunctionComponent<ConnectedProps &
   DispatchedProps> = props => {
   const { games, fetchAllGames } = props;
 
-  const [displayedItems, setDisplayedItems] = useState(PAGE_COUNT);
+  const [currentPage, setCurrentPage] = useState(0);
 
-  const handleMoreClick = useCallback(() => {
-    setDisplayedItems(items => items + PAGE_COUNT);
+  const handleNext = useCallback(() => {
+    setCurrentPage(page => page + 1);
+    window.scrollTo(0, 0);
+  }, []);
+
+  const handlePrev = useCallback(() => {
+    setCurrentPage(page => page - 1);
+    window.scrollTo(0, 0);
   }, []);
 
   useEffect(() => {
-    fetchAllGames();
-  }, [fetchAllGames]);
+    fetchAllGames(PAGE_COUNT, currentPage * PAGE_COUNT);
+  }, [fetchAllGames, currentPage]);
 
   const ErrorMessage = (props: { message: string }) => (
     <Typography variant="body2" className={styles.emptyTable}>
@@ -44,8 +50,7 @@ const HistoryPage: React.FunctionComponent<ConnectedProps &
     const groupedGames = groupByDateTime(games);
     const sessionTables = Object.keys(groupedGames)
       .sort()
-      .reverse()
-      .slice(0, displayedItems);
+      .reverse();
 
     return (
       <>
@@ -58,7 +63,14 @@ const HistoryPage: React.FunctionComponent<ConnectedProps &
             <SessionTable games={groupedGames[key]} context={'history'} />
           </div>
         ))}
-        <Button onClick={handleMoreClick}>Sessions précédentes</Button>
+        {currentPage > 0 && (
+          <Button onClick={handlePrev} className={styles.loadMoreButton}>
+            Précédent
+          </Button>
+        )}
+        <Button onClick={handleNext} className={styles.loadMoreButton}>
+          Suivant
+        </Button>
       </>
     );
   }
@@ -85,6 +97,7 @@ export default connect<ConnectedProps, DispatchedProps, {}, AppState>(
     games: state.game.allGames,
   }),
   dispatch => ({
-    fetchAllGames: () => dispatch(fetchAllGames()),
+    fetchAllGames: (limit: number, offset: number) =>
+      dispatch(fetchAllGames(limit, offset)),
   }),
 )(HistoryPage);

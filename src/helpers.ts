@@ -13,7 +13,7 @@ export function formatDate(date: string = new Date().toISOString()) {
 
 export function groupByDateTime(games: GamesResponse) {
   return games.reduce<{ [key: string]: GamesResponse }>(function(groups, game) {
-    const groupKey = `${game.date} - ${
+    const groupKey = `${(new Date(game.date)).toISOString()} - ${
       game.time === 'midday' ? 'midi' : 'soir'
     }`;
     (groups[groupKey] = groups[groupKey] || []).push(game);

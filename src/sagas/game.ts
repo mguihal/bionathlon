@@ -1,28 +1,27 @@
-import { all, put, takeLatest, call, delay } from 'redux-saga/effects';
-
+import { all, call, delay, put, takeLatest } from 'redux-saga/effects';
 import {
-  TODAY_FETCH,
-  todayFetched,
-  todayFetchedError,
-  PLAYERGAMES_FETCH,
-  PlayerGamesFetch,
-  playerGamesFetched,
-  playerGamesFetchedError,
-  ALLGAMES_FETCH,
+  AllGamesFetch,
   allGamesFetched,
   allGamesFetchedError,
-  GAME_ADD,
+  ALLGAMES_FETCH,
+  fetchAllGames,
+  fetchToday,
   GameAdd,
   gameAdded,
   gameAddedError,
   gameAddReset,
+  GAME_ADD,
+  PlayerGamesFetch,
+  playerGamesFetched,
+  playerGamesFetchedError,
+  PLAYERGAMES_FETCH,
   SuddenDeathSet,
   SUDDEN_DEATH_SET,
-  fetchAllGames,
-  fetchToday,
+  todayFetched,
+  todayFetchedError,
+  TODAY_FETCH,
 } from '../actionCreators/game';
-
-import { getGames, GamesResponse, addGame, setSuddenDeathWinner } from './api';
+import { addGame, GamesResponse, getGames, setSuddenDeathWinner } from './api';
 
 function getTZToday() {
   const date = new Date();
@@ -60,9 +59,12 @@ function* fetchPlayerGames() {
 }
 
 function* fetchAllGamesSaga() {
-  yield takeLatest(ALLGAMES_FETCH, function*() {
+  yield takeLatest<AllGamesFetch>(ALLGAMES_FETCH, function*(action) {
     try {
-      const response: GamesResponse = yield call(getGames);
+      const response: GamesResponse = yield call(getGames, {
+        limit: action.limit,
+        offset: action.offset,
+      });
 
       yield put(allGamesFetched(response));
     } catch (error) {
@@ -84,13 +86,13 @@ function* addGameSaga() {
         action.scoreMiddleBottle,
         action.scoreRightBottle,
         action.scoreMalusBottle,
-        action.note
+        action.note,
       );
       yield put(gameAdded());
     } catch (error) {
       yield put(gameAddedError(error.message));
 
-      console.log({error});
+      console.log({ error });
     }
 
     yield delay(3000);
@@ -106,10 +108,10 @@ function* setSuddenDeathWinnerSaga() {
       if (action.context === 'today') {
         yield put(fetchToday());
       } else {
-        yield put(fetchAllGames());
+        yield put(fetchAllGames(10, 0));
       }
     } catch (error) {
-      console.log({error});
+      console.log({ error });
     }
   });
 }
