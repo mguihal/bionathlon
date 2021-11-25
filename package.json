@@ -44,7 +44,7 @@
   "scripts": {
     "backend": "PORT=3001 ts-node-dev --project=tsconfig.db.json  --respawn --clear api/_dev-server.ts",
     "lint": "prettier --write './**/*.ts'",
-    "db:up": "TS_NODE_PROJECT=tsconfig.db.json knex migrate:up --env=master",
+    "db:up": "TS_NODE_PROJECT=tsconfig.db.json knex migrate:latest --env=master",
     "build": "react-scripts build && npm run db:up",
     "start": "react-scripts start",
     "dev": "npm run backend & npm run start",
