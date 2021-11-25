@@ -1,0 +1,49 @@
+version: "3"
+volumes:
+  bionathlon-db:
+services:
+  db:
+    image: postgres:10
+    environment:
+      - POSTGRES_DB=bionathlon_dev
+      - POSTGRES_USER=bionathlon_dev
+      - POSTGRES_PASSWORD=bionathlon_dev
+    volumes:
+      - bionathlon-db:/var/lib/postgresql/data
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile-app
+    ports:
+      - 3000:3000
+    environment:
+      - NODE_ENV=production
+      - HTTPS=true
+      - REACT_APP_API_HOST=https://localhost:3001
+      - REACT_APP_LOGIN_ORIGIN=https://bionathlon.com
+      - PORT=3000
+
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile-server
+    depends_on:
+      - db
+    ports:
+      - 3001:3001
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      - SECRET=mySecret
+      - DATABASE_URL=postgresql://bionathlon_dev:bionathlon_dev@db:5432/bionathlon_dev
+      - CHATSPACE=xxx
+      - GOOGLE_PRIVATE_KEY=xxx
+      - LOCAL=true
+    entrypoint: sh -c "yarn db:up && yarn backend"

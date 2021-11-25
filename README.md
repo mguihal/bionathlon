@@ -4,12 +4,6 @@ The official app for Bionathlon !
 
 ## Install
 
-```
-yarn
-cp .env.dist .env
-```
-
-Replace .env file content with correct values
 
 Generate dev certificates via :
 
@@ -23,7 +17,13 @@ rm csr.pem
 ## Run
 
 ```
-yarn dev
+docker-compose up
 ```
 
-Go to http://localhost:3000
+Go to https://localhost:3000 for the web-app
+
+Api is available at https://localhost:3001/api/*
+
+(to make Chrome accept your self-signed localhost certificate, type "thisisunsafe" blindly on the error page)
+
+To update development database, go to htttp://localhost:8080, username and password are "bionathlon_dev"
