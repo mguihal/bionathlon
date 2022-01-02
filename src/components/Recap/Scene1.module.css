@@ -1,0 +1,55 @@
+.scene1 {
+  font-family: 'roboto';
+  background-color: white;
+  text-align: center;
+}
+
+.scene1 :global(#title1) {
+  font-size: 30px;
+  color: #DA5345;
+  position: absolute;
+  top: 40%;
+  width: 100%;
+  text-align: center;
+}
+
+.scene1 :global(#rondelle) {
+  position: absolute;
+  top: 60%;
+  margin: auto;
+  left: calc(50% - 35px);
+  width: 70px;
+}
+
+.scene1 :global(#bg2) {
+  width: 100%;
+  height: 100%;
+  background-color: #DA5345;
+}
+
+.scene1 h2 {
+  font-size: 24px;
+  color: white;
+  position: absolute;
+  top: 35%;
+  width: 100%;
+  text-align: center;
+}
+
+.scene1 :global(#title3) {
+  top: 50%;
+}
+
+.scene1 :global(#title4) {
+  color: black;
+  top: 20%;
+}
+
+.scene1 h3 {
+  font-size: 200px;
+  color: black;
+  position: absolute;
+  top: 10%;
+  width: 100%;
+  text-align: center;
+}

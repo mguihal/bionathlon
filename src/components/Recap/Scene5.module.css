@@ -1,0 +1,274 @@
+.scene5 {
+  font-family: 'roboto';
+  background-color: white;
+  text-align: center;
+  color: black;
+}
+
+.scene5 :global(#title1) {
+  font-size: 30px;
+  position: absolute;
+  top: 10%;
+  width: 100%;
+  padding-left: 10%;
+  padding-right: 10%;
+  box-sizing: border-box;
+  opacity: 0;
+  transform: translateY(-500px);
+}
+
+.scene5 :global(#title2) {
+  font-size: 30px;
+  position: absolute;
+  top: 13%;
+  width: 100%;
+  padding-left: 10%;
+  padding-right: 10%;
+  box-sizing: border-box;
+  opacity: 0;
+}
+
+.scene5 :global(#title3) {
+  font-size: 30px;
+  position: absolute;
+  top: 16%;
+  width: 100%;
+  padding-left: 10%;
+  padding-right: 10%;
+  box-sizing: border-box;
+  opacity: 0;
+}
+
+.scene5 :global(#title4) {
+  font-size: 30px;
+  position: absolute;
+  top: 80%;
+  width: 100%;
+  padding-left: 10%;
+  padding-right: 10%;
+  box-sizing: border-box;
+  opacity: 0;
+}
+
+.scene5 :global(#pct) {
+  font-size: 70px;
+  position: absolute;
+  top: 39%;
+  width: 100%;
+  padding-left: 10%;
+  padding-right: 10%;
+  box-sizing: border-box;
+  opacity: 0;
+  transform: scale(0.1);
+}
+
+.scene5 :global(.rondelleTop) {
+  background: url('./rondelle2.png');
+  background-size: cover;
+  width: 245px;
+  height: 145px;
+  position: absolute;
+  top: 242px;
+  left: 92px;
+  z-index: 1;
+  transform-origin: center bottom;
+}
+
+.scene5 :global(.rondelleBottom) {
+  background: url('./rondelle2.png');
+  background-size: cover;
+  width: 245px;
+  height: 121px;
+  position: absolute;
+  top: calc(242px + 145px);
+  left: 92px;
+  background-position: 0 -145px;
+  z-index: 10;
+  transform-origin: center top;
+}
+
+.scene5 :global(#pieLeft) {
+  background: #FFFFFF;
+  position: absolute;
+  top: 275px;
+  left: 100px;
+  width: 115px;
+  height: 230px;
+  border-radius: 50%;
+  border-radius: 115px 0 0 115px;
+}
+
+.scene5 :global(#pieRight) {
+  background: #7be394;
+  position: absolute;
+  top: 275px;
+  left: 215px;
+  width: 115px;
+  height: 230px;
+  border-radius: 0 115px 115px 0;
+}
+
+.scene5 :global(#pieMask) {
+  background: #FFFFFF;
+  position: absolute;
+  top: 275px;
+  left: 215px;
+  width: 115px;
+  height: 230px;
+  border-radius: 0 115px 115px 0;
+  transform-origin: center left;
+}
+
+.scene5 :global(#bottle) {
+  background: url('../bottle.svg');
+  width: 115px;
+  aspect-ratio: 89 / 337;
+  position: absolute;
+  top: 280px;
+  left: 158px;
+  background-size: contain;
+  z-index: 5;
+  transform: translateY(1000px);
+}
+
+.scene5 :global(#bottleLeft) {
+  background: url('../bottle.svg');
+  width: 115px;
+  aspect-ratio: 89 / 337;
+  position: absolute;
+  top: 200px;
+  left: -116px;
+  background-size: contain;
+  z-index: 5;
+}
+
+.scene5 :global(#bottleRight) {
+  background: url('../bottle.svg');
+  width: 115px;
+  aspect-ratio: 89 / 337;
+  position: absolute;
+  top: 200px;
+  left: 432px;
+  background-size: contain;
+  z-index: 5;
+}
+
+.scene5 :global(.rondelleTopLeft) {
+  background: url('./rondelle2.png');
+  background-size: cover;
+  width: 245px;
+  height: 145px;
+  position: absolute;
+  top: 463px;
+  left: -181px;
+  z-index: 1;
+  transform-origin: center bottom;
+  transform: translateY(-800px) rotateX(60deg);
+  opacity: 0;
+}
+
+.scene5 :global(.rondelleBottomLeft) {
+  background: url('./rondelle2.png');
+  background-size: cover;
+  width: 245px;
+  height: 121px;
+  position: absolute;
+  top: calc(463px + 145px);
+  left: -181px;
+  background-position: 0 -145px;
+  z-index: 10;
+  transform-origin: center top;
+  transform: translateY(-800px) rotateX(60deg);
+  opacity: 0;
+}
+
+.scene5 :global(.rondelleTopRight) {
+  background: url('./rondelle2.png');
+  background-size: cover;
+  width: 245px;
+  height: 145px;
+  position: absolute;
+  top: 463px;
+  left: 368px;
+  z-index: 1;
+  transform-origin: center bottom;
+  transform: translateY(-800px) rotateX(60deg);
+  opacity: 0;
+}
+
+.scene5 :global(.rondelleBottomRight) {
+  background: url('./rondelle2.png');
+  background-size: cover;
+  width: 245px;
+  height: 121px;
+  position: absolute;
+  top: calc(463px + 145px);
+  left: 368px;
+  background-position: 0 -145px;
+  z-index: 10;
+  transform-origin: center top;
+  transform: translateY(-800px) rotateX(60deg);
+  opacity: 0;
+}
+
+.scene5 :global(#bottleMalus) {
+  background: url('../malusBottle.svg');
+  width: 115px;
+  aspect-ratio: 84 / 179;
+  position: absolute;
+  top: 222px;
+  left: 158px;
+  background-size: contain;
+  z-index: 5;
+  transform: scale(0.5);
+  opacity: 0;
+}
+
+.scene5 :global(.rondelleMalusTop) {
+  background: url('./rondelle2.png');
+  background-size: cover;
+  width: 245px;
+  height: 145px;
+  position: absolute;
+  top: 250px;
+  left: 92px;
+  z-index: 1;
+  transform-origin: center bottom;
+  transform: scale(0.5) rotateX(60deg) translateY(-400px);
+  opacity: 0;
+}
+
+.scene5 :global(.rondelleMalusBottom) {
+  background: url('./rondelle2.png');
+  background-size: cover;
+  width: 245px;
+  height: 121px;
+  position: absolute;
+  top: calc(250px + 145px);
+  left: 92px;
+  background-position: 0 -145px;
+  z-index: 10;
+  transform-origin: center top;
+  transform: scale(0.5) rotateX(60deg) translateY(-400px);
+  opacity: 0;
+}
+
+.scene5 :global(#bg2) {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #DA5345;
+  transform: translateY(100%);
+  z-index: 1000;
+}
+
+.scene5 :global(#bg3) {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: white;
+  transform: translateY(200%);
+  z-index: 2000;
+}

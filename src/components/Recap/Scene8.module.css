@@ -1,0 +1,44 @@
+.scene8 {
+  font-family: 'roboto';
+  background-color: white;
+  text-align: center;
+  color: black;
+}
+
+.scene8 :global(#title1) {
+  font-size: 30px;
+  position: absolute;
+  top: 20%;
+  width: 100%;
+  padding-left: 10%;
+  padding-right: 10%;
+  box-sizing: border-box;
+  color: black;
+  opacity: 0;
+}
+
+.scene8 :global(#title2) {
+  font-size: 70px;
+  position: absolute;
+  top: 35%;
+  width: 100%;
+  padding-left: 10%;
+  padding-right: 10%;
+  box-sizing: border-box;
+  color: black;
+  opacity: 0;
+  transform: scale(0.5);
+}
+
+.scene8 :global(#title3) {
+  font-size: 100px;
+  position: absolute;
+  top: 55%;
+  width: 100%;
+  padding-left: 10%;
+  padding-right: 10%;
+  box-sizing: border-box;
+  color: black;
+  opacity: 0;
+  transform: scale(0.1);
+}

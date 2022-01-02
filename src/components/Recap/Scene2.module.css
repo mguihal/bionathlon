@@ -1,0 +1,58 @@
+.scene2 {
+  font-family: 'roboto';
+  background-color: white;
+  text-align: center;
+  color: black;
+}
+
+.scene2 :global(#container) {
+  position: absolute;
+  display: flex;
+  flex-wrap: wrap;
+  height: 910px;
+  width: 546px;
+  top: -40px;
+  left: -65px;
+}
+
+.scene2 :global(#container) div {
+  background: #C4C4C4;
+  border: 1px solid #CBCACA;
+  width: 180px;
+  height: 180px;
+  transform: scale(0.9);
+  opacity: 0;
+}
+
+.scene2 :global(#line) {
+  position: absolute;
+  display: flex;
+  top: 503px;
+  transform: translateY(-10px);
+}
+
+.scene2 :global(#line) div {
+  background: #DA5345;
+  width: 15px;
+  height: 5px;
+  margin-right: 10px;
+  opacity: 0;
+}
+
+.scene2 :global(#title1) {
+  top: 20%;
+  font-size: 24px;
+  position: absolute;
+  left: -999%;
+  width: 90%;
+  opacity: 0;
+}
+
+.scene2 :global(#title2) {
+  top: 80%;
+  font-size: 18px;
+  position: absolute;
+  left: -999%;
+  width: 90%;
+  opacity: 0;
+}

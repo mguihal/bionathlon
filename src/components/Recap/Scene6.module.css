@@ -1,0 +1,210 @@
+.scene6 {
+  font-family: 'roboto';
+  background-color: white;
+  text-align: center;
+  color: black;
+}
+
+.scene6 :global(#title1) {
+  font-size: 30px;
+  position: absolute;
+  top: 10%;
+  width: 100%;
+  padding-left: 20%;
+  padding-right: 20%;
+  box-sizing: border-box;
+  opacity: 0;
+  transform: translateY(-500px);
+}
+
+.scene6 :global(#title2) {
+  font-size: 30px;
+  position: absolute;
+  top: 10%;
+  width: 100%;
+  padding-left: 10%;
+  padding-right: 10%;
+  box-sizing: border-box;
+  opacity: 0;
+}
+
+.scene6 :global(#title3) {
+  font-size: 30px;
+  position: absolute;
+  top: 50%;
+  width: 100%;
+  padding-left: 30%;
+  padding-right: 30%;
+  box-sizing: border-box;
+  opacity: 0;
+}
+
+.scene6 :global(#nbWin) {
+  font-size: 60px;
+  position: absolute;
+  top: 201px;
+  width: 100%;
+  padding-left: 9%;
+  padding-right: 10%;
+  box-sizing: border-box;
+  opacity: 0;
+}
+
+.scene6 :global(#cb1) {
+  position: absolute;
+  background: url('./cowboy1.png');
+  background-size: cover;
+  aspect-ratio: 216 / 755;
+  top: 244px;
+  left: 284px;
+  width: 150px;
+  z-index: 10;
+}
+
+.scene6 :global(#cb2) {
+  position: absolute;
+  background: url('./cowboy1.png');
+  background-size: cover;
+  aspect-ratio: 216 / 755;
+  top: 244px;
+  left: -2px;
+  width: 150px;
+  transform: scaleX(-1);
+  z-index: 10;
+}
+
+.scene6 :global(#scene1) {
+  transform: translateY(-250px) scale(2.5) ;
+}
+
+.scene6 :global(#gun) {
+  position: absolute;
+  background: url('./gun.png');
+  background-size: cover;
+  aspect-ratio: 216 / 311;
+  top: 250px;
+  left: 150px;
+  width: 150px;
+  transform: scale(0.05);
+  opacity: 0;
+}
+
+.scene6 :global(#r1) {
+  position: absolute;
+  top: 250px;
+  left: 142px;
+  width: 36px;
+  opacity: 0;
+}
+
+.scene6 :global(#r2) {
+  position: absolute;
+  top: 245px;
+  left: 132px;
+  width: 36px;
+  opacity: 0;
+}
+
+.scene6 :global(#r3) {
+  position: absolute;
+  top: 240px;
+  left: 122px;
+  width: 37px;
+  opacity: 0;
+}
+
+.scene6 :global(#r4) {
+  position: absolute;
+  top: 233px;
+  left: 107px;
+  width: 38px;
+  opacity: 0;
+}
+
+.scene6 :global(#r5) {
+  position: absolute;
+  top: 226px;
+  left: 92px;
+  width: 40px;
+  opacity: 0;
+}
+
+.scene6 :global(#r6) {
+  position: absolute;
+  top: 217px;
+  left: 74px;
+  width: 44px;
+  opacity: 0;
+}
+
+.scene6 :global(#r7) {
+  position: absolute;
+  top: 209px;
+  left: 52px;
+  width: 48px;
+  opacity: 0;
+}
+
+.scene6 :global(#r8) {
+  position: absolute;
+  top: 193px;
+  left: 18px;
+  width: 64px;
+  opacity: 0;
+}
+
+.scene6 :global(#r9) {
+  position: absolute;
+  top: 178px;
+  left: -28px;
+  width: 96px;
+  opacity: 0;
+}
+
+.scene6 :global(#r10) {
+  position: absolute;
+  top: 172px;
+  left: -58px;
+  width: 110px;
+  opacity: 0;
+}
+
+.scene6 :global(#r11) {
+  position: absolute;
+  top: 162px;
+  left: -89px;
+  width: 130px;
+  opacity: 0;
+}
+
+.scene6 :global(#r12) {
+  position: absolute;
+  top: 166px;
+  left: -121px;
+  width: 140px;
+  opacity: 0;
+}
+
+.scene6 :global(#r13) {
+  position: absolute;
+  top: 172px;
+  left: -147px;
+  width: 150px;
+  opacity: 0;
+}
+
+.scene6 :global(#r14) {
+  position: absolute;
+  top: 182px;
+  left: -172px;
+  width: 160px;
+  opacity: 0;
+}
+
+.scene6 :global(#bg2) {
+  width: 100%;
+  height: 100%;
+  background-color: #DA5345;
+  transform: translateY(100%);
+  z-index: 1000;
+}

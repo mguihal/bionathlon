@@ -1,0 +1,77 @@
+.scene3 {
+  font-family: 'roboto';
+  background-color: white;
+  text-align: center;
+  color: black;
+}
+
+.scene3 :global(#container), .scene3 :global(#container2) {
+  position: absolute;
+  display: flex;
+  flex-wrap: wrap;
+  height: 910px;
+  width: 546px;
+  top: -40px;
+  left: -65px;
+}
+
+.scene3 :global(#container) div, .scene3 :global(#container2) div  {
+  background: #C4C4C4;
+  border: 1px solid #CBCACA;
+  width: 180px;
+  height: 180px;
+}
+
+.scene3 :global(#container2) {
+  left: calc(546px - 65px);
+}
+
+.scene3 :global(#line) {
+  position: absolute;
+  display: flex;
+  top: 503px;
+}
+
+.scene3 :global(#line) div {
+  background: #DA5345;
+  width: 15px;
+  height: 5px;
+  margin-right: 10px;
+}
+
+.scene3 :global(#midday) {
+  position: absolute;
+  top: -80px;
+  width: 80%;
+  display: flex;
+  justify-content: space-around;
+  left: 10%;
+}
+
+.scene3 :global(#midday) div {
+  width: 80px;
+  height: 80px;
+  background-image: url('./midday.png');
+  flex-shrink: 0;
+}
+
+.scene3 :global(#evening) {
+  position: absolute;
+  top: 100%;
+  width: 80%;
+  display: flex;
+  justify-content: space-around;
+  left: 10%;
+}
+
+.scene3 :global(#evening) div {
+  width: 80px;
+  height: 80px;
+  background-image: url('./evening.png');
+  flex-shrink: 0;
+}
+
+.scene3 :global(h1) {
+  font-size: 24px;
+  max-width: 175px;
+}

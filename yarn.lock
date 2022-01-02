@@ -6042,6 +6042,11 @@ growly@^1.3.0:
   resolved "https://registry.yarnpkg.com/growly/-/growly-1.3.0.tgz#f10748cbe76af964b7c96c93c6bcc28af120c081"
   integrity sha1-8QdIy+dq+WS3yWyTxrzCivEgwIE=
 
+gsap@^3.9.0:
+  version "3.9.0"
+  resolved "https://registry.yarnpkg.com/gsap/-/gsap-3.9.0.tgz#c5cf85b686ccfe530bb9f309f1b42efde6cf9841"
+  integrity sha512-YfIBNHJu4UHES1Vj780+sXtQuiD78QQwgJqktaXE9PO9OuXz5l4ETz05pnhxUfJcxJy4SUINXJxT9ZZhuYwU2g==
+
 gtoken@^4.1.0:
   version "4.1.4"
   resolved "https://registry.yarnpkg.com/gtoken/-/gtoken-4.1.4.tgz#925ff1e7df3aaada06611d30ea2d2abf60fcd6a7"
@@ -10509,6 +10514,11 @@ react-google-login@^5.0.7:
   dependencies:
     "@types/react" "*"
     prop-types "^15.6.0"
+
+react-insta-stories@^2.3.0:
+  version "2.3.0"
+  resolved "https://registry.yarnpkg.com/react-insta-stories/-/react-insta-stories-2.3.0.tgz#f2d0aeca7eca8f1f7a13486e573758a460de20da"
+  integrity sha512-1609XYXFPKvaoEGoHSJqdqd75pGhBv9iaX3vY2vJRaVFWVBYb8D2ax1S7iBTvqadEM34o7bbrp0g6hN4hDK44w==
 
 react-is@^16.6.0, react-is@^16.7.0, react-is@^16.8.4, react-is@^16.9.0:
   version "16.11.0"

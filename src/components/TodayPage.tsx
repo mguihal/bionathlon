@@ -1,32 +1,28 @@
-import React, { useEffect } from 'react';
-import { connect } from 'react-redux'
-import { Dataway, fold } from 'dataway';
-import { Link } from 'react-router-dom';
-
-import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import ButtonGroup from '@material-ui/core/ButtonGroup';
 import Fab from '@material-ui/core/Fab';
+import Typography from '@material-ui/core/Typography';
 import PersonIcon from '@material-ui/icons/Person';
 import SportsESportsIcon from '@material-ui/icons/SportsEsports';
-
 import SpeedDial from '@material-ui/lab/SpeedDial';
-import SpeedDialIcon from '@material-ui/lab/SpeedDialIcon';
 import SpeedDialAction from '@material-ui/lab/SpeedDialAction';
-
-import SessionTable from './SessionTable';
-
-import { AppState } from '../store';
-
+import SpeedDialIcon from '@material-ui/lab/SpeedDialIcon';
+import { Dataway, fold } from 'dataway';
+import React, { useEffect } from 'react';
+import { connect } from 'react-redux';
+import { Link } from 'react-router-dom';
 import { fetchToday } from '../actionCreators/game';
-
 import styles from '../App.module.css';
-import { GamesResponse } from '../sagas/api';
-
 import { formatDate, isMidDayGame } from '../helpers';
+import { GamesResponse } from '../sagas/api';
+import { AppState } from '../store';
+import Recap from './Recap/Recap';
+import SessionTable from './SessionTable';
 
 interface ConnectedProps {
   games: Dataway<string, GamesResponse>;
+  token: string;
+  currentUserId: number;
 }
 
 interface DispatchedProps {
@@ -35,7 +31,7 @@ interface DispatchedProps {
 
 const TodayPage: React.FunctionComponent<ConnectedProps & DispatchedProps> = (props) => {
 
-  const { games, fetchToday } = props;
+  const { games, fetchToday, token, currentUserId } = props;
 
   const [open, setOpen] = React.useState(false);
 
@@ -87,6 +83,7 @@ const TodayPage: React.FunctionComponent<ConnectedProps & DispatchedProps> = (pr
           />
         </SpeedDial>
       </div>
+      <Recap token={token} playerId={currentUserId} />
       <div className={styles.todayContainer}>
         <div className={styles.tableContainer}>
           <Typography variant="h6">
@@ -125,6 +122,8 @@ const TodayPage: React.FunctionComponent<ConnectedProps & DispatchedProps> = (pr
 export default connect<ConnectedProps, DispatchedProps, {}, AppState>(
   state => ({
     games: state.game.today,
+    token: state.user.token,
+    currentUserId: state.user.user.id,
   }),
   dispatch => ({
     fetchToday: () => dispatch(fetchToday()),

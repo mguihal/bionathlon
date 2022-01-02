@@ -1,0 +1,118 @@
+.scene4 {
+  font-family: 'roboto';
+  background-color: white;
+  text-align: center;
+  color: black;
+}
+
+.scene4 :global(#title1) {
+  font-size: 24px;
+  position: absolute;
+  top: 20%;
+  width: 300%;
+  padding-left: 110%;
+  padding-right: 110%;
+  box-sizing: border-box;
+  background: rgba(255, 255, 255, 0.8);
+  z-index: 100;
+  opacity: 0;
+}
+
+.scene4 :global(#title2) {
+  font-size: 24px;
+  position: absolute;
+  top: 60%;
+  width: 300%;
+  padding-left: 110%;
+  padding-right: 110%;
+  box-sizing: border-box;
+  background: rgba(255, 255, 255, 0.8);
+  z-index: 100;
+  opacity: 0;
+}
+
+.scene4 :global(#title3) {
+  font-size: 40px;
+  position: absolute;
+  top: 40%;
+  width: 100%;
+  box-sizing: border-box;
+  z-index: 100;
+  transform: scale(0.25);
+  opacity: 0
+}
+
+.scene4 :global(.rondelleO) {
+  background: url('./rondelle2.png');
+  background-size: cover;
+  aspect-ratio: 261 / 284;
+  width: 30px;
+  display: inline-block;
+  margin-left: 2px;
+  margin-right: 2px;
+  box-sizing: border-box;
+  margin-bottom: -5px;
+}
+
+.scene4 :global(.rondelle) {
+  background: url('./rondelle2.png');
+  background-size: cover;
+  aspect-ratio: 261 / 284;
+  width: 50px;
+  position: absolute;
+  top: -150px;
+}
+
+.scene4 :global(.r1) {
+  width: 100px;
+  /* left: 50px; */
+}
+
+.scene4 :global(.r2) {
+  width: 50px;
+  /* left: 10px; */
+  opacity: 0.5;
+  transform: rotate(1);
+}
+
+.scene4 :global(.r3) {
+  width: 75px;
+  /* left: 100px; */
+  opacity: 0.75;
+  transform: rotate(3);
+}
+
+.scene4 :global(.r4) {
+  width: 100px;
+  /* left: 300px; */
+  opacity: 1;
+  transform: rotate(4);
+}
+
+.scene4 :global(.r5) {
+  width: 50px;
+  /* left: 400px; */
+  opacity: 0.5;
+  transform: rotate(5);
+}
+
+.scene4 :global(.r6){
+  width: 75px;
+  /* left: 500px; */
+  opacity: 0.75;
+  transform: rotate(6);
+}
+
+.scene4 :global(.r7) {
+  width: 50px;
+  /* left: 230px; */
+  opacity: 0.5;
+  transform: rotate(7);
+}
+
+.scene4 :global(.r8){
+  width: 50px;
+  /* left: 450px; */
+  opacity: 0.5;
+  transform: rotate(8);
+}
