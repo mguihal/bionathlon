@@ -92,7 +92,7 @@ const RankingPage: React.FunctionComponent<ConnectedProps &
 
   const [rankingType, setRankingType] = useState<RankingType>('nbPoints');
   const [rankingFilter, setRankingFilter] = useState(
-    `${now.getFullYear()}-${now.getMonth() + 1}`,
+    `${now.getFullYear()}-${(now.getMonth() + 1 < 10 ? `0${now.getMonth() + 1}` : now.getMonth() + 1)}`,
   );
 
   useEffect(() => {
