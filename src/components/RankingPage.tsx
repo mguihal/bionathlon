@@ -24,13 +24,6 @@ interface DispatchedProps {
   fetchStats: (month?: string) => { type: string };
 }
 
-interface Rank {
-  id: number;
-  name: string;
-  score: number;
-  suffix?: string;
-}
-
 type RankingType =
   | 'nbMatchs'
   | 'nbWonMatchs'

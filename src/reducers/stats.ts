@@ -1,3 +1,4 @@
+/* eslint-disable import/no-anonymous-default-export */
 import { Dataway, failure, loading, notAsked, success } from 'dataway';
 import {
   StatsAction,

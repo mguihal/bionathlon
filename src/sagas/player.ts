@@ -18,7 +18,8 @@ function* fetchPlayersSaga() {
       const response: PlayersResponse = yield call(getPlayers);
 
       yield put(playersFetched(response));
-    } catch (error) {
+    } catch (e) {
+      const error = e as Error;
       yield put(playersFetchedError(error.message));
     }
   });
@@ -29,7 +30,8 @@ function* addPlayerSaga() {
     try {
       yield call(addPlayer, action.email, action.name);
       yield put(playerAdded());
-    } catch (error) {
+    } catch (e) {
+      const error = e as Error;
       yield put(playerAddedError(error.message));
     }
 

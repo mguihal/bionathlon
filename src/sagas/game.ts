@@ -38,7 +38,8 @@ function* fetchTodaySaga() {
       });
 
       yield put(todayFetched(response));
-    } catch (error) {
+    } catch (e) {
+      const error = e as Error;
       yield put(todayFetchedError(error.message));
     }
   });
@@ -52,7 +53,8 @@ function* fetchPlayerGames() {
       });
 
       yield put(playerGamesFetched(response));
-    } catch (error) {
+    } catch (e) {
+      const error = e as Error;
       yield put(playerGamesFetchedError(error.message));
     }
   });
@@ -67,7 +69,8 @@ function* fetchAllGamesSaga() {
       });
 
       yield put(allGamesFetched(response));
-    } catch (error) {
+    } catch (e) {
+      const error = e as Error;
       yield put(allGamesFetchedError(error.message));
     }
   });
@@ -89,7 +92,8 @@ function* addGameSaga() {
         action.note,
       );
       yield put(gameAdded());
-    } catch (error) {
+    } catch (e) {
+      const error = e as Error;
       yield put(gameAddedError(error.message));
 
       console.log({ error });

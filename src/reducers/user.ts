@@ -1,3 +1,4 @@
+/* eslint-disable import/no-anonymous-default-export */
 import {
   UserAction,
   LOGIN_ERROR_UPDATED,

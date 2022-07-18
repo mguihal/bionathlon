@@ -32,7 +32,8 @@ function* googleLoginSucceeded() {
       localStorage.setItem('user', JSON.stringify(response.user));
 
       yield put(loginSucceeded(response.token, response.user));
-    } catch (error) {
+    } catch (e) {
+      const error = e as Error;
       yield put(updateLoginError(error.message));
     }
   });

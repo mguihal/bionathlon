@@ -12,19 +12,20 @@ function* doRequest(
   authenticated: boolean,
   body?: any,
 ) {
-  const token = yield select<typeof getToken>(getToken);
+  const token: ReturnType<typeof getToken> = yield select<typeof getToken>(getToken);
 
-  const response = yield call(fetch, `${HOST}/api${path}`, {
+  const response: Response = yield call(fetch, `${HOST}/api${path}`, {
     method,
     headers: {
-      Authorization: authenticated ? token : null,
+      Authorization: authenticated ? token : '',
     },
     body: body ? JSON.stringify(body) : null,
   });
 
   switch (response.status) {
     case 200:
-      return yield call([response, 'json']);
+      const parsed: object = yield call([response, 'json']);
+      return parsed;
     case 400:
       throw new Error(`Paramètres de la requête invalides`);
     case 401:
@@ -37,7 +38,7 @@ function* doRequest(
           : `Vous n'êtes pas autorisé à vous connecter`,
       );
     case 500:
-      const content = yield call([response, 'json']);
+      const content: { error: string } = yield call([response, 'json']);
       throw new Error(content.error || 'Erreur inconnue');
     default:
       throw new Error('Erreur inconnue');
@@ -54,11 +55,12 @@ export interface LoginResponse {
 }
 
 export function* login(accessToken: string) {
-  return yield call(doRequest, '/login', 'POST', false, {
+  const response: LoginResponse = yield call(doRequest, '/login', 'POST', false, {
     data: {
       googleToken: accessToken,
     },
   });
+  return response;
 }
 
 export interface GameResponse {
@@ -104,12 +106,13 @@ export function* getGames(
     filtersQuery.push(`offset=${filters.offset}`);
   }
 
-  return yield call(
+  const response: GameResponse = yield call(
     doRequest,
     `/game${filtersQuery ? '?' + filtersQuery.join('&') : ''}`,
     'GET',
     true,
   );
+  return response;
 }
 
 export interface PlayerResponse {
@@ -121,16 +124,18 @@ export interface PlayerResponse {
 export type PlayersResponse = PlayerResponse[];
 
 export function* getPlayers() {
-  return yield call(doRequest, `/player`, 'GET', true);
+  const response: PlayersResponse = yield call(doRequest, `/player`, 'GET', true);
+  return response;
 }
 
 export function* addPlayer(email: string, name: string) {
-  return yield call(doRequest, '/player', 'POST', true, {
+  const response: {} = yield call(doRequest, '/player', 'POST', true, {
     data: {
       email,
       name,
     },
   });
+  return response;
 }
 
 export function* addGame(
@@ -160,16 +165,18 @@ export function* addGame(
     Object.entries(data).filter(([key, value]) => value !== null),
   );
 
-  return yield call(doRequest, '/game', 'POST', true, { data: filteredData });
+  const response: {} = yield call(doRequest, '/game', 'POST', true, { data: filteredData });
+  return response;
 }
 
 export function* setSuddenDeathWinner(gameId: number) {
-  return yield call(doRequest, '/suddenDeath', 'PUT', true, {
+  const response: {} = yield call(doRequest, '/suddenDeath', 'PUT', true, {
     data: {
       gameId,
       won: true,
     },
   });
+  return response;
 }
 
 interface Rank {
@@ -197,10 +204,11 @@ export function* getStats(filters?: Partial<{ month: string }>) {
     filtersQuery.push(`month=${filters.month}`);
   }
 
-  return yield call(
+  const response: StatsResponse = yield call(
     doRequest,
     `/stats${filtersQuery ? '?' + filtersQuery.join('&') : ''}`,
     'GET',
     true,
   );
+  return response;
 }

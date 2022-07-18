@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Redirect } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 
 import { GoogleLogin } from 'react-google-login';
 
@@ -55,7 +55,7 @@ const LoginPage: React.FunctionComponent<ConnectedProps & DispatchedProps> = (pr
       return null;
     }
 
-    return <Redirect to={'/'} />;
+    return <Navigate to={'/'} />;
   }
 
   return (

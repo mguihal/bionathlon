@@ -1,5 +1,4 @@
 import React from 'react';
-import { connect } from 'react-redux';
 
 import Link from '@material-ui/core/Link';
 import Table from '@material-ui/core/Table';
@@ -28,23 +27,21 @@ import { byScoreDesc, isWinner, getSuddenDeathGames, computeScore } from '../hel
 import { setSuddenDeathWinner } from '../actionCreators/game';
 
 import styles from '../App.module.css';
+import { useDispatch } from 'react-redux';
 
 interface Props {
   games: GamesResponse;
   context: string;
 }
 
-interface DispatchedProps {
-  setSuddenDeathWinner: (gameId: number, context: string) => {type: string};
-}
+const SessionTable: React.FunctionComponent<Props> = (props) => {
 
-const SessionTable: React.FunctionComponent<Props & DispatchedProps> = (props) => {
-
-  const { games, setSuddenDeathWinner, context } = props;
+  const { games, context } = props;
 
   const [open, setOpen] = React.useState(false);
   const [openDetails, setOpenDetails] = React.useState<GameResponse | null>(null);
   const [winner, setWinner] = React.useState(0);
+  const dispatch = useDispatch();
 
   const suddenDeathGames = getSuddenDeathGames(games);
 
@@ -58,7 +55,7 @@ const SessionTable: React.FunctionComponent<Props & DispatchedProps> = (props) =
 
   const handleConfirm = () => {
     handleClose();
-    setSuddenDeathWinner(winner, context);
+    dispatch(setSuddenDeathWinner(winner, context));
   };
 
   const renderNote = (note: string) => {
@@ -131,9 +128,4 @@ const SessionTable: React.FunctionComponent<Props & DispatchedProps> = (props) =
   );
 }
 
-export default connect<{}, DispatchedProps, {}, {}>(
-  () => ({}),
-  dispatch => ({
-    setSuddenDeathWinner: (gameId: number, context: string) => dispatch(setSuddenDeathWinner(gameId, context)),
-  })
-)(SessionTable);
+export default SessionTable;

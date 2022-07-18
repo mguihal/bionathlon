@@ -1,7 +1,7 @@
 import joi from '@hapi/joi';
-import { NowRequest, NowResponse } from '@now/node';
+import { VercelRequest, VercelResponse } from '@vercel/node';
 import jwt, { JsonWebTokenError } from 'jsonwebtoken';
-import knex from 'knex';
+import knex, { Knex } from 'knex';
 
 const jwtVersion = '1';
 const jwtSecret = process.env.SECRET || 'secret';
@@ -14,10 +14,10 @@ export interface MethodConfig {
   };
   authenticated?: boolean;
   handler: (
-    res: NowResponse,
+    res: VercelResponse,
     payload?: any,
     query?: any,
-  ) => Promise<NowResponse>;
+  ) => Promise<VercelResponse>;
 }
 
 export interface RouteConfig {
@@ -26,8 +26,8 @@ export interface RouteConfig {
   put?: MethodConfig;
 }
 
-function withBody(req: NowRequest) {
-  return new Promise<NowRequest>(resolve => {
+function withBody(req: VercelRequest) {
+  return new Promise<VercelRequest>(resolve => {
     let data: string[] = [];
 
     req.on('data', chunk => data.push(chunk));
@@ -43,8 +43,8 @@ function withBody(req: NowRequest) {
 }
 
 export async function validationWrapper(
-  req: NowRequest,
-  res: NowResponse,
+  req: VercelRequest,
+  res: VercelResponse,
   config: MethodConfig,
 ) {
   try {
@@ -62,7 +62,8 @@ export async function validationWrapper(
     }
 
     return config.handler(res, payload, query);
-  } catch (error) {
+  } catch (e) {
+    const error = e as Error;
     console.log(error);
 
     switch (error.constructor) {
@@ -77,8 +78,8 @@ export async function validationWrapper(
 }
 
 export async function routeWrapper(
-  req: NowRequest,
-  res: NowResponse,
+  req: VercelRequest,
+  res: VercelResponse,
   config: RouteConfig,
 ) {
   switch (req.method) {
@@ -106,7 +107,7 @@ export async function routeWrapper(
   return res.status(404).send('Not found');
 }
 
-export async function withDb(callback: (db: knex) => any) {
+export async function withDb(callback: (db: Knex) => any) {
   const db = knex({
     client: 'pg',
     connection: process.env.DATABASE_URL,

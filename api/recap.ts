@@ -1,5 +1,5 @@
 import joi from '@hapi/joi';
-import { NowRequest, NowResponse } from '@now/node';
+import { VercelRequest, VercelResponse } from '@vercel/node';
 import { RecapData } from '../src/components/Recap/RecapContext';
 import {
   computeScore,
@@ -143,5 +143,5 @@ const routeConfig: RouteConfig = {
   },
 };
 
-export default (req: NowRequest, res: NowResponse) =>
+export default (req: VercelRequest, res: VercelResponse) =>
   routeWrapper(req, res, routeConfig);

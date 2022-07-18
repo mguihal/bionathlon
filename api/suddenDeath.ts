@@ -1,4 +1,4 @@
-import { NowRequest, NowResponse } from '@now/node';
+import { VercelRequest, VercelResponse } from '@vercel/node';
 import joi from '@hapi/joi';
 
 import { RouteConfig, routeWrapper, withDb } from './_common';
@@ -52,7 +52,8 @@ const routeConfig: RouteConfig = {
           }
 
           return res.send(game);
-        } catch (error) {
+        } catch (e) {
+          const error = e as Error;
           console.error(error.message);
 
           if (error.message.indexOf('game_playerid_date_time_unique') >= 0) {
@@ -70,5 +71,5 @@ const routeConfig: RouteConfig = {
   },
 };
 
-export default (req: NowRequest, res: NowResponse) =>
+export default (req: VercelRequest, res: VercelResponse) =>
   routeWrapper(req, res, routeConfig);

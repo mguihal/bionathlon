@@ -15,7 +15,8 @@ function* fetchStatsSaga() {
       });
 
       yield put(statsFetched(response));
-    } catch (error) {
+    } catch (e) {
+      const error = e as Error;
       yield put(statsFetchedError(error.message));
     }
   });

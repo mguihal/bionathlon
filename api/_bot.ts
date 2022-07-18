@@ -1,4 +1,4 @@
-import knex from 'knex';
+import { Knex } from 'knex';
 import { GoogleAuth } from 'google-auth-library';
 import { GamePayload } from './game';
 import { SuddenDeathPayload } from './suddenDeath';
@@ -64,7 +64,7 @@ function computeScore(game: GamePayload['data']) {
     (scoreMalusBottle || 0);
 }
 
-export async function sendScoreOnChat(db: knex, payload: GamePayload) {
+export async function sendScoreOnChat(db: Knex, payload: GamePayload) {
   const payloadDate = (new Date(payload.data.date)).toISOString().split('T')[0];
   const threadKey = payloadDate + payload.data.time;
 
@@ -88,7 +88,7 @@ N'oubliez pas d'ajouter vos scores sur https://bionathlon.com !
   await sendChatMessage(process.env.CHATSPACE || null, threadKey, message);
 }
 
-export async function sendSuddenDeathOnChat(db: knex, payload: SuddenDeathPayload) {
+export async function sendSuddenDeathOnChat(db: Knex, payload: SuddenDeathPayload) {
   const game = await db('game')
     .first()
     .join('player', 'game.playerId', 'player.id')

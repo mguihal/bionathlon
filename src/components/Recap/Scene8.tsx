@@ -1,15 +1,12 @@
 import { gsap } from 'gsap';
 import React, { useLayoutEffect, useRef } from 'react';
 import styles from './Recap.module.css';
-import { useRecapData } from './RecapContext';
 import stylesScene from './Scene8.module.css';
 
 const Scene8 = () => {
   const ref = useRef(null);
   const q = gsap.utils.selector(ref);
   const timeline = useRef<gsap.core.Timeline>();
-
-  const data = useRecapData();
 
   useLayoutEffect(() => {
     timeline.current = gsap.timeline()

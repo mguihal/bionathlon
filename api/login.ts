@@ -1,4 +1,4 @@
-import { NowRequest, NowResponse } from '@now/node';
+import { VercelRequest, VercelResponse } from '@vercel/node';
 import joi from '@hapi/joi';
 import axios from 'axios';
 import jwt from 'jsonwebtoken';
@@ -22,7 +22,7 @@ interface GoogleResponse {
   locale: string;
 }
 
-async function loginHandler(res: NowResponse, payload: LoginPayload) {
+async function loginHandler(res: VercelResponse, payload: LoginPayload) {
   try {
     const googleToken = payload.data.googleToken;
     const response = await axios.get<GoogleResponse>(
@@ -51,7 +51,8 @@ async function loginHandler(res: NowResponse, payload: LoginPayload) {
         name: player.name,
       },
     });
-  } catch (error) {
+  } catch (e) {
+    const error = e as any;
     if (error.response && error.response.status === 401) {
       return res.status(401).send({ error: 'Token not authorized' });
     }
@@ -89,5 +90,5 @@ const routeConfig: RouteConfig = {
   },
 };
 
-export default (req: NowRequest, res: NowResponse) =>
+export default (req: VercelRequest, res: VercelResponse) =>
   routeWrapper(req, res, routeConfig);

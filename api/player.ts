@@ -1,5 +1,5 @@
 import joi from '@hapi/joi';
-import { NowRequest, NowResponse } from '@now/node';
+import { VercelRequest, VercelResponse } from '@vercel/node';
 import { RouteConfig, routeWrapper, withDb } from './_common';
 
 interface PlayerPayload {
@@ -60,7 +60,8 @@ const routeConfig: RouteConfig = {
             .returning('*');
 
           return res.send(player);
-        } catch (error) {
+        } catch (e) {
+          const error = e as Error;
           console.error(error.message);
 
           if (error.message.indexOf('player_email_unique') >= 0) {
@@ -78,5 +79,5 @@ const routeConfig: RouteConfig = {
   },
 };
 
-export default (req: NowRequest, res: NowResponse) =>
+export default (req: VercelRequest, res: VercelResponse) =>
   routeWrapper(req, res, routeConfig);

@@ -1,9 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux'
 import {
-  Route,
-  Redirect,
-  RouteProps
+  Navigate,
+  useLocation
 } from 'react-router-dom';
 
 import { AppState } from '../store';
@@ -12,21 +11,15 @@ interface ConnectedProps {
   isLogged: boolean;
 }
 
-const AuthRoute: React.FunctionComponent<RouteProps & ConnectedProps> = (props) => {
-  const { isLogged, children, ...rest } = props;
+const AuthRoute = (props: ConnectedProps & { children: JSX.Element; }) => {
+  const { isLogged, children } = props;
+  const location = useLocation();
 
-  return (
-    <Route
-      {...rest}
-      render={({ location }) =>
-        isLogged ? (
-          children
-        ) : (
-          <Redirect to={{ pathname: "/login", state: { from: location } }} />
-        )
-      }
-    />
-  );
+  if (!isLogged) {
+    return <Navigate to={'/login'} state={{ from: location }} />;
+  }
+
+  return children;
 }
 
 export default connect<ConnectedProps, {}, {}, AppState>(state => ({
