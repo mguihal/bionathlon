@@ -10,6 +10,7 @@ import AppBar from '@material-ui/core/AppBar';
 import TodayIcon from '@material-ui/icons/Today';
 import PersonIcon from '@material-ui/icons/Person';
 import HistoryIcon from '@material-ui/icons/History';
+import MenuBookIcon from '@material-ui/icons/MenuBook';
 import EmojiEventsIcon from '@material-ui/icons/EmojiEvents';
 
 import TodayPage from './TodayPage';
@@ -18,6 +19,7 @@ import AddGamePage from './AddGamePage';
 import ProfilePage from './ProfilePage';
 import HistoryPage from './HistoryPage';
 import RankingPage from './RankingPage';
+import RulesPage from './RulesPage';
 
 import { AppState } from '../store';
 
@@ -30,6 +32,7 @@ const mapping: {[key: string]: string} = {
   'profile' : 'profile',
   'history': 'history',
   'ranking': 'ranking',
+  'rules': 'rules',
 };
 
 const navMapping: {[value: string]: string} = {
@@ -39,6 +42,7 @@ const navMapping: {[value: string]: string} = {
   profile: 'profile',
   history: 'history',
   ranking: 'ranking',
+  rules: 'rules',
 };
 
 interface ConnectedProps {
@@ -72,6 +76,7 @@ const Page: React.FunctionComponent<ConnectedProps> = (props) => {
           >
             <Tab label="Aujourd'hui" value="today" component={Link} to="/" />
             <Tab label="Mon profil" value="profile" component={Link} to={`/profile/${currentUserId}`} />
+            <Tab label="Règlement" value="rules" component={Link} to="/rules" />
             <Tab label="Historique" value="history" component={Link} to="/history" />
             <Tab label="Classement" value="ranking" component={Link} to="/ranking" />
           </Tabs>
@@ -82,6 +87,7 @@ const Page: React.FunctionComponent<ConnectedProps> = (props) => {
       {value === 'addPlayer' && <AddPlayerPage />}
       {value === 'addGame' && <AddGamePage />}
       {value === 'profile' && <ProfilePage />}
+      {value === 'rules' && <RulesPage />}
       {value === 'history' && <HistoryPage />}
       {value === 'ranking' && <RankingPage />}
 
@@ -93,10 +99,11 @@ const Page: React.FunctionComponent<ConnectedProps> = (props) => {
           }}
           showLabels
         >
-          <BottomNavigationAction component={Link} to="/" label="Aujourd'hui" value="today" icon={<TodayIcon />} style={{maxWidth: 'initial', minWidth: 'initial'}}/>
-          <BottomNavigationAction component={Link} to={`/profile/${currentUserId}`} label="Mon profil" value="profile" icon={<PersonIcon />} style={{maxWidth: 'initial', minWidth: 'initial'}} />
-          <BottomNavigationAction component={Link} to="/history" label="Historique" value="history" icon={<HistoryIcon />} style={{maxWidth: 'initial', minWidth: 'initial'}} />
-          <BottomNavigationAction component={Link} to="/ranking" label="Classement" value="ranking" icon={<EmojiEventsIcon />} style={{maxWidth: 'initial', minWidth: 'initial'}} />
+          <BottomNavigationAction component={Link} to="/" value="today" icon={<TodayIcon />} style={{maxWidth: 'initial', minWidth: 'initial'}}/>
+          <BottomNavigationAction component={Link} to={`/profile/${currentUserId}`} value="profile" icon={<PersonIcon />} style={{maxWidth: 'initial', minWidth: 'initial'}} />
+          <BottomNavigationAction component={Link} to="/rules" value="rules" icon={<MenuBookIcon />} style={{maxWidth: 'initial', minWidth: 'initial'}} />
+          <BottomNavigationAction component={Link} to="/history" value="history" icon={<HistoryIcon />} style={{maxWidth: 'initial', minWidth: 'initial'}} />
+          <BottomNavigationAction component={Link} to="/ranking" value="ranking" icon={<EmojiEventsIcon />} style={{maxWidth: 'initial', minWidth: 'initial'}} />
         </BottomNavigation>
       </footer>
     </div>

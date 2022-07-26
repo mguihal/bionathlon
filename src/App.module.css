@@ -194,6 +194,13 @@ button.loadMoreButton {
   margin-bottom: 80px;
 }
 
+.rules {
+  font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+  margin: auto;
+  padding-bottom: 30px;
+  width: 90%;
+}
+
 @media screen and (min-width: 768px) {
   .page {
     margin-top: 80px;
@@ -267,4 +274,45 @@ button.loadMoreButton {
   button.loadMoreButton {
     margin-bottom: 20px;
   }
+
+  .rules {
+    width: 50%;
+  }
+}
+
+.rules h2 {
+  color: #da6345;
+}
+
+.rules h3 {
+  text-align: left;
+}
+
+.rules p {
+  text-align: left;
+}
+
+.rules img {
+  display: block;
+  margin: auto;
+}
+
+.rules a {
+  text-decoration: none;
+  color: #da6345;
+}
+
+.rules ul {
+  text-align: left;
+}
+
+.rules blockquote p {
+  text-align: center;
+  color: #999;
+  font-style: italic;
+  font-size: 0.9em;
+}
+
+.rules img {
+  max-width: 90%;
 }
