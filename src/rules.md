@@ -14,8 +14,8 @@ Par contre il y a 3 bouteilles de Bionade réparties en triangle isocèle plus u
 Chaque élastique sur une bouteille de Bionade vaut 1 point. Un élastique sur la petite bouteille vaut -1.
 Un bonus de +3 est accordé s’il y a un élastique sur les trois bouteilles. Le bonus est cumulable à l’infini tant qu’il y a des élastiques.
 
-Le lancer s’effectue à 240 cm de la zone des bouteilles (à la marque de moquette de la ligne de Vallée).
-Les bouteilles sont posées à 126 cm de hauteur.
+Le lancer s’effectue à 261 cm de la zone des bouteilles (à la marque de moquette de la ligne de Vallée).
+Les bouteilles sont posées à 108 cm de hauteur.
 L’écartement des bouteilles doit être réalisé par un juge-arbitre impartial et habilité au placement officiel des bouteilles.
 
 Après avoir effectué ses lancers, le joueur (ou bionathlète) doit impérativement ramasser ses élastiques et les remettre en place pour le suivant.
@@ -39,6 +39,7 @@ Une radiation à vie sur 3 générations est envisageable.
 - Si un joueur mord la ligne de Vallée et est soit repéré par le juge arbitre soit dénoncé par un autre bionathlète, l’intégralité des points marqués jusqu’à ce stade sont annulés. Jurisprudence du 19/12/2019, affaire C. S.
 - Si un joueur tente d’éviter une baisse statistique en visant la disqualification au lieu de compléter son match, son score est immédiatement enregistré comme la valeur négative maximale historique. Jurisprudence du 11/2019, affaire V. G.
 - Pour être conducteur, un élastique doit se trouver autour d’une bouteille de Bionade. Jurisprudence du 09/01/2020, affaire A. T.
+- Si un joueur lance un nombre d'élastiques inférieur à 33 sans s'en rendre compte, il ne peut pas justifier de rejouer ensuite. Jurisprudence du 28/07/2022, affaire S. L.
 
 ![](https://bionathlon.com/images/bionathlon3.png)
 > A est en cochère juste, B ne compte pas, C est validé = 1 point au total
