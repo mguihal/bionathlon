@@ -1,6 +1,6 @@
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
-import { Dataway, fold } from 'dataway';
+import { RemoteData, fold } from '@devexperts/remote-data-ts';
 import React, { useCallback, useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { fetchAllGames } from '../actionCreators/game';
@@ -11,7 +11,7 @@ import { AppState } from '../store';
 import SessionTable from './SessionTable';
 
 interface ConnectedProps {
-  games: Dataway<string, GamesResponse>;
+  games: RemoteData<string, GamesResponse>;
 }
 
 interface DispatchedProps {

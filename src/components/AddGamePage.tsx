@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { Link, Navigate } from 'react-router-dom';
-import { Dataway, isSuccess, isFailure, fold } from 'dataway';
+import { RemoteData, isSuccess, isFailure, fold } from '@devexperts/remote-data-ts';
 
 import TextField from '@material-ui/core/TextField';
 import Select from '@material-ui/core/Select';
@@ -33,10 +33,10 @@ import MalusBottleScore from './MalusBottleScore';
 import styles from '../App.module.css';
 
 interface ConnectedProps {
-  players: Dataway<string, PlayersResponse>;
+  players: RemoteData<string, PlayersResponse>;
   currentUserId: number;
   currentUserName: string;
-  addResponse: Dataway<string, any>;
+  addResponse: RemoteData<string, any>;
 }
 
 interface DispatchedProps {

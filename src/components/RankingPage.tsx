@@ -7,7 +7,7 @@ import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
 import Alert from '@material-ui/lab/Alert';
-import { Dataway, fold } from 'dataway';
+import { RemoteData, fold } from '@devexperts/remote-data-ts';
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { fetchStats } from '../actionCreators/stats';
@@ -16,7 +16,7 @@ import { StatsResponse } from '../sagas/api';
 import { AppState } from '../store';
 
 interface ConnectedProps {
-  stats: Dataway<string, StatsResponse>;
+  stats: RemoteData<string, StatsResponse>;
   currentUserId: number;
 }
 

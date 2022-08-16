@@ -1,3 +1,4 @@
+import { fold, RemoteData } from '@devexperts/remote-data-ts';
 import Button from '@material-ui/core/Button';
 import ButtonGroup from '@material-ui/core/ButtonGroup';
 import Fab from '@material-ui/core/Fab';
@@ -7,7 +8,6 @@ import SportsESportsIcon from '@material-ui/icons/SportsEsports';
 import SpeedDial from '@material-ui/lab/SpeedDial';
 import SpeedDialAction from '@material-ui/lab/SpeedDialAction';
 import SpeedDialIcon from '@material-ui/lab/SpeedDialIcon';
-import { Dataway, fold } from 'dataway';
 import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
@@ -20,7 +20,7 @@ import Recap from './Recap/Recap';
 import SessionTable from './SessionTable';
 
 interface ConnectedProps {
-  games: Dataway<string, GamesResponse>;
+  games: RemoteData<string, GamesResponse>;
   token: string;
   currentUserId: number;
 }

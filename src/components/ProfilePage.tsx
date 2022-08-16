@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { connect } from 'react-redux'
-import { Dataway, fold } from 'dataway';
+import { RemoteData, fold } from '@devexperts/remote-data-ts';
 import { useParams } from 'react-router-dom';
 
 import Table from '@material-ui/core/Table';
@@ -21,7 +21,7 @@ import { formatDate, round2, byDateTimeDesc, computeScore } from '../helpers';
 import ProfileChart from './ProfileChart';
 
 interface ConnectedProps {
-  playerGames: Dataway<string, GamesResponse>;
+  playerGames: RemoteData<string, GamesResponse>;
   currentUserId: number;
 }
 

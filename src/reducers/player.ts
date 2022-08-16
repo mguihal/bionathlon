@@ -9,17 +9,17 @@ import {
   PLAYER_ADDED,
   PLAYER_ADDED_ERROR,
 } from '../actionCreators/player';
-import { Dataway, notAsked, success, loading, failure } from 'dataway';
+import { RemoteData, initial, success, pending, failure } from '@devexperts/remote-data-ts';
 import { PlayersResponse } from '../sagas/api';
 
 interface PlayerState {
-  list: Dataway<string, PlayersResponse>;
-  addResponse: Dataway<string, any>;
+  list: RemoteData<string, PlayersResponse>;
+  addResponse: RemoteData<string, any>;
 }
 
 const playerInitialState: PlayerState = {
-  list: notAsked,
-  addResponse: notAsked,
+  list: initial,
+  addResponse: initial,
 };
 
 export default function(
@@ -28,15 +28,15 @@ export default function(
 ) {
   switch (action.type) {
     case PLAYERS_FETCH:
-      return { ...state, list: loading };
+      return { ...state, list: pending };
     case PLAYERS_FETCHED:
       return { ...state, list: success(action.players) };
     case PLAYERS_FETCHED_ERROR:
       return { ...state, list: failure(action.error) };
     case PLAYER_ADD:
-      return { ...state, addResponse: loading };
+      return { ...state, addResponse: pending };
       case PLAYER_ADD_RESET:
-        return { ...state, addResponse: notAsked };
+        return { ...state, addResponse: initial };
     case PLAYER_ADDED:
       return { ...state, addResponse: success({}) };
     case PLAYER_ADDED_ERROR:
