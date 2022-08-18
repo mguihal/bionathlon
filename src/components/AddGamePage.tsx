@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { connect } from 'react-redux';
 import { Link, Navigate } from 'react-router-dom';
 import { RemoteData, isSuccess, isFailure, fold } from '@devexperts/remote-data-ts';
 
@@ -31,34 +30,16 @@ import BottleScore from './BottleScore';
 import MalusBottleScore from './MalusBottleScore';
 
 import styles from '../App.module.css';
+import { useDispatch, useSelector } from 'react-redux';
 
-interface ConnectedProps {
-  players: RemoteData<string, PlayersResponse>;
-  currentUserId: number;
-  currentUserName: string;
-  addResponse: RemoteData<string, any>;
-}
-
-interface DispatchedProps {
-  fetchPlayers: () => {type: string};
-  addGame: (
-    date: string,
-    time: string,
-    playerId: number,
-    score: number | null,
-    scoreLeftBottle: number | null,
-    scoreMiddleBottle: number | null,
-    scoreRightBottle: number | null,
-    scoreMalusBottle: number | null,
-    note: string
-  ) => {type: string};
-}
-
-const AddGamePage: React.FunctionComponent<ConnectedProps & DispatchedProps> = (props) => {
-
-  const { players, currentUserId, currentUserName, fetchPlayers, addResponse } = props;
+const AddGamePage = () => {
 
   const currentTime = new Date();
+
+  const players = useSelector<AppState, RemoteData<string, PlayersResponse>>(state => state.player.list);
+  const currentUserName = useSelector<AppState, string>(state => state.user.user.name);
+  const currentUserId = useSelector<AppState, number>(state => state.user.user.id);
+  const addResponse = useSelector<AppState, RemoteData<string, any>>(state => state.game.addResponse);
 
   const [playerId, setPlayerId] = useState<number>(currentUserId);
   const [score, setScore] = useState<number | ''>('');
@@ -72,13 +53,15 @@ const AddGamePage: React.FunctionComponent<ConnectedProps & DispatchedProps> = (
   const [showDateFields, setShowDateFields] = useState<boolean>(false);
   const [showOldScoreField, setShowOldScoreField] = useState<boolean>(false);
 
+  const dispatch = useDispatch();
+
   useEffect(() => {
-    fetchPlayers();
-  }, [fetchPlayers]);
+    dispatch(fetchPlayers());
+  }, [dispatch]);
 
   const onSubmit = () => {
     if (score !== '' || !showOldScoreField) {
-      props.addGame(
+      dispatch(addGame(
         date.toISOString(),
         time,
         playerId,
@@ -88,7 +71,7 @@ const AddGamePage: React.FunctionComponent<ConnectedProps & DispatchedProps> = (
         showOldScoreField ? null : scoreRightBottle,
         showOldScoreField ? null : scoreMalusBottle,
         note,
-      );
+      ));
     }
   }
 
@@ -236,16 +219,4 @@ const AddGamePage: React.FunctionComponent<ConnectedProps & DispatchedProps> = (
   );
 }
 
-export default connect<ConnectedProps, DispatchedProps, {}, AppState>(
-  state => ({
-    addResponse: state.game.addResponse,
-    currentUserId: state.user.user.id,
-    currentUserName: state.user.user.name,
-    players: state.player.list,
-  }),
-  dispatch => ({
-    fetchPlayers: () => dispatch(fetchPlayers()),
-    addGame: (date, time, playerId, score, scoreLeftBottle, scoreMiddleBottle, scoreRightBottle, scoreMalusBottle, note) =>
-      dispatch(addGame(date, time, playerId, score, scoreLeftBottle, scoreMiddleBottle, scoreRightBottle, scoreMalusBottle, note)),
-  })
-)(AddGamePage);
+export default AddGamePage;

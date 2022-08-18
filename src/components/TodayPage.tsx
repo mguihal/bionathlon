@@ -9,7 +9,7 @@ import SpeedDial from '@material-ui/lab/SpeedDial';
 import SpeedDialAction from '@material-ui/lab/SpeedDialAction';
 import SpeedDialIcon from '@material-ui/lab/SpeedDialIcon';
 import React, { useEffect } from 'react';
-import { connect } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { fetchToday } from '../actionCreators/game';
 import styles from '../App.module.css';
@@ -19,25 +19,19 @@ import { AppState } from '../store';
 import Recap from './Recap/Recap';
 import SessionTable from './SessionTable';
 
-interface ConnectedProps {
-  games: RemoteData<string, GamesResponse>;
-  token: string;
-  currentUserId: number;
-}
+const TodayPage = () => {
 
-interface DispatchedProps {
-  fetchToday: () => {type: string};
-}
+  const dispatch = useDispatch();
 
-const TodayPage: React.FunctionComponent<ConnectedProps & DispatchedProps> = (props) => {
-
-  const { games, fetchToday, token, currentUserId } = props;
+  const games = useSelector<AppState, RemoteData<string, GamesResponse>>(state => state.game.today);
+  const token = useSelector<AppState, string>(state => state.user.token);
+  const currentUserId = useSelector<AppState, number>(state => state.user.user.id);
 
   const [open, setOpen] = React.useState(false);
 
   useEffect(() => {
-    fetchToday();
-  }, [fetchToday]);
+    dispatch(fetchToday())
+  }, [dispatch]);
 
   const ErrorMessage = (props: {message: string}) => (
     <Typography variant="body2" className={styles.emptyTable}>
@@ -119,13 +113,4 @@ const TodayPage: React.FunctionComponent<ConnectedProps & DispatchedProps> = (pr
   );
 }
 
-export default connect<ConnectedProps, DispatchedProps, {}, AppState>(
-  state => ({
-    games: state.game.today,
-    token: state.user.token,
-    currentUserId: state.user.user.id,
-  }),
-  dispatch => ({
-    fetchToday: () => dispatch(fetchToday()),
-  })
-)(TodayPage);
+export default TodayPage;

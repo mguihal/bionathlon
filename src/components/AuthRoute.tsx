@@ -1,5 +1,5 @@
 import React from 'react';
-import { connect } from 'react-redux'
+import { useSelector } from 'react-redux';
 import {
   Navigate,
   useLocation
@@ -7,13 +7,10 @@ import {
 
 import { AppState } from '../store';
 
-interface ConnectedProps {
-  isLogged: boolean;
-}
-
-const AuthRoute = (props: ConnectedProps & { children: JSX.Element; }) => {
-  const { isLogged, children } = props;
+const AuthRoute = (props: { children: JSX.Element; }) => {
+  const { children } = props;
   const location = useLocation();
+  const isLogged = useSelector<AppState, boolean>(state => state.user.token !== '');
 
   if (!isLogged) {
     return <Navigate to={'/login'} state={{ from: location }} />;
@@ -22,6 +19,4 @@ const AuthRoute = (props: ConnectedProps & { children: JSX.Element; }) => {
   return children;
 }
 
-export default connect<ConnectedProps, {}, {}, AppState>(state => ({
-  isLogged: state.user.token !== '',
-}))(AuthRoute);
+export default AuthRoute;

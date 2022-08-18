@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { connect } from 'react-redux';
 
 import BottomNavigation from '@material-ui/core/BottomNavigation';
 import BottomNavigationAction from '@material-ui/core/BottomNavigationAction';
@@ -24,6 +23,7 @@ import RulesPage from './RulesPage';
 import { AppState } from '../store';
 
 import styles from '../App.module.css';
+import { useSelector } from 'react-redux';
 
 const mapping: {[key: string]: string} = {
   '': 'today',
@@ -45,12 +45,9 @@ const navMapping: {[value: string]: string} = {
   rules: 'rules',
 };
 
-interface ConnectedProps {
-  currentUserId: number;
-}
+const Page = () => {
 
-const Page: React.FunctionComponent<ConnectedProps> = (props) => {
-  const { currentUserId } = props;
+  const currentUserId = useSelector<AppState, number>(state => state.user.user.id);
 
   const { pathname } = useLocation();
   const [value, setValue] = React.useState('today');
@@ -110,8 +107,4 @@ const Page: React.FunctionComponent<ConnectedProps> = (props) => {
   );
 }
 
-export default connect<ConnectedProps, {}, {}, AppState>(
-  state => ({
-    currentUserId: state.user.user.id,
-  })
-)(Page);
+export default Page;

@@ -2,27 +2,20 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import { RemoteData, fold } from '@devexperts/remote-data-ts';
 import React, { useCallback, useEffect, useState } from 'react';
-import { connect } from 'react-redux';
 import { fetchAllGames } from '../actionCreators/game';
 import styles from '../App.module.css';
 import { formatDate, groupByDateTime } from '../helpers';
 import { GamesResponse } from '../sagas/api';
 import { AppState } from '../store';
 import SessionTable from './SessionTable';
-
-interface ConnectedProps {
-  games: RemoteData<string, GamesResponse>;
-}
-
-interface DispatchedProps {
-  fetchAllGames: (limit: number, offset: number) => { type: string };
-}
+import { useDispatch, useSelector } from 'react-redux';
 
 const PAGE_COUNT = 10;
 
-const HistoryPage: React.FunctionComponent<ConnectedProps &
-  DispatchedProps> = props => {
-  const { games, fetchAllGames } = props;
+const HistoryPage = () => {
+  const dispatch = useDispatch();
+
+  const games = useSelector<AppState, RemoteData<string, GamesResponse>>(state => state.game.allGames);
 
   const [currentPage, setCurrentPage] = useState(0);
 
@@ -37,8 +30,8 @@ const HistoryPage: React.FunctionComponent<ConnectedProps &
   }, []);
 
   useEffect(() => {
-    fetchAllGames(PAGE_COUNT, currentPage * PAGE_COUNT);
-  }, [fetchAllGames, currentPage]);
+    dispatch(fetchAllGames(PAGE_COUNT, currentPage * PAGE_COUNT));
+  }, [dispatch, currentPage]);
 
   const ErrorMessage = (props: { message: string }) => (
     <Typography variant="body2" className={styles.emptyTable}>
@@ -92,12 +85,4 @@ const HistoryPage: React.FunctionComponent<ConnectedProps &
   );
 };
 
-export default connect<ConnectedProps, DispatchedProps, {}, AppState>(
-  state => ({
-    games: state.game.allGames,
-  }),
-  dispatch => ({
-    fetchAllGames: (limit: number, offset: number) =>
-      dispatch(fetchAllGames(limit, offset)),
-  }),
-)(HistoryPage);
+export default HistoryPage;

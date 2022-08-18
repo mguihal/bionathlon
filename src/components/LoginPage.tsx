@@ -1,8 +1,7 @@
 import React from 'react';
-import { connect } from 'react-redux';
 import { Navigate } from 'react-router-dom';
 
-import { GoogleLogin } from 'react-google-login';
+import { GoogleLogin, GoogleLoginResponse } from 'react-google-login';
 
 import Button from '@material-ui/core/Button';
 import Snackbar from '@material-ui/core/Snackbar';
@@ -13,26 +12,21 @@ import styles from '../App.module.css';
 
 import logo from './logo.png';
 import { AppState } from '../store';
+import { useDispatch, useSelector } from 'react-redux';
 
 type UserType = AppState['user']['user'];
 
-interface ConnectedProps {
-  isLogged: boolean;
-  loginError: string;
-  token: string;
-  user: UserType;
-}
-
-interface DispatchedProps {
-  onGoogleLoginSuccess: (payload: any) => {type: string};
-  onGoogleLoginFailure: (payload: any) => {type: string};
-  onExternalLoginSuccess: (token: string, user: UserType) => {type: string};
-}
-
-const LoginPage: React.FunctionComponent<ConnectedProps & DispatchedProps> = (props) => {
+const LoginPage = () => {
   const queryParams = new URLSearchParams(window.location.search);
   const queryToken = queryParams.get('token');
   const queryRedirect = queryParams.get('redirect');
+
+  const dispatch = useDispatch();
+
+  const isLogged = useSelector<AppState, boolean>(state => state.user.token !== '');
+  const loginError = useSelector<AppState, string>(state => state.user.loginError);
+  const token = useSelector<AppState, string>(state => state.user.token);
+  const user = useSelector<AppState, UserType>(state => state.user.user);
 
   if (queryToken) {
     const tokenObject = JSON.parse(atob(queryToken));
@@ -40,7 +34,7 @@ const LoginPage: React.FunctionComponent<ConnectedProps & DispatchedProps> = (pr
     localStorage.setItem('token', tokenObject.token);
     localStorage.setItem('user', JSON.stringify(tokenObject.user));
 
-    props.onExternalLoginSuccess(tokenObject.token, tokenObject.user);
+    dispatch(loginSucceeded(tokenObject.token, tokenObject.user));
   }
 
   if (!queryToken && window.location.origin !== process.env.REACT_APP_LOGIN_ORIGIN) {
@@ -48,9 +42,9 @@ const LoginPage: React.FunctionComponent<ConnectedProps & DispatchedProps> = (pr
     return null;
   }
 
-  if (props.isLogged) {
+  if (isLogged) {
     if (queryRedirect) {
-      const tokenPayload = btoa(JSON.stringify({ token: props.token, user: props.user }));
+      const tokenPayload = btoa(JSON.stringify({ token, user }));
       window.location.href = `${queryRedirect}?token=${tokenPayload}`;
       return null;
     }
@@ -62,16 +56,16 @@ const LoginPage: React.FunctionComponent<ConnectedProps & DispatchedProps> = (pr
     <div className={styles.page}>
       <Snackbar
         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-        open={props.loginError !== ''}
-        message={props.loginError}
+        open={loginError !== ''}
+        message={loginError}
       />
       <div className={styles.loginBox}>
         <img src={logo} className={styles.loginLogo} alt="logo" />
         <GoogleLogin
           clientId="459868567762-0roa3b365fl7d9hv63pd1hauoi0ohkmd.apps.googleusercontent.com"
           buttonText="Se connecter"
-          onSuccess={props.onGoogleLoginSuccess}
-          onFailure={props.onGoogleLoginFailure}
+          onSuccess={(payload) => dispatch(googleLoginSucceeded((payload as GoogleLoginResponse).tokenId))}
+          onFailure={(payload) => dispatch(googleLoginFailed(payload.error, payload.details))}
           cookiePolicy={'single_host_origin'}
           className={styles.loginButton}
           render={renderProps => (
@@ -91,16 +85,4 @@ const LoginPage: React.FunctionComponent<ConnectedProps & DispatchedProps> = (pr
   );
 }
 
-export default connect<ConnectedProps, DispatchedProps, {}, AppState>(
-  state => ({
-    isLogged: state.user.token !== '',
-    loginError: state.user.loginError,
-    token: state.user.token,
-    user: state.user.user,
-  }),
-  dispatch => ({
-    onGoogleLoginSuccess: (payload) => dispatch(googleLoginSucceeded(payload.tokenId)),
-    onGoogleLoginFailure: (payload) => dispatch(googleLoginFailed(payload.error, payload.details)),
-    onExternalLoginSuccess: (token, user) => dispatch(loginSucceeded(token, user)),
-  })
-)(LoginPage);
+export default LoginPage;
