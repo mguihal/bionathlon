@@ -16,20 +16,20 @@ import {
   GAME_ADDED_ERROR,
 } from '../actionCreators/game';
 import { GamesResponse } from '../sagas/api';
-import { Dataway, notAsked, success, loading, failure } from 'dataway';
+import { failure, initial, pending, RemoteData, success } from '@devexperts/remote-data-ts';
 
 interface GameState {
-  today: Dataway<string, GamesResponse>;
-  playerGames: Dataway<string, GamesResponse>;
-  allGames: Dataway<string, GamesResponse>;
-  addResponse: Dataway<string, any>;
+  today: RemoteData<string, GamesResponse>;
+  playerGames: RemoteData<string, GamesResponse>;
+  allGames: RemoteData<string, GamesResponse>;
+  addResponse: RemoteData<string, any>;
 }
 
 const gameInitialState: GameState = {
-  today: notAsked,
-  playerGames: notAsked,
-  allGames: notAsked,
-  addResponse: notAsked,
+  today: initial,
+  playerGames: initial,
+  allGames: initial,
+  addResponse: initial,
 };
 
 export default function(
@@ -38,27 +38,27 @@ export default function(
 ) {
   switch (action.type) {
     case TODAY_FETCH:
-      return { ...state, today: loading };
+      return { ...state, today: pending };
     case TODAY_FETCHED:
       return { ...state, today: success(action.games) };
     case TODAY_FETCHED_ERROR:
       return { ...state, today: failure(action.error) };
     case PLAYERGAMES_FETCH:
-      return { ...state, playerGames: loading };
+      return { ...state, playerGames: pending };
     case PLAYERGAMES_FETCHED:
       return { ...state, playerGames: success(action.games) };
     case PLAYERGAMES_FETCHED_ERROR:
       return { ...state, playerGames: failure(action.error) };
     case ALLGAMES_FETCH:
-      return { ...state, allGames: loading };
+      return { ...state, allGames: pending };
     case ALLGAMES_FETCHED:
       return { ...state, allGames: success(action.games) };
     case ALLGAMES_FETCHED_ERROR:
       return { ...state, allGames: failure(action.error) };
     case GAME_ADD:
-      return { ...state, addResponse: loading };
+      return { ...state, addResponse: pending };
     case GAME_ADD_RESET:
-      return { ...state, addResponse: notAsked };
+      return { ...state, addResponse: initial };
     case GAME_ADDED:
       return { ...state, addResponse: success({}) };
     case GAME_ADDED_ERROR:

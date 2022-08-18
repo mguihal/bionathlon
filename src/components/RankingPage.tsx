@@ -7,22 +7,14 @@ import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
 import Alert from '@material-ui/lab/Alert';
-import { Dataway, fold } from 'dataway';
+import { RemoteData, fold } from '@devexperts/remote-data-ts';
 import React, { useEffect, useState } from 'react';
-import { connect } from 'react-redux';
 import { fetchStats } from '../actionCreators/stats';
 import styles from '../App.module.css';
 import { StatsResponse } from '../sagas/api';
 import { AppState } from '../store';
-
-interface ConnectedProps {
-  stats: Dataway<string, StatsResponse>;
-  currentUserId: number;
-}
-
-interface DispatchedProps {
-  fetchStats: (month?: string) => { type: string };
-}
+import { useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 type RankingType =
   | 'nbMatchs'
@@ -77,9 +69,11 @@ function getFilterOptions() {
   return list;
 }
 
-const RankingPage: React.FunctionComponent<ConnectedProps &
-  DispatchedProps> = props => {
-  const { stats, fetchStats } = props;
+const RankingPage = () => {
+
+  const dispatch = useDispatch();
+
+  const stats = useSelector<AppState, RemoteData<string, StatsResponse>>(state => state.stats.data);
 
   const now = new Date();
 
@@ -89,8 +83,8 @@ const RankingPage: React.FunctionComponent<ConnectedProps &
   );
 
   useEffect(() => {
-    fetchStats(rankingFilter === 'all' ? undefined : rankingFilter);
-  }, [rankingFilter, fetchStats]);
+    dispatch(fetchStats(rankingFilter === 'all' ? undefined : rankingFilter));
+  }, [rankingFilter, dispatch]);
 
   const ErrorMessage = (props: { message: string }) => (
     <Typography variant="body2" className={styles.emptyTable}>
@@ -176,12 +170,4 @@ const RankingPage: React.FunctionComponent<ConnectedProps &
   );
 };
 
-export default connect<ConnectedProps, DispatchedProps, {}, AppState>(
-  state => ({
-    currentUserId: state.user.user.id,
-    stats: state.stats.data,
-  }),
-  dispatch => ({
-    fetchStats: (month?: string) => dispatch(fetchStats(month)),
-  }),
-)(RankingPage);
+export default RankingPage;

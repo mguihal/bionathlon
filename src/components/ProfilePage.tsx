@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
-import { connect } from 'react-redux'
-import { Dataway, fold } from 'dataway';
+import { RemoteData, fold } from '@devexperts/remote-data-ts';
 import { useParams } from 'react-router-dom';
 
 import Table from '@material-ui/core/Table';
@@ -19,24 +18,20 @@ import { GamesResponse } from '../sagas/api';
 import { formatDate, round2, byDateTimeDesc, computeScore } from '../helpers';
 
 import ProfileChart from './ProfileChart';
+import { useDispatch, useSelector } from 'react-redux';
 
-interface ConnectedProps {
-  playerGames: Dataway<string, GamesResponse>;
-  currentUserId: number;
-}
+const ProfilePage = () => {
 
-interface DispatchedProps {
-  fetchPlayerGames: (playerId: number) => {type: string};
-}
-
-const ProfilePage: React.FunctionComponent<ConnectedProps & DispatchedProps> = (props) => {
-
-  const { playerGames, fetchPlayerGames, currentUserId } = props;
   const { playerId } = useParams();
 
+  const dispatch = useDispatch();
+
+  const playerGames = useSelector<AppState, RemoteData<string, GamesResponse>>(state => state.game.playerGames);
+  const currentUserId = useSelector<AppState, number>(state => state.user.user.id);
+
   useEffect(() => {
-    fetchPlayerGames(playerId ? Number(playerId) : currentUserId);
-  }, [fetchPlayerGames, playerId, currentUserId]);
+    dispatch(fetchPlayerGames(playerId ? Number(playerId) : currentUserId));
+  }, [dispatch, playerId, currentUserId]);
 
   const ErrorMessage = (props: {message: string}) => (
     <Typography variant="body2" className={styles.emptyTable}>
@@ -129,12 +124,4 @@ const ProfilePage: React.FunctionComponent<ConnectedProps & DispatchedProps> = (
   );
 }
 
-export default connect<ConnectedProps, DispatchedProps, {}, AppState>(
-  state => ({
-    playerGames: state.game.playerGames,
-    currentUserId: state.user.user.id,
-  }),
-  dispatch => ({
-    fetchPlayerGames: (playerId: number) => dispatch(fetchPlayerGames(playerId)),
-  })
-)(ProfilePage);
+export default ProfilePage;

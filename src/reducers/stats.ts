@@ -1,5 +1,5 @@
 /* eslint-disable import/no-anonymous-default-export */
-import { Dataway, failure, loading, notAsked, success } from 'dataway';
+import { RemoteData, failure, pending, initial, success } from '@devexperts/remote-data-ts';
 import {
   StatsAction,
   STATS_FETCH,
@@ -9,11 +9,11 @@ import {
 import { StatsResponse } from '../sagas/api';
 
 interface StatsState {
-  data: Dataway<string, StatsResponse>;
+  data: RemoteData<string, StatsResponse>;
 }
 
 const statsInitialState: StatsState = {
-  data: notAsked,
+  data: initial,
 };
 
 export default function(
@@ -22,7 +22,7 @@ export default function(
 ) {
   switch (action.type) {
     case STATS_FETCH:
-      return { ...state, data: loading };
+      return { ...state, data: pending };
     case STATS_FETCHED:
       return { ...state, data: success(action.stats) };
     case STATS_FETCHED_ERROR:

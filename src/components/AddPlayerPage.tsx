@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import { connect } from 'react-redux'
 import { Link } from 'react-router-dom';
-import { Dataway, isSuccess, isFailure, fold } from 'dataway';
+import { RemoteData, isSuccess, isFailure, fold } from '@devexperts/remote-data-ts';
 
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
@@ -13,20 +12,17 @@ import { AppState } from '../store';
 import { addPlayer } from '../actionCreators/player';
 
 import styles from '../App.module.css';
+import { useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 
-interface ConnectedProps {
-  addResponse: Dataway<string, any>;
-}
-
-interface DispatchedProps {
-  addPlayer: (email: string, name: string) => {type: string};
-}
-
-const AddPlayerPage: React.FunctionComponent<ConnectedProps & DispatchedProps> = (props) => {
+const AddPlayerPage = () => {
 
   const [playerEmail, setPlayerEmail] = useState('');
   const [playerName, setPlayerName] = useState('');
   const [emailError, setEmailError] = useState('');
+
+  const dispatch = useDispatch();
+  const addResponse = useSelector<AppState, RemoteData<string, any>>(state => state.player.addResponse);
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -37,7 +33,7 @@ const AddPlayerPage: React.FunctionComponent<ConnectedProps & DispatchedProps> =
       return;
     }
 
-    props.addPlayer(playerEmail, playerName);
+    dispatch(addPlayer(playerEmail, playerName));
   }
 
   return (
@@ -65,10 +61,10 @@ const AddPlayerPage: React.FunctionComponent<ConnectedProps & DispatchedProps> =
         <Button type="submit" variant="contained" component={Link} to="/">Retour</Button>
         <Snackbar
           anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-          open={isSuccess(props.addResponse) || isFailure(props.addResponse)}
+          open={isSuccess(addResponse) || isFailure(addResponse)}
         >
           <SnackbarContent
-            style={{background: isSuccess(props.addResponse) ? '#479F4C' : '#D13135'}}
+            style={{background: isSuccess(addResponse) ? '#479F4C' : '#D13135'}}
             message={(
               <span>{
                 fold<string, any, string>(
@@ -76,7 +72,7 @@ const AddPlayerPage: React.FunctionComponent<ConnectedProps & DispatchedProps> =
                   () => '',
                   (error) => error,
                   () => 'Le joueur a été ajouté'
-                )(props.addResponse)
+                )(addResponse)
               }</span>
             )}
           />
@@ -86,11 +82,4 @@ const AddPlayerPage: React.FunctionComponent<ConnectedProps & DispatchedProps> =
   );
 }
 
-export default connect<ConnectedProps, DispatchedProps, {}, AppState>(
-  state => ({
-    addResponse: state.player.addResponse,
-  }),
-  dispatch => ({
-    addPlayer: (email, name) => dispatch(addPlayer(email, name)),
-  })
-)(AddPlayerPage);
+export default AddPlayerPage;
