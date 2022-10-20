@@ -3,7 +3,7 @@ import { VercelRequest, VercelResponse } from '@vercel/node';
 import jwt, { JsonWebTokenError } from 'jsonwebtoken';
 import knex, { Knex } from 'knex';
 
-const jwtVersion = '1';
+const jwtVersion = '2';
 const jwtSecret = process.env.SECRET || 'secret';
 export const JWT_SECRET = jwtSecret + jwtVersion;
 

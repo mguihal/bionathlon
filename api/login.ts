@@ -5,13 +5,13 @@ import jwt from 'jsonwebtoken';
 
 import { RouteConfig, routeWrapper, JWT_SECRET, withDb } from './_common';
 
-interface LoginPayload {
+type LoginPayload = {
   data: {
     googleToken: string;
   };
-}
+};
 
-interface GoogleResponse {
+type GoogleResponse = {
   id: string;
   email: string;
   verified_email: boolean;
@@ -20,7 +20,15 @@ interface GoogleResponse {
   family_name: string;
   picture: string;
   locale: string;
-}
+};
+
+type PlayerQuery = {
+  id: number;
+  email: string;
+  name: string;
+  avatar: string | null;
+  isAdmin: boolean;
+};
 
 async function loginHandler(res: VercelResponse, payload: LoginPayload) {
   try {
@@ -29,7 +37,7 @@ async function loginHandler(res: VercelResponse, payload: LoginPayload) {
       `https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=${googleToken}`,
     );
 
-    const player = await withDb(async db => {
+    const player: PlayerQuery = await withDb(async db => {
       return db('player')
         .first()
         .where({ email: response.data.email });
@@ -37,6 +45,17 @@ async function loginHandler(res: VercelResponse, payload: LoginPayload) {
 
     if (!player) {
       throw new Error('User not authorized');
+    }
+
+    if (!player.avatar && response.data.picture) {
+      await withDb(async db => {
+        await db('player')
+          .update({
+            avatar: response.data.picture,
+          })
+          .where({ email: response.data.email });
+        player.avatar = response.data.picture;
+      });
     }
 
     const jwtPayload = player;
@@ -49,6 +68,8 @@ async function loginHandler(res: VercelResponse, payload: LoginPayload) {
         id: player.id,
         email: player.email,
         name: player.name,
+        avatar: player.avatar,
+        isAdmin: player.isAdmin
       },
     });
   } catch (e) {
