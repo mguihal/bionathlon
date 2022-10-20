@@ -15,6 +15,7 @@ import { StatsResponse } from '../sagas/api';
 import { AppState } from '../store';
 import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
+import { Avatar } from '@material-ui/core';
 
 type RankingType =
   | 'nbMatchs'
@@ -142,12 +143,40 @@ const RankingPage = () => {
                     2020.
                   </Alert>
                 )}
+
+                <div className={styles.podium}>
+                  <div className={styles.second}>
+                    <Avatar alt={stats[rankingType][1].name} src={stats[rankingType][1].avatar} className={styles.avatar} />
+                    <Link href={`/profile/${stats[rankingType][1].id}`}>
+                      {stats[rankingType][1].name}
+                    </Link>
+                    <br />
+                    {stats[rankingType][1].score}{stats[rankingType][1].suffix}
+                  </div>
+                  <div className={styles.first}>
+                    <Avatar alt={stats[rankingType][0].name} src={stats[rankingType][0].avatar} className={styles.avatar} />
+                    <Link href={`/profile/${stats[rankingType][0].id}`}>
+                      {stats[rankingType][0].name}
+                    </Link>
+                    <br />
+                    {stats[rankingType][0].score}{stats[rankingType][0].suffix}
+                  </div>
+                  <div className={styles.third}>
+                    <Avatar alt={stats[rankingType][2].name} src={stats[rankingType][2].avatar} className={styles.avatar} />
+                    <Link href={`/profile/${stats[rankingType][2].id}`}>
+                      {stats[rankingType][2].name}
+                    </Link>
+                    <br />
+                    {stats[rankingType][2].score}{stats[rankingType][2].suffix}
+                  </div>
+                </div>
+
                 <Table aria-label="simple table">
                   <TableBody>
-                    {stats[rankingType].map((player, i) => (
+                    {stats[rankingType].slice(3).map((player, i) => (
                       <TableRow key={player.id}>
                         <TableCell component="th" scope="row" align="right">
-                          #{i + 1}
+                          #{i + 4}
                         </TableCell>
                         <TableCell component="th" scope="row">
                           <Link href={`/profile/${player.id}`}>

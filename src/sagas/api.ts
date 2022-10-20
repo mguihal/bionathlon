@@ -69,6 +69,7 @@ export interface GameResponse {
   time: string;
   playerId: number;
   playerName: string;
+  playerAvatar?: string;
   score?: number;
   scoreLeftBottle?: number;
   scoreMiddleBottle?: number;
@@ -182,6 +183,7 @@ export function* setSuddenDeathWinner(gameId: number) {
 interface Rank {
   id: number;
   name: string;
+  avatar?: string;
   score: number;
   suffix?: string;
 }

@@ -19,6 +19,7 @@ import { formatDate, round2, byDateTimeDesc, computeScore } from '../helpers';
 
 import ProfileChart from './ProfileChart';
 import { useDispatch, useSelector } from 'react-redux';
+import { Avatar } from '@material-ui/core';
 
 const ProfilePage = () => {
 
@@ -52,6 +53,16 @@ const ProfilePage = () => {
             )(playerGames)
           }
         </Typography>
+        {
+          fold<string, GamesResponse, JSX.Element>(
+            () => <Avatar alt={''} src={''} className={styles.avatar} />,
+            () => <Avatar alt={''} src={''} className={styles.avatar} />,
+            () => <Avatar alt={''} src={''} className={styles.avatar} />,
+            (games) => games.length === 0 
+              ? <Avatar alt={''} src={''} className={styles.avatar} /> 
+              : <Avatar alt={games[0].playerName} src={games[0].playerAvatar} imgProps={{ referrerPolicy: 'no-referrer'}} className={styles.avatar} />
+          )(playerGames)
+        }
         <Typography variant="subtitle2">
           Matchs joués : {fold<string, GamesResponse, string>(
             () => 'N/A',

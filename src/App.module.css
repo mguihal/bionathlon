@@ -46,6 +46,7 @@
   width: 90%;
   margin-top: 30px;
   margin-bottom: 80px;
+  padding-bottom: 80px;
 }
 
 .tableContainer th {
@@ -201,6 +202,76 @@ button.loadMoreButton {
   width: 90%;
 }
 
+.todayContainer {
+  padding-bottom: 30px;
+}
+
+.profileTitle .avatar {
+  width: 100px;
+  height: 100px;
+  margin: auto;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.podium {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-left: 50px;
+  margin-right: 50px;
+  margin-bottom: 20px;
+  margin-top: 20px;
+
+  font-weight: bold;
+  font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+  font-size: 0.875rem;
+}
+
+.podium .avatar {
+  margin: auto;
+  margin-bottom: 4px;
+}
+
+.podium > div {
+  width: 100%;
+}
+
+.podium .first:after, .podium .second:after, .podium .third:after {
+  display: block;
+  width: 100%;
+  border: 1px solid black;
+  background: url('./components/Recap/rondelle2.png');
+  background-size: 50px;
+  background-repeat: no-repeat;
+  background-position: center;
+  margin-top: 4px;
+}
+
+.podium .first:after {
+  content: '1';
+  height: 120px;
+  line-height: 125px;
+  font-size: 24px;
+}
+
+.podium .second:after {
+  content: '2';
+  height: 90px;
+  border-right: none;
+  line-height: 95px;
+  font-size: 24px;
+}
+
+.podium .third:after {
+  content: '3';
+  height: 60px;
+  border-left: none;
+  margin-left: 1px;
+  line-height: 65px;
+  font-size: 24px;
+}
+
 @media screen and (min-width: 768px) {
   .page {
     margin-top: 80px;
@@ -221,6 +292,7 @@ button.loadMoreButton {
 
   .tableContainer {
     width: 35%;
+    padding-bottom: 30px;
   }
 
   .topActionButtons {
@@ -247,6 +319,7 @@ button.loadMoreButton {
 
   .todayContainer {
     display: flex;
+    padding-bottom: 0px;
   }
 
   .bottleScore .bottlePicture img {

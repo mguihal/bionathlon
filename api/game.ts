@@ -56,6 +56,7 @@ const routeConfig: RouteConfig = {
             'scoreMalusBottle',
             'note',
             'name as playerName',
+            'avatar as playerAvatar',
             'suddenDeath',
           );
 
