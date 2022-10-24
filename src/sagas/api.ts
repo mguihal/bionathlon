@@ -197,11 +197,11 @@ export interface StatsResponse {
   topScore: Rank[];
 }
 
-export function* getStats(filters?: Partial<{ month: string }>) {
+export function* getStats(filters?: Partial<{ dateFilter: string }>) {
   let filtersQuery = [];
 
-  if (filters && filters.month) {
-    filtersQuery.push(`month=${filters.month}`);
+  if (filters && filters.dateFilter) {
+    filtersQuery.push(`dateFilter=${filters.dateFilter}`);
   }
 
   const response: StatsResponse = yield call(

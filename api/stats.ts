@@ -12,7 +12,7 @@ import {
 import { RouteConfig, routeWrapper, withDb } from './_common';
 
 interface Filters {
-  month?: string;
+  dateFilter?: string;
 }
 
 interface Rank {
@@ -27,7 +27,7 @@ const routeConfig: RouteConfig = {
     validate: {
       payload: joi.any(),
       query: joi.object().keys({
-        month: joi.string().description('Filtre par mois (ex: 2021-09)'),
+        dateFilter: joi.string().description('Filtre par mois (ex: 2021-09) ou par an (ex: 2021)'),
       }),
     },
     handler: async (res, _, query: Filters) => {
@@ -49,9 +49,9 @@ const routeConfig: RouteConfig = {
             'suddenDeath',
           );
 
-        if (query.month) {
-          gamesQuery.whereRaw(`CAST(date AS TEXT) >= ?`, [`${query.month}-01`]);
-          gamesQuery.whereRaw(`CAST(date AS TEXT) <= ?`, [`${query.month}-31`]);
+        if (query.dateFilter) {
+          gamesQuery.whereRaw(`CAST(date AS TEXT) >= ?`, [`${query.dateFilter}-01`]);
+          gamesQuery.whereRaw(`CAST(date AS TEXT) <= ?`, [`${query.dateFilter}-31`]);
         }
 
         const games = await gamesQuery;

@@ -15,6 +15,9 @@ import { StatsResponse } from '../sagas/api';
 import { AppState } from '../store';
 import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
+import { Collapse, IconButton, ListItemSecondaryAction, ListItemText, Menu } from '@material-ui/core';
+import ExpandLess from '@material-ui/icons/ExpandLess';
+import ExpandMore from '@material-ui/icons/ExpandMore';
 
 type RankingType =
   | 'nbMatchs'
@@ -33,7 +36,7 @@ function formatDate(date: Date) {
 }
 
 function getFilterOptions() {
-  const list: { value: string; label: string }[] = [];
+  const list: { value: string; label: string; year: boolean; }[] = [];
   const months = [
     'Janvier',
     'Février',
@@ -57,14 +60,17 @@ function getFilterOptions() {
   while (`${year}-${month < 10 ? `0${month}` : month}` <= formatDate(now)) {
     const value = `${year}-${month < 10 ? `0${month}` : month}`;
     const label = `${months[month - 1]} ${year}`;
-    list.unshift({ value, label });
+    list.unshift({ value, label, year: false });
 
     month += 1;
     if (month === 13) {
+      list.unshift({ value: `${year}`, label: `${year}`, year: true });
       month = 1;
       year += 1;
     }
   }
+
+  list.unshift({ value: `${year}`, label: `${year}`, year: true });
 
   return list;
 }
@@ -82,6 +88,27 @@ const RankingPage = () => {
     `${now.getFullYear()}-${(now.getMonth() + 1 < 10 ? `0${now.getMonth() + 1}` : now.getMonth() + 1)}`,
   );
 
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+
+  const handleMenuClick = (target: EventTarget) => {
+    setAnchorEl(target as HTMLElement);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+  const [openedYear, setOpenedYear] = useState(`${now.getFullYear()}`);
+
+  const handleOpenedYear = (year: string) => {
+    setOpenedYear(year === openedYear ? '' : year);
+  };
+
+  const handleFilterChange = (value: string) => {
+    setRankingFilter(value);
+    handleMenuClose();
+  };
+
   useEffect(() => {
     dispatch(fetchStats(rankingFilter === 'all' ? undefined : rankingFilter));
   }, [rankingFilter, dispatch]);
@@ -91,6 +118,39 @@ const RankingPage = () => {
       {props.message}
     </Typography>
   );
+
+  const renderMenu = () => {
+    const result: JSX.Element[] = [
+      <MenuItem key={'all'} value={'all'} selected={rankingFilter === 'all'} onClick={() => handleFilterChange('all')}>
+        Global
+      </MenuItem>
+    ];
+
+    getFilterOptions().filter(o => o.year).forEach(optionYear => {
+      result.push(
+        <MenuItem key={optionYear.value} value={optionYear.value} selected={rankingFilter === optionYear.value} onClick={() => handleFilterChange(optionYear.value)}>
+          <ListItemText>{optionYear.label}</ListItemText>
+          <ListItemSecondaryAction onClick={() => handleOpenedYear(optionYear.value)}>
+            <IconButton edge="end" aria-label="comments">
+              {optionYear.value === openedYear ? <ExpandLess /> : <ExpandMore />}
+            </IconButton>
+          </ListItemSecondaryAction>
+        </MenuItem>
+      );
+
+      result.push(
+        <Collapse key={`collape-${optionYear.value}`} in={optionYear.value === openedYear} timeout="auto" unmountOnExit>
+            {getFilterOptions().filter(o => !o.year && o.value.startsWith(optionYear.value)).map(optionMonth => (
+              <MenuItem key={optionMonth.value} value={optionMonth.value} selected={rankingFilter === optionMonth.value} onClick={() => handleFilterChange(optionMonth.value)}>
+                {optionMonth.label}
+              </MenuItem>
+            ))}
+        </Collapse>
+      );
+    });
+
+    return result;
+  }
 
   return (
     <>
@@ -114,7 +174,8 @@ const RankingPage = () => {
           <Select
             id="rankingFilter"
             value={rankingFilter}
-            onChange={e => setRankingFilter(e.target.value as string)}
+            open={false}
+            onOpen={(e) => handleMenuClick(e.currentTarget)}
           >
             <MenuItem value={'all'}>Global</MenuItem>
             {getFilterOptions().map(option => (
@@ -123,6 +184,15 @@ const RankingPage = () => {
               </MenuItem>
             ))}
           </Select>
+          <Menu
+            id="rankingFilterMenu"
+            anchorEl={anchorEl}
+            keepMounted
+            open={Boolean(anchorEl)}
+            onClose={handleMenuClose}
+          >
+            {renderMenu()}
+          </Menu>
         </div>
       </div>
       <div className={`${styles.tableContainer} ${styles.profileTable}`}>

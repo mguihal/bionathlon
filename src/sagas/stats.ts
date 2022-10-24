@@ -11,7 +11,7 @@ function* fetchStatsSaga() {
   yield takeLatest<StatsFetch>(STATS_FETCH, function*(action) {
     try {
       const response: StatsResponse = yield call(getStats, {
-        month: action.month,
+        dateFilter: action.dateFilter,
       });
 
       yield put(statsFetched(response));

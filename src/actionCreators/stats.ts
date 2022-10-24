@@ -6,7 +6,7 @@ export const STATS_FETCHED_ERROR = 'STATS_FETCHED_ERROR';
 
 export interface StatsFetch {
   type: typeof STATS_FETCH;
-  month?: string;
+  dateFilter?: string;
 }
 
 export interface StatsFetched {
@@ -21,10 +21,10 @@ export interface StatsFetchedError {
 
 export type StatsAction = StatsFetch | StatsFetched | StatsFetchedError;
 
-export function fetchStats(month?: string): StatsFetch {
+export function fetchStats(dateFilter?: string): StatsFetch {
   return {
     type: STATS_FETCH,
-    month,
+    dateFilter,
   };
 }
 
