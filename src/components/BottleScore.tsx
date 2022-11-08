@@ -7,7 +7,7 @@ import bottle from './bottle.svg';
 import styles from '../App.module.css';
 
 interface Props {
-  staticScore?: number;
+  staticScore?: number | null;
   onChange?: (score: number) => void;
 }
 

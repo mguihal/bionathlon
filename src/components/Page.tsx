@@ -24,6 +24,7 @@ import { AppState } from '../store';
 
 import styles from '../App.module.css';
 import { useSelector } from 'react-redux';
+import ChartsPage from './ChartsPage';
 
 const mapping: {[key: string]: string} = {
   '': 'today',
@@ -33,6 +34,7 @@ const mapping: {[key: string]: string} = {
   'history': 'history',
   'ranking': 'ranking',
   'rules': 'rules',
+  'charts': 'charts',
 };
 
 const navMapping: {[value: string]: string} = {
@@ -43,6 +45,7 @@ const navMapping: {[value: string]: string} = {
   history: 'history',
   ranking: 'ranking',
   rules: 'rules',
+  charts: 'ranking',
 };
 
 const Page = () => {
@@ -87,6 +90,7 @@ const Page = () => {
       {value === 'rules' && <RulesPage />}
       {value === 'history' && <HistoryPage />}
       {value === 'ranking' && <RankingPage />}
+      {value === 'charts' && <ChartsPage />}
 
       <footer className={styles.bottomNavigation}>
         <BottomNavigation

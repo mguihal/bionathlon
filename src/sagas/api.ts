@@ -69,11 +69,11 @@ export interface GameResponse {
   time: string;
   playerId: number;
   playerName: string;
-  score?: number;
-  scoreLeftBottle?: number;
-  scoreMiddleBottle?: number;
-  scoreRightBottle?: number;
-  scoreMalusBottle?: number;
+  score: number | null;
+  scoreLeftBottle: number | null;
+  scoreMiddleBottle: number | null;
+  scoreRightBottle: number | null;
+  scoreMalusBottle: number | null;
   note: string;
   suddenDeath: boolean;
 }
@@ -119,6 +119,7 @@ export interface PlayerResponse {
   id: number;
   email: string;
   name: string;
+  avatar: string;
 }
 
 export type PlayersResponse = PlayerResponse[];
