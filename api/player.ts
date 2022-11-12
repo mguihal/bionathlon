@@ -19,7 +19,7 @@ const routeConfig: RouteConfig = {
       return withDb(async db => {
         const players = await db('player')
           .orderBy('id')
-          .select();
+          .select('id', 'email', 'name', 'avatar');
         return res.send(players);
       });
     },

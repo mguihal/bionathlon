@@ -36,6 +36,7 @@ const App: React.FunctionComponent<Props> = (props) => {
             <Route path="/profile/:playerId" element={<AuthRoute><Page /></AuthRoute>} />
             <Route path="/history" element={<AuthRoute><Page /></AuthRoute>} />
             <Route path="/ranking" element={<AuthRoute><Page /></AuthRoute>} />
+            <Route path="/charts" element={<AuthRoute><Page /></AuthRoute>} />
             <Route path="/rules" element={<AuthRoute><Page /></AuthRoute>} />
             <Route path="/addPlayer" element={<AuthRoute><Page /></AuthRoute>} />
             <Route path="/addGame" element={<AuthRoute><Page /></AuthRoute>} />

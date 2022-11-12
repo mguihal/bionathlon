@@ -1,5 +1,5 @@
 import React from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useSearchParams } from 'react-router-dom';
 
 import { GoogleLogin, GoogleLoginResponse } from 'react-google-login';
 
@@ -13,20 +13,28 @@ import styles from '../App.module.css';
 import logo from './logo.png';
 import { AppState } from '../store';
 import { useDispatch, useSelector } from 'react-redux';
+import { useAuth } from '../services/auth';
 
 type UserType = AppState['user']['user'];
 
 const LoginPage = () => {
-  const queryParams = new URLSearchParams(window.location.search);
+  const [queryParams] = useSearchParams();
   const queryToken = queryParams.get('token');
   const queryRedirect = queryParams.get('redirect');
+  const queryExpired = queryParams.get('expired') !== null;
 
   const dispatch = useDispatch();
+  const { getToken } = useAuth();
 
-  const isLogged = useSelector<AppState, boolean>(state => state.user.token !== '');
-  const loginError = useSelector<AppState, string>(state => state.user.loginError);
+  const isLogged = getToken() !== '';
+
+  let loginError = useSelector<AppState, string>(state => state.user.loginError);
   const token = useSelector<AppState, string>(state => state.user.token);
   const user = useSelector<AppState, UserType>(state => state.user.user);
+
+  if (loginError === '' && queryExpired) {
+    loginError = 'Session expirée';
+  }
 
   if (queryToken) {
     const tokenObject = JSON.parse(atob(queryToken));

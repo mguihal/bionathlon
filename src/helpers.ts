@@ -108,7 +108,7 @@ export function getWinner(games: GamesResponse) {
   }
 }
 
-export function getSuddenDeathGames(games: GamesResponse) {
+export function getSuddenDeathGames(games: GamesResponse, checkIfDone: boolean = true) {
   if (games.length === 0) {
     return [];
   }
@@ -124,7 +124,7 @@ export function getSuddenDeathGames(games: GamesResponse) {
     }
   });
 
-  return isSuddenDeathDone || suddenDeathGames.length === 1
+  return (checkIfDone && isSuddenDeathDone) || suddenDeathGames.length === 1
     ? []
     : suddenDeathGames;
 }
