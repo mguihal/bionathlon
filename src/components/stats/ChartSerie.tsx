@@ -95,7 +95,7 @@ const ChartSerie = (props: Props) => {
         >
           <MenuItem value={'all'}>Tous</MenuItem>
           {
-            props.players(
+            props.players.fold(
               (players) => players.map(player => <MenuItem key={player.id} value={player.id}>{player.name}</MenuItem>),
               () => [<MenuItem key={'error'} value={''} disabled>{'Erreur de récupération'}</MenuItem>],
               () => [<MenuItem key={'notAsked'} value={''} disabled></MenuItem>],

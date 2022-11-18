@@ -2,16 +2,16 @@ import React, { useState, useEffect } from 'react';
 
 import Typography from '@material-ui/core/Typography';
 
-import bottle from './bottle.svg';
+import bottle from '../../assets/malusBottle.svg';
 
-import styles from '../App.module.css';
+import styles from './BottleScore.module.css';
 
 interface Props {
   staticScore?: number | null;
   onChange?: (score: number) => void;
 }
 
-const BottleScore: React.FunctionComponent<Props> = (props) => {
+const MalusBottleScore: React.FunctionComponent<Props> = (props) => {
 
   const { staticScore, onChange } = props;
   const [ score, setScore ] = useState(staticScore || 0);
@@ -41,4 +41,4 @@ const BottleScore: React.FunctionComponent<Props> = (props) => {
   );
 }
 
-export default BottleScore;
+export default MalusBottleScore;

@@ -1,0 +1,37 @@
+.page {
+  text-align: center;
+  height: 100%;
+  margin-top: 20px;
+}
+
+.topNavigation {
+  display: none;
+}
+
+.bottomNavigation {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  border-top: 1px solid #ccc;
+}
+
+.bottomNavigation .MuiBottomNavigationAction-root {
+  max-width: auto;
+  min-width: auto;
+  background: red;
+}
+
+@media screen and (min-width: 768px) {
+  .page {
+    margin-top: 80px;
+    margin-bottom: 30px;
+  }
+
+  .topNavigation {
+    display: block;
+  }
+
+  .bottomNavigation {
+    display: none;
+  }
+}

@@ -2,67 +2,45 @@ import * as t from 'io-ts';
 import { PathReporter, success } from 'io-ts/lib/PathReporter';
 import { useCallback, useState } from 'react';
 import { useAuth } from './auth';
-
-type DataNotFetched = { readonly _tag: 'dataNotFetched' };
-type DataPending = { readonly _tag: 'dataPending' };
-type DataFetchedSuccess<T> = { readonly _tag: 'dataFetchedSuccess', data: T };
-type DataFetchedError<E> = { readonly _tag: 'dataFetchedError', error: E };
-type ApiData<T, E> = DataNotFetched | DataPending | DataFetchedSuccess<T> | DataFetchedError<E>; 
-
-const dataNotFetched: DataNotFetched = { _tag: 'dataNotFetched' };
-const dataPending: DataPending = { _tag: 'dataPending' };
-const dataSuccess = <T>(data: T): DataFetchedSuccess<T> => ({ _tag: 'dataFetchedSuccess', data });
-const dataError = <E>(error: E): DataFetchedError<E> => ({ _tag: 'dataFetchedError', error });
-
-const fold = <T, E>(data: ApiData<T, E>) => <R>(
-  success: (value: T) => R,
-  error: (error: E) => R,
-  notFetched: () => R,
-  pending: () => R
-) => {
-  if (data._tag === 'dataFetchedSuccess') {
-    return success(data.data);
-  } else if (data._tag === 'dataFetchedError') {
-    return error(data.error)
-  } else if (data._tag === 'dataNotFetched') {
-    return notFetched();
-  } else {
-    return pending();
-  }
-};
+import { dataError, dataNotFetched, dataPending, DataResponse, dataSuccess, WrapData, wrap } from './remoteData';
 
 const BASE_URL = process.env.REACT_APP_API_HOST;
 
-type FoldData<T> = <R>(
-  success: (data: T) => R,
-  error: (error: Error) => R,
-  notFetched: () => R,
-  pending: () => R
-) => R;
+type ApiOptions = { path: string, method?: 'GET' | 'POST' | 'PUT', schema: t.Any, authenticated?: boolean };
+type ApiQueryParams =  Record<string, string>;
+type ApiPayload = Record<string, any>;
+type ApiResponse<T> = WrapData<T, Error>;
 
-export type ApiHookReturnType<T, QP extends Record<string, string>> = [
-  FoldData<T>, 
-  (queryParams: QP) => Promise<FoldData<T>>
-];
+type ReturnTypeSimple<T> = [ApiResponse<T>, () => Promise<ApiResponse<T>>];
+type ReturnTypeWithQueryParams<T, QP extends ApiQueryParams> = [ApiResponse<T>, (queryParams: QP) => Promise<ApiResponse<T>>];
+type ReturnTypeWithQueryParamsAndPayload<T, QP extends ApiQueryParams, P extends ApiPayload> = [ApiResponse<T>, (queryParams: QP, payload: P) => Promise<ApiResponse<T>>];
 
-export const useApi = <T, QP extends Record<string, string> = {}>(options: { path: string, schema: t.Any }): ApiHookReturnType<T, QP> => {
+function useApi<T>(options: ApiOptions): ReturnTypeSimple<T>;
+function useApi<T, QP extends ApiQueryParams>(options: ApiOptions): ReturnTypeWithQueryParams<T, QP>;
+function useApi<T, QP extends ApiQueryParams, P extends ApiPayload>(options: ApiOptions): ReturnTypeWithQueryParamsAndPayload<T, QP, P>;
+
+function useApi<T, QP extends ApiQueryParams = {}, P extends ApiPayload = {}>(
+  options: ApiOptions
+): ReturnTypeSimple<T> | ReturnTypeWithQueryParams<T, QP> | ReturnTypeWithQueryParamsAndPayload<T, QP, P> {
 
   const { getToken, logout } = useAuth();
-  const [data, setData] = useState<ApiData<T, Error>>(dataNotFetched);
+  const [data, setData] = useState<DataResponse<T, Error>>(dataNotFetched);
 
-  const fetchApi = useCallback((queryParams: QP) => {
-    let result: ApiData<T, Error> = dataNotFetched;
+  const fetchApi = useCallback((queryParams?: QP, payload?: P) => {
+    let result: DataResponse<T, Error> = dataNotFetched;
 
     const asyncFct = async () => {
       result = dataPending;
       setData(dataPending);
   
-      try {
-        const qs = (new URLSearchParams(queryParams)).toString();
+      try {        
+        const qs = (new URLSearchParams(queryParams || {})).toString();
         const response = await fetch(`${BASE_URL}${options.path}${qs !== '' ? `?${qs}` : ''}`, {
+          method: options.method || 'GET',
           headers: {
-            Authorization: getToken(),
-          }
+            Authorization: options.authenticated === false ? '' : getToken(),
+          },
+          body: payload ? JSON.stringify(payload) : null,
         });
       
         if (response.status === 200) {
@@ -79,7 +57,7 @@ export const useApi = <T, QP extends Record<string, string> = {}>(options: { pat
           throw new Error(`Paramètres de la requête invalides`);
         } else if (response.status === 401) {
           logout(true);
-          throw new Error(`Token invalide` || `Vous n'êtes pas autorisé à vous connecter`);
+          throw new Error(options.authenticated === false ? `Vous n'êtes pas autorisé à vous connecter` : `Token invalide`);
         } else if (response.status === 500) {
           const errorPayload: { error: string } = await response.json();
           throw new Error(errorPayload.error || 'Erreur inconnue');
@@ -88,16 +66,21 @@ export const useApi = <T, QP extends Record<string, string> = {}>(options: { pat
         }
       } catch (error) {
         if (error instanceof Error) {
+          console.error(error.message);
           result = dataError(error);
           setData(dataError(error));
         }
       }
 
-      return fold(result);
+      return wrap(result);
     };
     
     return asyncFct();
-  }, [options.path, options.schema, getToken, logout]);
+  }, [options.path, options.schema, options.method, options.authenticated, getToken, logout]);
 
-  return [fold(data), fetchApi];
+  return [wrap(data), fetchApi];
+}
+
+export {
+  useApi,
 };

@@ -20,11 +20,9 @@ import HistoryPage from './HistoryPage';
 import RankingPage from './RankingPage';
 import RulesPage from './RulesPage';
 
-import { AppState } from '../store';
-
-import styles from '../App.module.css';
-import { useSelector } from 'react-redux';
+import styles from './Page.module.css';
 import ChartsPage from './ChartsPage';
+import { useAuth } from '../services/auth';
 
 const mapping: {[key: string]: string} = {
   '': 'today',
@@ -50,7 +48,8 @@ const navMapping: {[value: string]: string} = {
 
 const Page = () => {
 
-  const currentUserId = useSelector<AppState, number>(state => state.user.user.id);
+  const { getUser } = useAuth();
+  const currentUser = getUser();
 
   const { pathname } = useLocation();
   const [value, setValue] = React.useState('today');
@@ -75,7 +74,7 @@ const Page = () => {
             centered
           >
             <Tab label="Aujourd'hui" value="today" component={Link} to="/" />
-            <Tab label="Mon profil" value="profile" component={Link} to={`/profile/${currentUserId}`} />
+            <Tab label="Mon profil" value="profile" component={Link} to={`/profile/${currentUser.id}`} />
             <Tab label="Règlement" value="rules" component={Link} to="/rules" />
             <Tab label="Historique" value="history" component={Link} to="/history" />
             <Tab label="Classement" value="ranking" component={Link} to="/ranking" />
@@ -101,7 +100,7 @@ const Page = () => {
           showLabels
         >
           <BottomNavigationAction component={Link} to="/" value="today" icon={<TodayIcon />} style={{maxWidth: 'initial', minWidth: 'initial'}}/>
-          <BottomNavigationAction component={Link} to={`/profile/${currentUserId}`} value="profile" icon={<PersonIcon />} style={{maxWidth: 'initial', minWidth: 'initial'}} />
+          <BottomNavigationAction component={Link} to={`/profile/${currentUser.id}`} value="profile" icon={<PersonIcon />} style={{maxWidth: 'initial', minWidth: 'initial'}} />
           <BottomNavigationAction component={Link} to="/rules" value="rules" icon={<MenuBookIcon />} style={{maxWidth: 'initial', minWidth: 'initial'}} />
           <BottomNavigationAction component={Link} to="/history" value="history" icon={<HistoryIcon />} style={{maxWidth: 'initial', minWidth: 'initial'}} />
           <BottomNavigationAction component={Link} to="/ranking" value="ranking" icon={<EmojiEventsIcon />} style={{maxWidth: 'initial', minWidth: 'initial'}} />

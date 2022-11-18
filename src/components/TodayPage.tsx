@@ -1,4 +1,3 @@
-import { fold, RemoteData } from '@devexperts/remote-data-ts';
 import Button from '@material-ui/core/Button';
 import ButtonGroup from '@material-ui/core/ButtonGroup';
 import Fab from '@material-ui/core/Fab';
@@ -8,30 +7,19 @@ import SportsESportsIcon from '@material-ui/icons/SportsEsports';
 import SpeedDial from '@material-ui/lab/SpeedDial';
 import SpeedDialAction from '@material-ui/lab/SpeedDialAction';
 import SpeedDialIcon from '@material-ui/lab/SpeedDialIcon';
-import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React from 'react';
 import { Link } from 'react-router-dom';
-import { fetchToday } from '../actionCreators/game';
-import styles from '../App.module.css';
+import styles from './TodayPage.module.css';
 import { formatDate, isMidDayGame } from '../helpers';
-import { GamesResponse } from '../sagas/api';
-import { AppState } from '../store';
+import { useGetTodayGames } from '../services/games';
 import Recap from './Recap/Recap';
-import SessionTable from './SessionTable';
+import SessionTable from './SessionTable/SessionTable';
 
 const TodayPage = () => {
 
-  const dispatch = useDispatch();
-
-  const games = useSelector<AppState, RemoteData<string, GamesResponse>>(state => state.game.today);
-  const token = useSelector<AppState, string>(state => state.user.token);
-  const currentUserId = useSelector<AppState, number>(state => state.user.user.id);
+  const [games, fetchTodayGames] = useGetTodayGames();
 
   const [open, setOpen] = React.useState(false);
-
-  useEffect(() => {
-    dispatch(fetchToday())
-  }, [dispatch]);
 
   const ErrorMessage = (props: {message: string}) => (
     <Typography variant="body2" className={styles.emptyTable}>
@@ -45,6 +33,10 @@ const TodayPage = () => {
 
   const handleClose = () => {
     setOpen(false);
+  };
+
+  const onUpdate = () => {
+    fetchTodayGames();
   };
 
   return (
@@ -77,20 +69,20 @@ const TodayPage = () => {
           />
         </SpeedDial>
       </div>
-      <Recap token={token} playerId={currentUserId} />
+      <Recap />
       <div className={styles.todayContainer}>
         <div className={styles.tableContainer}>
           <Typography variant="h6">
             {formatDate()} - Midi
           </Typography>
           {
-            fold<string, GamesResponse, JSX.Element>(
+            games.fold(
+              (games) => games.filter(isMidDayGame).length === 0 ?
+                <ErrorMessage message="Aucun score" /> : <SessionTable games={games.filter(isMidDayGame)} onUpdate={onUpdate} />,
+                (error) => <ErrorMessage message={error.message} />,
               () => <ErrorMessage message="Aucune donnée" />,
               () => <ErrorMessage message="Chargement..." />,
-              (error) => <ErrorMessage message={error} />,
-              (games) => games.filter(isMidDayGame).length === 0 ?
-                <ErrorMessage message="Aucun score" /> : <SessionTable games={games.filter(isMidDayGame)} context={'today'} />
-            )(games)
+            )
           }
         </div>
 
@@ -99,13 +91,13 @@ const TodayPage = () => {
             {formatDate()} - Soir
           </Typography>
           {
-            fold<string, GamesResponse, JSX.Element>(
+            games.fold(
+              (games) => games.filter((e) => !isMidDayGame(e)).length === 0 ?
+                <ErrorMessage message="Aucun score" /> : <SessionTable games={games.filter((e) => !isMidDayGame(e))} onUpdate={onUpdate} />,
+              (error) => <ErrorMessage message={error.message} />,
               () => <ErrorMessage message="Aucune donnée" />,
               () => <ErrorMessage message="Chargement..." />,
-              (error) => <ErrorMessage message={error} />,
-              (games) => games.filter((e) => !isMidDayGame(e)).length === 0 ?
-                <ErrorMessage message="Aucun score" /> : <SessionTable games={games.filter((e) => !isMidDayGame(e))} context={'today'} />
-            )(games)
+            )
           }
         </div>
       </div>

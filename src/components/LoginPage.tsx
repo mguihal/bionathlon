@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 import { Navigate, useSearchParams } from 'react-router-dom';
 
 import { GoogleLogin, GoogleLoginResponse } from 'react-google-login';
@@ -6,16 +6,11 @@ import { GoogleLogin, GoogleLoginResponse } from 'react-google-login';
 import Button from '@material-ui/core/Button';
 import Snackbar from '@material-ui/core/Snackbar';
 
-import { googleLoginSucceeded, googleLoginFailed, loginSucceeded } from '../actionCreators/user';
+import styles from './LoginPage.module.css';
 
-import styles from '../App.module.css';
-
-import logo from './logo.png';
-import { AppState } from '../store';
-import { useDispatch, useSelector } from 'react-redux';
+import logo from '../assets/logo.png';
 import { useAuth } from '../services/auth';
-
-type UserType = AppState['user']['user'];
+import { useLogin } from '../services/user';
 
 const LoginPage = () => {
   const [queryParams] = useSearchParams();
@@ -23,26 +18,31 @@ const LoginPage = () => {
   const queryRedirect = queryParams.get('redirect');
   const queryExpired = queryParams.get('expired') !== null;
 
-  const dispatch = useDispatch();
-  const { getToken } = useAuth();
+  const { getToken, getUser, login } = useAuth();
+  const [, logUser] = useLogin();
 
   const isLogged = getToken() !== '';
 
-  let loginError = useSelector<AppState, string>(state => state.user.loginError);
-  const token = useSelector<AppState, string>(state => state.user.token);
-  const user = useSelector<AppState, UserType>(state => state.user.user);
+  const [loginError, setLoginError] = useState(queryExpired ? 'Session expirée' : '');
 
-  if (loginError === '' && queryExpired) {
-    loginError = 'Session expirée';
-  }
+  const onError = useCallback((errorDetails: string) => {
+    setLoginError(`Erreur Google Auth: ${errorDetails || 'Erreur inconnue'}`);
+  }, []);
+
+  const onSuccess = useCallback((accessToken: string) => {
+    setLoginError('');
+    logUser({}, { data: { googleToken: accessToken } }).then(response => {
+      response.fold(
+        (payload) => login(payload.token, payload.user),
+        (error) => setLoginError(error.message),
+        () => {},
+      );
+    });
+  }, [logUser, login]);
 
   if (queryToken) {
     const tokenObject = JSON.parse(atob(queryToken));
-
-    localStorage.setItem('token', tokenObject.token);
-    localStorage.setItem('user', JSON.stringify(tokenObject.user));
-
-    dispatch(loginSucceeded(tokenObject.token, tokenObject.user));
+    login(tokenObject.token, tokenObject.user);
   }
 
   if (!queryToken && window.location.origin !== process.env.REACT_APP_LOGIN_ORIGIN) {
@@ -52,7 +52,7 @@ const LoginPage = () => {
 
   if (isLogged) {
     if (queryRedirect) {
-      const tokenPayload = btoa(JSON.stringify({ token, user }));
+      const tokenPayload = btoa(JSON.stringify({ token: getToken(), user: getUser() }));
       window.location.href = `${queryRedirect}?token=${tokenPayload}`;
       return null;
     }
@@ -72,8 +72,8 @@ const LoginPage = () => {
         <GoogleLogin
           clientId="459868567762-0roa3b365fl7d9hv63pd1hauoi0ohkmd.apps.googleusercontent.com"
           buttonText="Se connecter"
-          onSuccess={(payload) => dispatch(googleLoginSucceeded((payload as GoogleLoginResponse).tokenId))}
-          onFailure={(payload) => dispatch(googleLoginFailed(payload.error, payload.details))}
+          onSuccess={(payload) => onSuccess((payload as GoogleLoginResponse).tokenId)}
+          onFailure={(payload) => onError(payload.details)}
           cookiePolicy={'single_host_origin'}
           className={styles.loginButton}
           render={renderProps => (

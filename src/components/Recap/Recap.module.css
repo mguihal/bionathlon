@@ -20,7 +20,7 @@
 }
 
 .rondelle {
-  background: url('./rondelle2.png');
+  background: url('../../assets/rondelle.png');
   background-size: cover;
   aspect-ratio: 261 / 284;
   width: 50px;

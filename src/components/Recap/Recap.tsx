@@ -3,8 +3,10 @@ import Modal from '@material-ui/core/Modal';
 import Alert from '@material-ui/lab/Alert';
 import React from 'react';
 import Stories from 'react-insta-stories';
+import { useAuth } from '../../services/auth';
+import { useGetRecap } from '../../services/recap';
 import styles from './Recap.module.css';
-import RecapContext, { RecapData } from './RecapContext';
+import RecapContext from './RecapContext';
 import Scene1 from './Scene1';
 import Scene2 from './Scene2';
 import Scene3 from './Scene3';
@@ -14,29 +16,20 @@ import Scene6 from './Scene6';
 import Scene7 from './Scene7';
 import Scene8 from './Scene8';
 
-type Props = {
-  token: string;
-  playerId: number;
-}
+const Recap = () => {
 
-const Recap = (props: Props) => {
-
-  const { token, playerId } = props;
+  const { getUser } = useAuth();
 
   const defaultOpen = false;
   const [recapOpen, setRecapOpen] = React.useState(defaultOpen);
-  const [data, setData] = React.useState<RecapData>();
 
-  React.useEffect(() => {
-    fetch(`${process.env.REACT_APP_API_HOST}/api/recap?playerId=${playerId}`, {
-      headers: {
-        Authorization: token,
-      }
-    })
-      .then(response => response.json())
-      .then(payload => setData(payload));
-  }, [token, playerId]);
+  const [data, fetchRecap] = useGetRecap();
 
+  const openRecap = () => {
+    fetchRecap({ playerId: getUser().id.toString(), year: '2021' }).then(() => {
+      setRecapOpen(true);
+    });
+  };
 
   const stories = [
     { duration: 17500, content: Scene1 },
@@ -51,7 +44,7 @@ const Recap = (props: Props) => {
 
   const now = (new Date()).toISOString();
 
-  if (!data || now >= '2022-02-01') {
+  if (now >= '2022-02-01') {
     return null;
   }
 
@@ -60,7 +53,7 @@ const Recap = (props: Props) => {
       <Alert severity="info">
         <div>
           Votre récapitulatif 2021 est prêt. Cliquez&nbsp;
-          <MLink component="button" variant="body2" onClick={() => setRecapOpen(true)}>ici</MLink>
+          <MLink component="button" variant="body2" onClick={() => openRecap()}>ici</MLink>
           &nbsp;pour le découvrir !
         </div>
       </Alert>
@@ -68,7 +61,7 @@ const Recap = (props: Props) => {
         open={recapOpen}
         onClose={() => setRecapOpen(false)}
       >
-        <RecapContext.Provider value={data}>
+        <RecapContext.Provider value={data.getOrElse(null)}>
           <div className={styles.container}>
             <Stories
               stories={stories.slice(0)}

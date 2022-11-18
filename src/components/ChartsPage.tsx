@@ -2,7 +2,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import Typography from '@material-ui/core/Typography';
 import React, { useEffect } from 'react';
-import styles from '../App.module.css';
+import styles from './ChartsPage.module.css';
 import { Button, FormControl, InputLabel } from '@material-ui/core';
 import * as Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
@@ -24,7 +24,7 @@ const formatSerieName = (data: SerieData, playersData: PlayersData) => {
   const date = new Date(data.date);
   const formattedDate = data.date === 'all' ? 'Global' : data.date.includes('-') ? `${months[date.getMonth()]} ${date.getFullYear()}` : `${date.getFullYear()}`;
 
-  const players = playersData((p) => p, () => [], () => [], () => []);
+  const players = playersData.getOrElse([]);
   const player = players.find(p => p.id.toString() === data.playerFilter.toString())?.name || 'inconnu';
   const formattedPlayer = data.playerFilter === 'all' ? null : player;
 
@@ -53,7 +53,7 @@ const formatXAxis = (category: string, sampling: Sampling, playersData: PlayersD
     'monthName': () => months[parseInt(category, 10) - 1],
     'bottle': () => category === 'leftBottle' ? 'Gauche' : category === 'middleBottle' ? 'Milieu' : category === 'rightBottle' ? 'Droite' : 'Malus',
     'player': () => {
-      const players = playersData((p) => p, () => [], () => [], () => []);
+      const players = playersData.getOrElse([]);
       return players.find(p => p.id.toString() === category)?.name || 'Inconnu';
     },
     'score': () => category,
@@ -153,10 +153,7 @@ const ChartsPage = () => {
         sampling, 
         chartDate: dateFilter
       }).then((response) => {
-        const points = response((p) => p, (error) => {
-          console.log('Error when retrieving points:', error);
-          return [];
-        }, () => [], () => []);
+        const points = response.getOrElse([]);
         const categories = points.map(p => p.key);
 
         setChartSeries(val => {
@@ -203,16 +200,16 @@ const ChartsPage = () => {
 
   return (
     <>
-      <div className={styles.profileTitle}>
+      <div className={styles.title}>
         <Typography variant="h6">Statistiques avancées</Typography>
       </div>
-      <div className={styles.profileChart}>
+      <div className={styles.chart}>
         <HighchartsReact highcharts={Highcharts} options={options} />
         {chartLoading && (
           <div className={styles.chartLoading}>Chargement...</div>
         )}
       </div>
-      <div className={styles.profileTitle}>
+      <div className={styles.title}>
         <Typography variant="h6">Affichage</Typography>
       </div>
       <div className={styles.chartFilters}>
@@ -238,7 +235,7 @@ const ChartsPage = () => {
           )
         }
       </div>
-      <div className={styles.profileTitle}>
+      <div className={styles.title}>
         <Typography variant="h6">Séries</Typography>
       </div>
 

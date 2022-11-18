@@ -1,15 +1,9 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
-import joi from '@hapi/joi';
 import axios from 'axios';
 import jwt from 'jsonwebtoken';
+import { LoginPayload, loginPayloadSchema, LoginResponse } from '../src/services/user';
 
 import { RouteConfig, routeWrapper, JWT_SECRET, withDb } from './_common';
-
-type LoginPayload = {
-  data: {
-    googleToken: string;
-  };
-};
 
 type GoogleResponse = {
   id: string;
@@ -71,7 +65,7 @@ async function loginHandler(res: VercelResponse, payload: LoginPayload) {
         avatar: player.avatar,
         isAdmin: player.isAdmin
       },
-    });
+    } as LoginResponse);
   } catch (e) {
     const error = e as any;
     if (error.response && error.response.status === 401) {
@@ -90,21 +84,7 @@ async function loginHandler(res: VercelResponse, payload: LoginPayload) {
 const routeConfig: RouteConfig = {
   post: {
     validate: {
-      payload: joi
-        .object()
-        .keys({
-          data: joi
-            .object()
-            .keys({
-              googleToken: joi
-                .string()
-                .required()
-                .description('AccessToken Google'),
-            })
-            .required(),
-        })
-        .required(),
-      query: joi.any(),
+      payload: loginPayloadSchema,
     },
     authenticated: false,
     handler: loginHandler,

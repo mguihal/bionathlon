@@ -1,0 +1,37 @@
+.tableContainer {
+  margin: auto;
+  width: 90%;
+  margin-top: 30px;
+  padding-bottom: 80px;
+}
+
+.tableContainer th {
+  font-weight: bold;
+}
+
+.tableContainer .tableNote {
+  color: #999;
+  font-size: 0.9em;
+}
+
+.tableContainer .emptyTable {
+  margin-top: 30px;
+}
+
+.profileTitle {
+  margin: auto;
+  width: 90%;
+  background: white;
+}
+
+@media screen and (min-width: 768px) {
+  .tableContainer {
+    width: 35%;
+    padding-bottom: 30px;
+  }
+
+  .profileTitle {
+    width: 35%;
+    left: 32.5%;
+  }
+}

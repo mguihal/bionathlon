@@ -1,4 +1,3 @@
-import joi from '@hapi/joi';
 import { VercelRequest, VercelResponse } from '@vercel/node';
 import {
   computeRondelles,
@@ -9,7 +8,7 @@ import {
   round2,
 } from '../src/helpers';
 import { RouteConfig, routeWrapper, withDb } from './_common';
-import { Sampling, SerieModifier, ChartSerieQueryParams, ChartSerieResponse } from '../src/services/stats';
+import { Sampling, SerieModifier, ChartSerieQueryParams, ChartSerieResponse, chartSerieQueryParamsSchema } from '../src/services/stats';
 
 type Point = {
   key: string;
@@ -183,15 +182,7 @@ function filterGames(game: EnrichedGame, sample: string, sampling: Sampling, mod
 const routeConfig: RouteConfig = {
   get: {
     validate: {
-      payload: joi.any(),
-      query: joi.object().keys({
-        type: joi.string(),
-        date: joi.string(),
-        modifier: joi.string(),
-        playerFilter: joi.string(),
-        sampling: joi.string(),
-        chartDate: joi.string(),
-      }),
+      query: chartSerieQueryParamsSchema,
     },
     handler: async (res, _, query: ChartSerieQueryParams) => {
       return withDb(async db => {

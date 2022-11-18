@@ -1,4 +1,5 @@
 import * as t from 'io-ts';
+import { nullable } from 'io-ts/lib/Type';
 import { useEffect } from 'react';
 import { useApi } from './api';
 
@@ -7,24 +8,44 @@ export const playersSchema = t.array(
     id: t.number,
     email: t.string,
     name: t.string,
-    avatar: t.union([t.string, t.null]),
+    avatar: nullable(t.string),
   })
 );
 
-type PlayersResponse = t.TypeOf<typeof playersSchema>;
-export type PlayersData = ReturnType<typeof useApi<PlayersResponse>>[0];
+export type GetPlayersResponse = t.TypeOf<typeof playersSchema>;
+export type PlayersData = ReturnType<typeof useApi<GetPlayersResponse>>[0];
 
-export const useGetPlayers = (initialLoad: boolean): ReturnType<typeof useApi<PlayersResponse>> => {
-  const [foldData, fetchApi] = useApi<PlayersResponse>({
+export const useGetPlayers = (initialLoad: boolean): ReturnType<typeof useApi<GetPlayersResponse>> => {
+  const [responseData, fetchApi] = useApi<GetPlayersResponse>({
     path: '/api/player',
     schema: playersSchema,
   });
 
   useEffect(() => {
     if (initialLoad) {
-      fetchApi({});
+      fetchApi();
     }
   }, [initialLoad, fetchApi]);
 
-  return [foldData, fetchApi];
+  return [responseData, fetchApi];
+};
+
+export const addPlayerPayloadSchema = t.type({
+  data: t.type({
+    email: t.string,
+    name: t.string,
+  })
+});
+
+export type AddPlayerResponse = t.TypeOf<typeof playersSchema>;
+export type AddPlayerPayload = t.TypeOf<typeof addPlayerPayloadSchema>;
+
+export const useAddPlayer = (): ReturnType<typeof useApi<AddPlayerResponse, {}, AddPlayerPayload>> => {
+  const [responseData, fetchApi] = useApi<AddPlayerResponse, {}, AddPlayerPayload>({
+    path: '/api/player',
+    method: 'POST',
+    schema: playersSchema,
+  });
+
+  return [responseData, fetchApi];
 };

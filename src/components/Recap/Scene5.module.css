@@ -63,7 +63,7 @@
 }
 
 .scene5 :global(.rondelleTop) {
-  background: url('./rondelle2.png');
+  background: url('../../assets/rondelle.png');
   background-size: cover;
   width: 245px;
   height: 145px;
@@ -75,7 +75,7 @@
 }
 
 .scene5 :global(.rondelleBottom) {
-  background: url('./rondelle2.png');
+  background: url('../../assets/rondelle.png');
   background-size: cover;
   width: 245px;
   height: 121px;
@@ -120,7 +120,7 @@
 }
 
 .scene5 :global(#bottle) {
-  background: url('../bottle.svg');
+  background: url('../../assets/bottle.svg');
   width: 115px;
   aspect-ratio: 89 / 337;
   position: absolute;
@@ -132,7 +132,7 @@
 }
 
 .scene5 :global(#bottleLeft) {
-  background: url('../bottle.svg');
+  background: url('../../assets/bottle.svg');
   width: 115px;
   aspect-ratio: 89 / 337;
   position: absolute;
@@ -143,7 +143,7 @@
 }
 
 .scene5 :global(#bottleRight) {
-  background: url('../bottle.svg');
+  background: url('../../assets/bottle.svg');
   width: 115px;
   aspect-ratio: 89 / 337;
   position: absolute;
@@ -154,7 +154,7 @@
 }
 
 .scene5 :global(.rondelleTopLeft) {
-  background: url('./rondelle2.png');
+  background: url('../../assets/rondelle.png');
   background-size: cover;
   width: 245px;
   height: 145px;
@@ -168,7 +168,7 @@
 }
 
 .scene5 :global(.rondelleBottomLeft) {
-  background: url('./rondelle2.png');
+  background: url('../../assets/rondelle.png');
   background-size: cover;
   width: 245px;
   height: 121px;
@@ -183,7 +183,7 @@
 }
 
 .scene5 :global(.rondelleTopRight) {
-  background: url('./rondelle2.png');
+  background: url('../../assets/rondelle.png');
   background-size: cover;
   width: 245px;
   height: 145px;
@@ -197,7 +197,7 @@
 }
 
 .scene5 :global(.rondelleBottomRight) {
-  background: url('./rondelle2.png');
+  background: url('../../assets/rondelle.png');
   background-size: cover;
   width: 245px;
   height: 121px;
@@ -212,7 +212,7 @@
 }
 
 .scene5 :global(#bottleMalus) {
-  background: url('../malusBottle.svg');
+  background: url('../../assets/malusBottle.svg');
   width: 115px;
   aspect-ratio: 84 / 179;
   position: absolute;
@@ -225,7 +225,7 @@
 }
 
 .scene5 :global(.rondelleMalusTop) {
-  background: url('./rondelle2.png');
+  background: url('../../assets/rondelle.png');
   background-size: cover;
   width: 245px;
   height: 145px;
@@ -239,7 +239,7 @@
 }
 
 .scene5 :global(.rondelleMalusBottom) {
-  background: url('./rondelle2.png');
+  background: url('../../assets/rondelle.png');
   background-size: cover;
   width: 245px;
   height: 121px;

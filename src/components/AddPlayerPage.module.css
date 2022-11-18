@@ -1,0 +1,19 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  width: 90%;
+  margin: auto;
+  margin-bottom: 80px;
+}
+
+.form > div,
+.form > button,
+.form > a {
+  margin-top: 30px;
+}
+
+@media screen and (min-width: 768px) {
+  .form {
+    width: 30%;
+  }
+}

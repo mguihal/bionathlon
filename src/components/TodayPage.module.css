@@ -1,0 +1,64 @@
+.tableContainer {
+  margin: auto;
+  width: 90%;
+  margin-top: 30px;
+  padding-bottom: 80px;
+}
+
+.tableContainer th {
+  font-weight: bold;
+}
+
+.tableContainer .emptyTable {
+  margin-top: 30px;
+}
+
+.topActionButtons {
+  display: none;
+}
+
+.floatingActionButtons {
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+}
+
+.floatingActionButtonsExtended {
+  position: fixed;
+  bottom: 84px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.floatingActionButtonsExtended a {
+  margin-top: 20px;
+}
+
+.floatingActionButtonsExtended svg {
+  margin-right: 5px;
+}
+
+.todayContainer {
+  padding-bottom: 30px;
+}
+
+@media screen and (min-width: 768px) {
+  .tableContainer {
+    width: 35%;
+    padding-bottom: 30px;
+  }
+
+  .topActionButtons {
+    display: block;
+  }
+
+  .floatingActionButtons {
+    display: none;
+  }
+
+  .todayContainer {
+    display: flex;
+    padding-bottom: 0px;
+  }
+}

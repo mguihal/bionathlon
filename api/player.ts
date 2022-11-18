@@ -1,65 +1,34 @@
-import joi from '@hapi/joi';
 import { VercelRequest, VercelResponse } from '@vercel/node';
+import { GetPlayersResponse, AddPlayerResponse, AddPlayerPayload, addPlayerPayloadSchema } from '../src/services/players';
 import { RouteConfig, routeWrapper, withDb } from './_common';
-
-interface PlayerPayload {
-  data: {
-    email: string;
-    name: string;
-  };
-}
 
 const routeConfig: RouteConfig = {
   get: {
-    validate: {
-      payload: joi.any(),
-      query: joi.any(),
-    },
     handler: async res => {
       return withDb(async db => {
         const players = await db('player')
           .orderBy('id')
           .select('id', 'email', 'name', 'avatar');
-        return res.send(players);
+        return res.send(players as GetPlayersResponse);
       });
     },
   },
 
   post: {
     validate: {
-      payload: joi
-        .object()
-        .keys({
-          data: joi
-            .object()
-            .keys({
-              email: joi
-                .string()
-                .email()
-                .required()
-                .description('Email du joueur'),
-              name: joi
-                .string()
-                .min(3)
-                .required()
-                .description('Nom du joueur'),
-            })
-            .required(),
-        })
-        .required(),
-      query: joi.any(),
+      payload: addPlayerPayloadSchema
     },
-    handler: async (res, payload: PlayerPayload) => {
+    handler: async (res, payload: AddPlayerPayload) => {
       return withDb(async db => {
         try {
-          const player = await db('player')
+          const players = await db('player')
             .insert({
               email: payload.data.email,
               name: payload.data.name,
             })
-            .returning('*');
+            .returning(['id', 'email', 'name', 'avatar']);
 
-          return res.send(player);
+          return res.send(players as AddPlayerResponse);
         } catch (e) {
           const error = e as Error;
           console.error(error.message);

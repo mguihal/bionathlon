@@ -1,0 +1,56 @@
+.title {
+  margin: auto;
+  width: 90%;
+  background: white;
+}
+
+.rankingFilters {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.rankingFilters > div {
+  margin: 10px 10px 0 10px;
+}
+
+.tableContainer {
+  margin: auto;
+  width: 90%;
+  margin-top: 30px;
+  padding-bottom: 80px;
+}
+
+.tableContainer th {
+  font-weight: bold;
+}
+
+.tableContainer .emptyTable {
+  margin-top: 30px;
+}
+
+.reportsLink {
+  margin-top: 30px;
+  display: none;
+}
+
+@media screen and (min-width: 768px) {
+  .title {
+    width: 35%;
+    left: 32.5%;
+  }
+
+  .rankingFilters {
+    flex-direction: row;
+    margin-top: 20px;
+  }
+  
+  .tableContainer {
+    width: 35%;
+    padding-bottom: 30px;
+  }
+
+  .reportsLink {
+    display: block;
+  }
+}

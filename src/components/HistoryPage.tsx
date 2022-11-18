@@ -1,22 +1,15 @@
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
-import { RemoteData, fold } from '@devexperts/remote-data-ts';
 import React, { useCallback, useEffect, useState } from 'react';
-import { fetchAllGames } from '../actionCreators/game';
-import styles from '../App.module.css';
+import styles from './HistoryPage.module.css';
 import { formatDate, groupByDateTime } from '../helpers';
-import { GamesResponse } from '../sagas/api';
-import { AppState } from '../store';
-import SessionTable from './SessionTable';
-import { useDispatch, useSelector } from 'react-redux';
+import SessionTable from './SessionTable/SessionTable';
+import { Game, useGetPaginatedGames } from '../services/games';
 
 const PAGE_COUNT = 10;
 
 const HistoryPage = () => {
-  const dispatch = useDispatch();
-
-  const games = useSelector<AppState, RemoteData<string, GamesResponse>>(state => state.game.allGames);
-
+  const [games, fetchGames] = useGetPaginatedGames();
   const [currentPage, setCurrentPage] = useState(0);
 
   const handleNext = useCallback(() => {
@@ -29,9 +22,16 @@ const HistoryPage = () => {
     window.scrollTo(0, 0);
   }, []);
 
+  const onUpdate = useCallback(() => {
+    fetchGames({ 
+      limit: PAGE_COUNT.toString(), 
+      offset: (currentPage * PAGE_COUNT).toString(),
+    });
+  }, [fetchGames, currentPage]);
+
   useEffect(() => {
-    dispatch(fetchAllGames(PAGE_COUNT, currentPage * PAGE_COUNT));
-  }, [dispatch, currentPage]);
+    onUpdate();
+  }, [onUpdate]);
 
   const ErrorMessage = (props: { message: string }) => (
     <Typography variant="body2" className={styles.emptyTable}>
@@ -39,7 +39,7 @@ const HistoryPage = () => {
     </Typography>
   );
 
-  function renderTables(games: GamesResponse) {
+  function renderTables(games: Game[]) {
     const groupedGames = groupByDateTime(games);
     const sessionTables = Object.keys(groupedGames)
       .sort()
@@ -53,7 +53,7 @@ const HistoryPage = () => {
               {formatDate(groupedGames[key][0].date)} -{' '}
               {groupedGames[key][0].time === 'midday' ? 'midi' : 'soir'}
             </Typography>
-            <SessionTable games={groupedGames[key]} context={'history'} />
+            <SessionTable games={groupedGames[key]} onUpdate={onUpdate} />
           </div>
         ))}
         {currentPage > 0 && (
@@ -70,17 +70,12 @@ const HistoryPage = () => {
 
   return (
     <>
-      {fold<string, GamesResponse, JSX.Element>(
+      {games.fold(
+        games => games.length === 0 ? <ErrorMessage message="Aucun score" /> : renderTables(games),
+        error => <ErrorMessage message={error.message} />,
         () => <ErrorMessage message="Aucune donnée" />,
         () => <ErrorMessage message="Chargement..." />,
-        error => <ErrorMessage message={error} />,
-        games =>
-          games.length === 0 ? (
-            <ErrorMessage message="Aucun score" />
-          ) : (
-            renderTables(games)
-          ),
-      )(games)}
+      )}
     </>
   );
 };

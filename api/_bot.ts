@@ -1,9 +1,9 @@
 import { Knex } from 'knex';
 import { GoogleAuth } from 'google-auth-library';
-import { GamePayload } from './game';
-import { SuddenDeathPayload } from './suddenDeath';
+import { AddGamePayload, UpdateGamePayload } from '../src/services/games';
 import { existsSync, writeFileSync } from 'fs';
 import atob from 'atob';
+import { computeScore, formatDate } from '../src/helpers';
 
 const googlePrivateKeyPath = '/tmp/BionathlonBot.privatekey.json';
 
@@ -12,17 +12,6 @@ if (!existsSync(googlePrivateKeyPath)) {
 }
 
 process.env.GOOGLE_APPLICATION_CREDENTIALS = googlePrivateKeyPath;
-
-function formatDate(date: string) {
-  const dateObject = new Date(date);
-  const day = dateObject.getDate();
-  const month = dateObject.getMonth() + 1;
-  const year = dateObject.getFullYear();
-
-  const pad = (n: number) => n < 10 ? `0${n}` : n;
-
-  return `${pad(day)}/${pad(month)}/${year}`;
-}
 
 async function sendChatMessage(spaceId: string | null, thread: string, message: string) {
   if (!spaceId) {
@@ -48,23 +37,7 @@ async function sendChatMessage(spaceId: string | null, thread: string, message: 
   }
 }
 
-function computeScore(game: GamePayload['data']) {
-  const { score, scoreLeftBottle, scoreMiddleBottle, scoreRightBottle, scoreMalusBottle } = game;
-
-  if (score !== null && score !== undefined) {
-    return score;
-  }
-
-  const bonus = Math.min(scoreLeftBottle || 0, scoreMiddleBottle || 0, scoreRightBottle || 0) * 3;
-
-  return bonus +
-    (scoreLeftBottle || 0) +
-    (scoreMiddleBottle || 0) +
-    (scoreRightBottle || 0) -
-    (scoreMalusBottle || 0);
-}
-
-export async function sendScoreOnChat(db: Knex, payload: GamePayload) {
+export async function sendScoreOnChat(db: Knex, payload: AddGamePayload) {
   const payloadDate = (new Date(payload.data.date)).toISOString().split('T')[0];
   const threadKey = payloadDate + payload.data.time;
 
@@ -88,11 +61,11 @@ N'oubliez pas d'ajouter vos scores sur https://bionathlon.com !
   await sendChatMessage(process.env.CHATSPACE || null, threadKey, message);
 }
 
-export async function sendSuddenDeathOnChat(db: Knex, payload: SuddenDeathPayload) {
+export async function sendSuddenDeathOnChat(db: Knex, gameId: string) {
   const game = await db('game')
     .first()
     .join('player', 'game.playerId', 'player.id')
-    .where('game.id', payload.data.gameId);
+    .where('game.id', gameId);
 
   if (!game) {
     return;

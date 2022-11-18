@@ -1,4 +1,5 @@
-import joi from '@hapi/joi';
+import * as t from 'io-ts';
+import { PathReporter, success } from 'io-ts/lib/PathReporter';
 import { VercelRequest, VercelResponse } from '@vercel/node';
 import jwt, { JsonWebTokenError } from 'jsonwebtoken';
 import knex, { Knex } from 'knex';
@@ -7,10 +8,10 @@ const jwtVersion = '2';
 const jwtSecret = process.env.SECRET || 'secret';
 export const JWT_SECRET = jwtSecret + jwtVersion;
 
-export interface MethodConfig {
-  validate: {
-    payload: joi.AnySchema;
-    query: joi.AnySchema;
+export type MethodConfig = {
+  validate?: {
+    payload?: t.Any;
+    query?: t.Any;
   };
   authenticated?: boolean;
   handler: (
@@ -18,7 +19,7 @@ export interface MethodConfig {
     payload?: any,
     query?: any,
   ) => Promise<VercelResponse>;
-}
+};
 
 export interface RouteConfig {
   get?: MethodConfig;
@@ -42,6 +43,14 @@ function withBody(req: VercelRequest) {
   });
 }
 
+class ValidationError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "ValidationError";
+    Object.setPrototypeOf(this, ValidationError.prototype);
+  }
+}
+
 export async function validationWrapper(
   req: VercelRequest,
   res: VercelResponse,
@@ -50,8 +59,19 @@ export async function validationWrapper(
   try {
     req = await withBody(req);
 
-    const payload = await config.validate.payload.validateAsync(req.body);
-    const query = await config.validate.query.validateAsync(req.query);
+    const queryValidator2 = config.validate?.query || t.unknown;
+    const queryValidation = PathReporter.report(queryValidator2.decode(req.query))[0];
+
+    if (queryValidation !== success()[0]) {
+      throw new ValidationError(`Format des queryParams incorrect: ${queryValidation}`);
+    }
+
+    const payloadValidator2 = config.validate?.payload || t.unknown;
+    const payloadValidation = PathReporter.report(payloadValidator2.decode(req.body))[0];
+
+    if (payloadValidation !== success()[0]) {
+      throw new ValidationError(`Format du payload incorrect: ${payloadValidation}`);
+    }
 
     if (config.authenticated !== false && process.env.LOCAL !== 'true') {
       try {
@@ -61,13 +81,12 @@ export async function validationWrapper(
       }
     }
 
-    return config.handler(res, payload, query);
+    return config.handler(res, req.body, req.query);
   } catch (e) {
     const error = e as Error;
-    console.log(error);
 
     switch (error.constructor) {
-      case joi.ValidationError:
+      case ValidationError:
         return res.status(400).send({ error: error.message });
       case JsonWebTokenError:
         return res.status(401).send({ error: error.message });

@@ -1,0 +1,37 @@
+.page {
+  text-align: center;
+  height: 100%;
+  margin-top: 20px;
+}
+
+.loginBox {
+  position: absolute;
+  top: 30%;
+  width: 100%;
+  height: 300px;
+  left: 0;
+}
+
+.loginLogo {
+  position: absolute;
+  top: 0%;
+  left: 0%;
+  width: 100%;
+}
+
+.loginButton {
+  position: absolute;
+  top: 60%;
+}
+
+@media screen and (min-width: 768px) {
+  .page {
+    margin-top: 80px;
+    margin-bottom: 30px;
+  }
+
+  .loginBox {
+    width: 50%;
+    left: 25%;
+  }
+}

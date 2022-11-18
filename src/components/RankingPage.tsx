@@ -7,16 +7,11 @@ import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
 import Alert from '@material-ui/lab/Alert';
-import { RemoteData, fold } from '@devexperts/remote-data-ts';
 import React, { useEffect, useState } from 'react';
-import { fetchStats } from '../actionCreators/stats';
-import styles from '../App.module.css';
-import { StatsResponse } from '../sagas/api';
-import { AppState } from '../store';
-import { useSelector } from 'react-redux';
-import { useDispatch } from 'react-redux';
+import styles from './RankingPage.module.css';
 import DateSelect from './stats/DateSelect';
 import Button from '@material-ui/core/Button';
+import { useGetRankings } from '../services/stats';
 
 type RankingType =
   | 'nbMatchs'
@@ -29,10 +24,7 @@ type RankingType =
   | 'topScore';
 
 const RankingPage = () => {
-
-  const dispatch = useDispatch();
-
-  const stats = useSelector<AppState, RemoteData<string, StatsResponse>>(state => state.stats.data);
+  const [rankings, fetchRankings] = useGetRankings();
 
   const now = new Date();
 
@@ -42,8 +34,8 @@ const RankingPage = () => {
   );
 
   useEffect(() => {
-    dispatch(fetchStats(dateFilter === 'all' ? undefined : dateFilter));
-  }, [dateFilter, dispatch]);
+    fetchRankings(dateFilter === 'all' ? {} : { dateFilter });
+  }, [dateFilter, fetchRankings]);
 
   const ErrorMessage = (props: { message: string }) => (
     <Typography variant="body2" className={styles.emptyTable}>
@@ -53,7 +45,7 @@ const RankingPage = () => {
 
   return (
     <>
-      <div className={styles.profileTitle}>
+      <div className={styles.title}>
         <Typography variant="h6">Classement</Typography>
         <div className={styles.rankingFilters}>
           <Select
@@ -76,13 +68,11 @@ const RankingPage = () => {
           />
         </div>
       </div>
-      <div className={`${styles.tableContainer} ${styles.profileTable}`}>
-        {fold<string, StatsResponse, JSX.Element>(
-          () => <ErrorMessage message="Aucune donnée" />,
-          () => <ErrorMessage message="Chargement..." />,
-          error => <ErrorMessage message={error} />,
-          stats =>
-            !stats[rankingType] ? (
+      <div className={styles.tableContainer}>
+
+        {rankings.fold(
+          rankingsData =>
+            !rankingsData[rankingType] ? (
               <ErrorMessage message="Aucun score" />
             ) : (
               <>
@@ -95,7 +85,7 @@ const RankingPage = () => {
                 )}
                 <Table aria-label="simple table">
                   <TableBody>
-                    {stats[rankingType].map((player, i) => (
+                    {rankingsData[rankingType].map((player, i) => (
                       <TableRow key={player.id}>
                         <TableCell component="th" scope="row" align="right">
                           #{i + 1}
@@ -115,7 +105,10 @@ const RankingPage = () => {
                 </Table>
               </>
             ),
-        )(stats)}
+            error => <ErrorMessage message={error.message} />,
+            () => <ErrorMessage message="Aucune donnée" />,
+            () => <ErrorMessage message="Chargement..." />,
+        )}
 
         <div className={styles.reportsLink}>
           <Button component={Link} href="/charts">Voir les statistiques avancées</Button>

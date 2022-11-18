@@ -1,6 +1,4 @@
 import React from 'react';
-import { Store } from 'redux';
-import { Provider } from 'react-redux'
 import {
   BrowserRouter,
   Routes,
@@ -8,8 +6,6 @@ import {
   Navigate,
 } from 'react-router-dom';
 import { MuiThemeProvider, createTheme } from '@material-ui/core/styles';
-
-import { AppState } from './store';
 
 import AuthRoute from './components/AuthRoute';
 import LoginPage from './components/LoginPage';
@@ -23,30 +19,24 @@ const theme = createTheme({
   }
 });
 
-interface Props {
-  store: Store<AppState>;
-};
-
-const App: React.FunctionComponent<Props> = (props) => {
+const App = () => {
   return (
-    <Provider store={props.store}>
-      <MuiThemeProvider theme={theme}>
-        <BrowserRouter>
-          <Routes>
-            <Route path="/profile/:playerId" element={<AuthRoute><Page /></AuthRoute>} />
-            <Route path="/history" element={<AuthRoute><Page /></AuthRoute>} />
-            <Route path="/ranking" element={<AuthRoute><Page /></AuthRoute>} />
-            <Route path="/charts" element={<AuthRoute><Page /></AuthRoute>} />
-            <Route path="/rules" element={<AuthRoute><Page /></AuthRoute>} />
-            <Route path="/addPlayer" element={<AuthRoute><Page /></AuthRoute>} />
-            <Route path="/addGame" element={<AuthRoute><Page /></AuthRoute>} />
-            <Route path="/" element={<AuthRoute><Page /></AuthRoute>} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="*" element={<Navigate to="/login" />} />
-          </Routes>
-        </BrowserRouter>
-      </MuiThemeProvider>
-    </Provider>
+    <MuiThemeProvider theme={theme}>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/profile/:playerId" element={<AuthRoute><Page /></AuthRoute>} />
+          <Route path="/history" element={<AuthRoute><Page /></AuthRoute>} />
+          <Route path="/ranking" element={<AuthRoute><Page /></AuthRoute>} />
+          <Route path="/charts" element={<AuthRoute><Page /></AuthRoute>} />
+          <Route path="/rules" element={<AuthRoute><Page /></AuthRoute>} />
+          <Route path="/addPlayer" element={<AuthRoute><Page /></AuthRoute>} />
+          <Route path="/addGame" element={<AuthRoute><Page /></AuthRoute>} />
+          <Route path="/" element={<AuthRoute><Page /></AuthRoute>} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="*" element={<Navigate to="/login" />} />
+        </Routes>
+      </BrowserRouter>
+    </MuiThemeProvider>
   );
 }
 

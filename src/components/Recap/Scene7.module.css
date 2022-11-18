@@ -63,7 +63,7 @@
 }
 
 .scene7 :global(#bottle) {
-  background: url('../bottle.svg');
+  background: url('../../assets/bottle.svg');
   width: 50px;
   aspect-ratio: 89 / 337;
   position: absolute;
@@ -74,7 +74,7 @@
 }
 
 .scene7 :global(#bottleLeft) {
-  background: url('../bottle.svg');
+  background: url('../../assets/bottle.svg');
   width: 50px;
   aspect-ratio: 89 / 337;
   position: absolute;
@@ -85,7 +85,7 @@
 }
 
 .scene7 :global(#bottleRight) {
-  background: url('../bottle.svg');
+  background: url('../../assets/bottle.svg');
   width: 50px;
   aspect-ratio: 89 / 337;
   position: absolute;
@@ -96,7 +96,7 @@
 }
 
 .scene7 :global(#bottleMalus) {
-  background: url('../malusBottle.svg');
+  background: url('../../assets/malusBottle.svg');
   width: 50px;
   aspect-ratio: 84 / 179;
   position: absolute;
@@ -107,7 +107,7 @@
 }
 
 .scene7 :global(.rondelleTop) {
-  background: url('./rondelle2.png');
+  background: url('../../assets/rondelle.png');
   background-size: cover;
   aspect-ratio: 245/145;
   width: 100px;
@@ -119,7 +119,7 @@
 }
 
 .scene7 :global(.rondelleBottom) {
-  background: url('./rondelle2.png');
+  background: url('../../assets/rondelle.png');
   background-size: cover;
   aspect-ratio: 245/121;
   width: 100px;

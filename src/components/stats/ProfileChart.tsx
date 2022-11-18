@@ -1,12 +1,12 @@
 import * as Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
 import React from 'react';
-import styles from '../App.module.css';
-import { computeScore, formatDate } from '../helpers';
-import { GamesResponse } from '../sagas/api';
+import styles from './ProfileChart.module.css';
+import { computeScore, formatDate } from '../../helpers';
+import { Game } from '../../services/games';
 
 interface ConnectedProps {
-  playerGames: GamesResponse;
+  playerGames: Game[];
 }
 
 const ProfileChart: React.FunctionComponent<ConnectedProps> = props => {
@@ -14,7 +14,7 @@ const ProfileChart: React.FunctionComponent<ConnectedProps> = props => {
 
   const reversedPlayerGames = playerGames.reverse();
 
-  const smoothData = (games: GamesResponse) => {
+  const smoothData = (games: Game[]) => {
     return games
       .map(cur => computeScore(cur))
       .reduce<number[]>((data, score, index, scores) => {

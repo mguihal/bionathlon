@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import { RemoteData, fold } from '@devexperts/remote-data-ts';
 import { useParams } from 'react-router-dom';
 
 import Table from '@material-ui/core/Table';
@@ -8,30 +7,25 @@ import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
 
-import { AppState } from '../store';
-
-import { fetchPlayerGames } from '../actionCreators/game';
-
-import styles from '../App.module.css';
-import { GamesResponse } from '../sagas/api';
+import styles from './ProfilePage.module.css';
 
 import { formatDate, round2, byDateTimeDesc, computeScore } from '../helpers';
 
-import ProfileChart from './ProfileChart';
-import { useDispatch, useSelector } from 'react-redux';
+import ProfileChart from './stats/ProfileChart';
+import { useGetPaginatedGames } from '../services/games';
+import { useAuth } from '../services/auth';
 
 const ProfilePage = () => {
 
   const { playerId } = useParams();
+  const [playerGames, fetchGames] = useGetPaginatedGames();
+  const { getUser } = useAuth();
 
-  const dispatch = useDispatch();
-
-  const playerGames = useSelector<AppState, RemoteData<string, GamesResponse>>(state => state.game.playerGames);
-  const currentUserId = useSelector<AppState, number>(state => state.user.user.id);
+  const currentUser = getUser();
 
   useEffect(() => {
-    dispatch(fetchPlayerGames(playerId ? Number(playerId) : currentUserId));
-  }, [dispatch, playerId, currentUserId]);
+    fetchGames({ playerId: playerId ? playerId : currentUser.id.toString() });
+  }, [fetchGames, playerId, currentUser.id]);
 
   const ErrorMessage = (props: {message: string}) => (
     <Typography variant="body2" className={styles.emptyTable}>
@@ -44,61 +38,58 @@ const ProfilePage = () => {
       <div className={styles.profileTitle}>
         <Typography variant="h6">
           {
-            fold<string, GamesResponse, string>(
+            playerGames.fold(
+              (games) => games.length === 0 ? 'Joueur inconnu' : games[0].playerName,
+              () => 'Erreur de chargement',
               () => 'Joueur inconnu',
               () => 'Chargement...',
-              (error) => 'Erreur de chargement',
-              (games) => games.length === 0 ? 'Joueur inconnu' : games[0].playerName
-            )(playerGames)
+            )
           }
         </Typography>
         <Typography variant="subtitle2">
-          Matchs joués : {fold<string, GamesResponse, string>(
+          Matchs joués : {playerGames.fold(
+            (games) => games.length.toString(),
+            () => 'N/A',
             () => 'N/A',
             () => 'Chargement...',
-            () => 'N/A',
-            (games) => games.length.toString()
-          )(playerGames)}
+          )}
         </Typography>
         <Typography variant="subtitle2">
-          Points cumulés : {fold<string, GamesResponse, string>(
+          Points cumulés : {playerGames.fold(
+            (games) => games.reduce((acc, cur) => acc + computeScore(cur), 0).toString(),
+            () => 'N/A',
             () => 'N/A',
             () => 'Chargement...',
-            () => 'N/A',
-            (games) => games.reduce((acc, cur) => acc + computeScore(cur), 0).toString()
-          )(playerGames)}
+          )}
         </Typography>
         <Typography variant="subtitle2">
-          Moyenne par match : {fold<string, GamesResponse, string>(
+          Moyenne par match : {playerGames.fold(
+            (games) => round2((games.reduce((acc, cur) => acc + computeScore(cur), 0) / games.length)).toString(),
+            () => 'N/A',
             () => 'N/A',
             () => 'Chargement...',
-            () => 'N/A',
-            (games) => round2((games.reduce((acc, cur) => acc + computeScore(cur), 0) / games.length)).toString()
-          )(playerGames)}
+          )}
         </Typography>
         <Typography variant="subtitle2">
-          Meilleur score : {fold<string, GamesResponse, string>(
+          Meilleur score : {playerGames.fold(
+            (games) => games.reduce((acc, cur) => computeScore(cur) > acc ? computeScore(cur) : acc, -999).toString(),
+            () => 'N/A',
             () => 'N/A',
             () => 'Chargement...',
-            () => 'N/A',
-            (games) => games.reduce((acc, cur) => computeScore(cur) > acc ? computeScore(cur) : acc, -999).toString()
-          )(playerGames)}
+          )}
         </Typography>
       </div>
 
-      {fold<string, GamesResponse, JSX.Element>(
+      {playerGames.fold(
+        (games) => <ProfileChart playerGames={games} />,
+        (error) => <ErrorMessage message={error.message} />,
         () => <ErrorMessage message="Aucune donnée" />,
         () => <ErrorMessage message="Chargement..." />,
-        (error) => <ErrorMessage message={error} />,
-        (games) => <ProfileChart playerGames={games} />
-      )(playerGames)}
+      )}
 
       <div className={`${styles.tableContainer} ${styles.profileTable}`}>
         {
-          fold<string, GamesResponse, JSX.Element>(
-            () => <ErrorMessage message="Aucune donnée" />,
-            () => <ErrorMessage message="Chargement..." />,
-            (error) => <ErrorMessage message={error} />,
+          playerGames.fold(
             (games) => games.length === 0 ?
               <ErrorMessage message="Aucun score" /> :
               <Table aria-label="simple table">
@@ -116,8 +107,11 @@ const ProfilePage = () => {
                     </TableRow>
                   ))}
                 </TableBody>
-              </Table>
-          )(playerGames)
+              </Table>,
+            (error) => <ErrorMessage message={error.message} />,
+            () => <ErrorMessage message="Aucune donnée" />,
+            () => <ErrorMessage message="Chargement..." />,
+          )
         }
       </div>
     </>

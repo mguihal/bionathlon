@@ -1,4 +1,3 @@
-import joi from '@hapi/joi';
 import { VercelRequest, VercelResponse } from '@vercel/node';
 import {
   byScore,
@@ -10,27 +9,21 @@ import {
   round2,
 } from '../src/helpers';
 import { RouteConfig, routeWrapper, withDb } from './_common';
+import { RankingsQueryParams, RankingsResponse, rankingsQueryParamsSchema } from '../src/services/stats';
 
-interface Filters {
-  dateFilter?: string;
-}
-
-interface Rank {
+type Rank = {
   id: number;
   name: string;
   score: number;
   suffix?: string;
-}
+};
 
 const routeConfig: RouteConfig = {
   get: {
     validate: {
-      payload: joi.any(),
-      query: joi.object().keys({
-        dateFilter: joi.string().description('Filtre par mois (ex: 2021-09) ou par an (ex: 2021)'),
-      }),
+      query: rankingsQueryParamsSchema,
     },
-    handler: async (res, _, query: Filters) => {
+    handler: async (res, _, query: RankingsQueryParams) => {
       return withDb(async db => {
         const gamesQuery = db('game')
           .join('player', 'game.playerId', 'player.id')
@@ -195,7 +188,7 @@ const routeConfig: RouteConfig = {
           efficiency,
           avgPoints,
           topScore,
-        });
+        } as RankingsResponse);
       });
     },
   },

@@ -1,4 +1,10 @@
-import { GameResponse, GamesResponse } from './sagas/api';
+import { Game } from './services/games';
+
+export function getTZDate(date: Date = new Date()) {
+  return new Date(date.getTime() - date.getTimezoneOffset() * 60 * 1000)
+    .toISOString()
+    .split('T')[0];
+}
 
 export function formatDate(date: string = new Date().toISOString()) {
   const dateObject = new Date(date);
@@ -11,8 +17,8 @@ export function formatDate(date: string = new Date().toISOString()) {
   return `${pad(day)}/${pad(month)}/${year}`;
 }
 
-export function groupByDateTime(games: GamesResponse) {
-  return games.reduce<{ [key: string]: GamesResponse }>(function(groups, game) {
+export function groupByDateTime(games: Game[]) {
+  return games.reduce<{ [key: string]: Game[] }>(function(groups, game) {
     const groupKey = `${(new Date(game.date)).toISOString()} - ${
       game.time === 'midday' ? 'midi' : 'soir'
     }`;
@@ -22,14 +28,17 @@ export function groupByDateTime(games: GamesResponse) {
   }, {});
 }
 
-export function groupByPlayer(games: GamesResponse) {
-  return games.reduce<{ [key: string]: GamesResponse }>(function(groups, game) {
+export function groupByPlayer(games: Game[]) {
+  return games.reduce<{ [key: string]: Game[] }>(function(groups, game) {
     (groups[game.playerId] = groups[game.playerId] || []).push(game);
     return groups;
   }, {});
 }
 
-export function byScoreDesc(a: GameResponse, b: GameResponse) {
+export function byScoreDesc(
+  a: Pick<Game, 'score' | 'scoreLeftBottle' | 'scoreMiddleBottle' | 'scoreRightBottle' | 'scoreMalusBottle' | 'suddenDeath'>, 
+  b: Pick<Game, 'score' | 'scoreLeftBottle' | 'scoreMiddleBottle' | 'scoreRightBottle' | 'scoreMalusBottle'>
+) {
   const scoreA = computeScore(a);
   const scoreB = computeScore(b);
 
@@ -42,7 +51,7 @@ export function byScoreDesc(a: GameResponse, b: GameResponse) {
   }
 }
 
-export function byDateTimeDesc(a: GameResponse, b: GameResponse) {
+export function byDateTimeDesc(a: Game, b: Game) {
   const aKey = `${a.date} - ${a.time === 'midday' ? 'midi' : 'soir'}`;
   const bKey = `${b.date} - ${b.time === 'midday' ? 'midi' : 'soir'}`;
 
@@ -75,11 +84,11 @@ export function round2(nb: number) {
   return Math.round(nb * 100) / 100;
 }
 
-export function isMidDayGame(game: GameResponse) {
+export function isMidDayGame(game: Game) {
   return game.time === 'midday';
 }
 
-export function isWinner(game: GameResponse, games: GamesResponse) {
+export function isWinner(game: Game, games: Game[]) {
   return games.every(otherGame => {
     if (otherGame.playerId === game.playerId) {
       return true;
@@ -93,7 +102,7 @@ export function isWinner(game: GameResponse, games: GamesResponse) {
   });
 }
 
-export function getWinner(games: GamesResponse) {
+export function getWinner(games: Game[]) {
   const sorted = games.sort(byScoreDesc);
 
   if (
@@ -108,14 +117,14 @@ export function getWinner(games: GamesResponse) {
   }
 }
 
-export function getSuddenDeathGames(games: GamesResponse, checkIfDone: boolean = true) {
+export function getSuddenDeathGames(games: Game[], checkIfDone: boolean = true) {
   if (games.length === 0) {
     return [];
   }
 
   const sorted = games.sort(byScoreDesc);
   let isSuddenDeathDone = false;
-  let suddenDeathGames: GamesResponse = [];
+  let suddenDeathGames: Game[] = [];
 
   games.forEach(game => {
     if (computeScore(game) === computeScore(sorted[0])) {
@@ -130,7 +139,7 @@ export function getSuddenDeathGames(games: GamesResponse, checkIfDone: boolean =
 }
 
 export function computeScore(
-  game: GameResponse,
+  game: Pick<Game, 'score' | 'scoreLeftBottle' | 'scoreMiddleBottle' | 'scoreRightBottle' | 'scoreMalusBottle'>,
   onlyScoreWithBottles: boolean = false,
 ) {
   const {
@@ -161,7 +170,9 @@ export function computeScore(
   );
 }
 
-export function computeRondelles(game: GameResponse) {
+export function computeRondelles(
+  game: Pick<Game, 'score' | 'scoreLeftBottle' | 'scoreMiddleBottle' | 'scoreRightBottle' | 'scoreMalusBottle'>,
+) {
   const {
     score,
     scoreLeftBottle,

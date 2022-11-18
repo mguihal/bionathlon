@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link, Navigate } from 'react-router-dom';
-import { RemoteData, isSuccess, isFailure, fold } from '@devexperts/remote-data-ts';
 
 import TextField from '@material-ui/core/TextField';
 import Select from '@material-ui/core/Select';
@@ -18,70 +17,64 @@ import UpdateIcon from '@material-ui/icons/Update';
 import DateFnsUtils from '@date-io/date-fns';
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
 
-import { AppState } from '../store';
-import { fetchPlayers } from '../actionCreators/player';
-import { addGame } from '../actionCreators/game';
-
-import { PlayersResponse } from '../sagas/api';
-
 import { formatDate } from '../helpers';
 
-import BottleScore from './BottleScore';
-import MalusBottleScore from './MalusBottleScore';
+import BottleScore from './BottleScore/BottleScore';
+import MalusBottleScore from './BottleScore/MalusBottleScore';
 
-import styles from '../App.module.css';
-import { useDispatch, useSelector } from 'react-redux';
+import styles from './AddGamePage.module.css';
+import { useGetPlayers } from '../services/players';
+import { useAddGame } from '../services/games';
+import { useAuth } from '../services/auth';
 
 const AddGamePage = () => {
 
   const currentTime = new Date();
 
-  const players = useSelector<AppState, RemoteData<string, PlayersResponse>>(state => state.player.list);
-  const currentUserName = useSelector<AppState, string>(state => state.user.user.name);
-  const currentUserId = useSelector<AppState, number>(state => state.user.user.id);
-  const addResponse = useSelector<AppState, RemoteData<string, any>>(state => state.game.addResponse);
+  const [players] = useGetPlayers(true);
+  const [addGameResponse, addGame] = useAddGame();
+  const { getUser } = useAuth();
 
-  const [playerId, setPlayerId] = useState<number>(currentUserId);
+  const currentUser = getUser();
+
+  const [playerId, setPlayerId] = useState<number>(currentUser.id);
   const [score, setScore] = useState<number | ''>('');
   const [scoreLeftBottle, setScoreLeftBottle] = useState<number>(0);
   const [scoreMiddleBottle, setScoreMiddleBottle] = useState<number>(0);
   const [scoreRightBottle, setScoreRightBottle] = useState<number>(0);
   const [scoreMalusBottle, setScoreMalusBottle] = useState<number>(0);
   const [note, setNote] = useState<string>('');
-  const [time, setTime] = useState<string>(currentTime.getHours() < 15 ? 'midday' : 'evening');
+  const [time, setTime] = useState<'midday' | 'evening'>(currentTime.getHours() < 15 ? 'midday' : 'evening');
   const [date, setDate] = useState<Date>(currentTime);
   const [showDateFields, setShowDateFields] = useState<boolean>(false);
   const [showOldScoreField, setShowOldScoreField] = useState<boolean>(false);
 
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    dispatch(fetchPlayers());
-  }, [dispatch]);
-
   const onSubmit = () => {
     if (score !== '' || !showOldScoreField) {
-      dispatch(addGame(
-        date.toISOString(),
-        time,
-        playerId,
-        showOldScoreField ? Number(score) : null,
-        showOldScoreField ? null : scoreLeftBottle,
-        showOldScoreField ? null : scoreMiddleBottle,
-        showOldScoreField ? null : scoreRightBottle,
-        showOldScoreField ? null : scoreMalusBottle,
-        note,
-      ));
+      addGame({}, {
+        data: {
+          date: date.toISOString(),
+          time,
+          playerId,
+          score: showOldScoreField ? Number(score) : null,
+          scoreLeftBottle: showOldScoreField ? null : scoreLeftBottle,
+          scoreMiddleBottle: showOldScoreField ? null : scoreMiddleBottle,
+          scoreRightBottle: showOldScoreField ? null : scoreRightBottle,
+          scoreMalusBottle: showOldScoreField ? null : scoreMalusBottle,
+          note,
+          suddenDeath: false,
+        }
+      });
     }
   }
 
-  if (isSuccess(addResponse)) {
+  if (addGameResponse.isSuccess()) {
     return <Navigate to={'/'} />;
   }
 
   return (
     <>
-      <form noValidate autoComplete="off" className={styles.addPlayerForm} onSubmit={(e) => e.preventDefault()}>
+      <form noValidate autoComplete="off" className={styles.form} onSubmit={(e) => e.preventDefault()}>
         <Typography variant="h6">
           Ajout d'un score
         </Typography>
@@ -91,7 +84,7 @@ const AddGamePage = () => {
           &nbsp;-&nbsp;
           {time === 'midday' ? 'Midi' : 'Soir'}
           &nbsp;-&nbsp;
-          {currentUserName}
+          {currentUser.name}
           <IconButton size="small" onClick={() => setShowDateFields(val => !val)}>
             <UpdateIcon />
           </IconButton>
@@ -110,7 +103,7 @@ const AddGamePage = () => {
             disableFuture
           />
         </MuiPickersUtilsProvider>
-        <RadioGroup name="time2" value={time} onChange={e => setTime(e.target.value as string)} row style={{
+        <RadioGroup name="time2" value={time} onChange={e => setTime(e.target.value as 'midday' | 'evening')} row style={{
           marginLeft: 'auto',
           marginRight: 'auto',
           display: showDateFields ? 'flex': 'none',
@@ -135,12 +128,12 @@ const AddGamePage = () => {
           style={{ display: showDateFields ? 'flex': 'none' }}
         >
           {
-            fold<string, PlayersResponse, JSX.Element[]>(
-              () => [<MenuItem key={'notAsked'} value={currentUserId} disabled></MenuItem>],
-              () => [<MenuItem key={'loading'} value={currentUserId} disabled>{'Chargement...'}</MenuItem>],
-              (error) => [<MenuItem key={'error'} value={currentUserId} disabled>{'Erreur de récupération'}</MenuItem>],
-              (players) => players.map(player => <MenuItem key={player.id} value={player.id}>{player.name}</MenuItem>)
-            )(players)
+            players.fold(
+              (data) => data.map(player => <MenuItem key={player.id} value={player.id}>{player.name}</MenuItem>),
+              () => [<MenuItem key={'error'} value={currentUser.id} disabled>{'Erreur de récupération'}</MenuItem>],
+              () => [<MenuItem key={'notAsked'} value={currentUser.id} disabled></MenuItem>],
+              () => [<MenuItem key={'loading'} value={currentUser.id} disabled>{'Chargement...'}</MenuItem>],
+            )
           }
         </Select>
 
@@ -190,7 +183,7 @@ const AddGamePage = () => {
           type="submit"
           color="primary"
           variant="contained"
-          disabled={(showOldScoreField && score === '') || !isSuccess(players)}
+          disabled={(showOldScoreField && score === '') || !players.isSuccess()}
           onClick={() => onSubmit()}
         >
           Ajouter
@@ -198,18 +191,17 @@ const AddGamePage = () => {
         <Button type="submit" variant="contained" component={Link} to="/">Retour</Button>
         <Snackbar
           anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-          open={isSuccess(addResponse) || isFailure(addResponse)}
+          open={addGameResponse.isSuccess() || addGameResponse.isError()}
         >
           <SnackbarContent
-            style={{background: isSuccess(addResponse) ? '#479F4C' : '#D13135'}}
+            style={{background: addGameResponse.isSuccess() ? '#479F4C' : '#D13135'}}
             message={(
               <span>{
-                fold<string, any, string>(
+                addGameResponse.fold(
+                  () => 'Le score a été ajouté',
+                  (error) => error.message,
                   () => '',
-                  () => '',
-                  (error) => error,
-                  () => 'Le score a été ajouté'
-                )(addResponse)
+                )
               }</span>
             )}
           />

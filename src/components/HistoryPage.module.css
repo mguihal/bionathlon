@@ -1,0 +1,25 @@
+.tableContainer {
+  margin: auto;
+  width: 90%;
+  margin-top: 30px;
+  padding-bottom: 80px;
+}
+
+.tableContainer th {
+  font-weight: bold;
+}
+
+.tableContainer .emptyTable {
+  margin-top: 30px;
+}
+
+@media screen and (min-width: 768px) {
+  .tableContainer {
+    width: 35%;
+    padding-bottom: 30px;
+  }
+
+  button.loadMoreButton {
+    margin-bottom: 20px;
+  }
+}

@@ -16,32 +16,30 @@ import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 
-import BottleScore from './BottleScore';
-import MalusBottleScore from './MalusBottleScore';
+import BottleScore from '../BottleScore/BottleScore';
+import MalusBottleScore from '../BottleScore/MalusBottleScore';
 
 import processString from 'react-process-string';
 
-import { GamesResponse, GameResponse } from '../sagas/api';
-import { byScoreDesc, isWinner, getSuddenDeathGames, computeScore } from '../helpers';
+import { byScoreDesc, isWinner, getSuddenDeathGames, computeScore } from '../../helpers';
 
-import { setSuddenDeathWinner } from '../actionCreators/game';
+import styles from './SessionTable.module.css';
+import { Game, useUpdateGame } from '../../services/games';
 
-import styles from '../App.module.css';
-import { useDispatch } from 'react-redux';
+type Props = {
+  games: Game[];
+  onUpdate: () => void;
+};
 
-interface Props {
-  games: GamesResponse;
-  context: string;
-}
+const SessionTable = (props: Props) => {
 
-const SessionTable: React.FunctionComponent<Props> = (props) => {
+  const { games, onUpdate } = props;
 
-  const { games, context } = props;
+  const [, updateGame] = useUpdateGame();
 
   const [open, setOpen] = React.useState(false);
-  const [openDetails, setOpenDetails] = React.useState<GameResponse | null>(null);
+  const [openDetails, setOpenDetails] = React.useState<Game | null>(null);
   const [winner, setWinner] = React.useState(0);
-  const dispatch = useDispatch();
 
   const suddenDeathGames = getSuddenDeathGames(games);
 
@@ -54,8 +52,11 @@ const SessionTable: React.FunctionComponent<Props> = (props) => {
   };
 
   const handleConfirm = () => {
-    handleClose();
-    dispatch(setSuddenDeathWinner(winner, context));
+    updateGame({ id: winner.toString() }, { data: { suddenDeath: true } })
+      .then(() => {
+        handleClose();
+        onUpdate()
+      });
   };
 
   const renderNote = (note: string) => {

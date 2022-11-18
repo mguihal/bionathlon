@@ -1,6 +1,5 @@
-import joi from '@hapi/joi';
 import { VercelRequest, VercelResponse } from '@vercel/node';
-import { RecapData } from '../src/components/Recap/RecapContext';
+import { recapQueryParamsSchema, RecapResponse, RecapQueryParams } from '../src/services/recap';
 import {
   computeScore,
   groupByDateTime,
@@ -8,26 +7,15 @@ import {
 } from '../src/helpers';
 import { RouteConfig, routeWrapper, withDb } from './_common';
 
-interface Filters {
-  playerId: number;
-}
-
-interface Rank {
-  id: number;
-  name: string;
-  score: number;
-  suffix?: string;
-}
-
 const routeConfig: RouteConfig = {
   get: {
     validate: {
-      payload: joi.any(),
-      query: joi.object().keys({
-        playerId: joi.number().description('Id du joueur'),
-      }),
+      query: recapQueryParamsSchema,
     },
-    handler: async (res, _, query: Filters) => {
+    handler: async (res, _, query: RecapQueryParams) => {
+      const playerId = parseInt(query.playerId, 10);
+      const year = parseInt(query.year, 10);
+
       return withDb(async db => {
         const gamesQuery = db('game')
           .join('player', 'game.playerId', 'player.id')
@@ -44,14 +32,14 @@ const routeConfig: RouteConfig = {
             'note',
             'name as playerName',
             'suddenDeath',
-          ).whereRaw(`CAST(date AS TEXT) >= ?`, [`2021-01`])
-          .whereRaw(`CAST(date AS TEXT) < ?`, [`2022-01`]);
+          ).whereRaw(`CAST(date AS TEXT) >= ?`, [`${year}-01`])
+          .whereRaw(`CAST(date AS TEXT) < ?`, [`${year + 1}-01`]);
 
         const previousYearQuery = db('game')
           .count('id')
-          .where('playerId', query.playerId)
-          .whereRaw(`CAST(date AS TEXT) >= ?`, [`2020-01`])
-          .whereRaw(`CAST(date AS TEXT) < ?`, [`2021-01`]);
+          .where('playerId', playerId)
+          .whereRaw(`CAST(date AS TEXT) >= ?`, [`${year - 1}-01`])
+          .whereRaw(`CAST(date AS TEXT) < ?`, [`${year}-01`]);
 
         const games = await gamesQuery;
         const previousYearGames = await previousYearQuery;
@@ -59,7 +47,7 @@ const routeConfig: RouteConfig = {
         const playersGames = groupByPlayer(games);
         const sessionGames = groupByDateTime(games);
 
-        const currentPlayerGames = playersGames[query.playerId];
+        const currentPlayerGames = playersGames[playerId];
 
         const nbBottles = currentPlayerGames.reduce((nb, game) => {
           return nb + (game.scoreLeftBottle || 0) + (game.scoreMiddleBottle || 0) + (game.scoreRightBottle || 0) + (game.scoreMalusBottle || 0);
@@ -80,7 +68,7 @@ const routeConfig: RouteConfig = {
         const suddenDeaths = Object.keys(sessionGames).reduce((obj, sessionKey) => {
           const games = sessionGames[sessionKey];
 
-          const currentPlayerGame = games.find(game => game.playerId === query.playerId);
+          const currentPlayerGame = games.find(game => game.playerId === playerId);
 
           if (currentPlayerGame && games.length > 1) {
             const currentPlayerScore = computeScore(currentPlayerGame);
@@ -118,7 +106,7 @@ const routeConfig: RouteConfig = {
           return obj;
         }, {date: '', points: -99, left: 0, middle: 0, right: 0, malus: 0});
 
-        const response: RecapData = {
+        const response: RecapResponse = {
           nbGames: currentPlayerGames.length,
           nbGamesPreviousYear: parseInt(previousYearGames[0].count as string, 10),
           nbGamesMidday: currentPlayerGames.filter(game => game.time === 'midday').length,
