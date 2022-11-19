@@ -1,6 +1,5 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
 import {
-  byScore,
   computeRondelles,
   computeScore,
   getWinner,
@@ -17,6 +16,16 @@ type Rank = {
   score: number;
   suffix?: string;
 };
+
+function byScore(a: Rank, b: Rank) {
+  if (a.score < b.score) {
+    return 1;
+  } else if (a.score > b.score) {
+    return -1;
+  } else {
+    return 0;
+  }
+}
 
 const routeConfig: RouteConfig = {
   get: {

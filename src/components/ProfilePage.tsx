@@ -6,6 +6,7 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
+import { Avatar } from '@material-ui/core';
 
 import styles from './ProfilePage.module.css';
 
@@ -46,6 +47,16 @@ const ProfilePage = () => {
             )
           }
         </Typography>
+        {
+          playerGames.fold(
+            (games) => games.length === 0 
+              ? <Avatar alt={''} src={''} className={styles.avatar} /> 
+              : <Avatar alt={games[0].playerName} src={games[0].playerAvatar || ''} imgProps={{ referrerPolicy: 'no-referrer'}} className={styles.avatar} />,
+            () => <Avatar alt={''} src={''} className={styles.avatar} />,
+            () => <Avatar alt={''} src={''} className={styles.avatar} />,
+            () => <Avatar alt={''} src={''} className={styles.avatar} />,
+          )
+        }
         <Typography variant="subtitle2">
           Matchs joués : {playerGames.fold(
             (games) => games.length.toString(),

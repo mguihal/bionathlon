@@ -64,22 +64,6 @@ export function byDateTimeDesc(a: Game, b: Game) {
   }
 }
 
-interface Rank {
-  id: number;
-  name: string;
-  score: number;
-}
-
-export function byScore(a: Rank, b: Rank) {
-  if (a.score < b.score) {
-    return 1;
-  } else if (a.score > b.score) {
-    return -1;
-  } else {
-    return 0;
-  }
-}
-
 export function round2(nb: number) {
   return Math.round(nb * 100) / 100;
 }

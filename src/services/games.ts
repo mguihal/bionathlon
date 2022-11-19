@@ -24,6 +24,7 @@ const gameSchema = t.intersection([
     id: t.number,
     suddenDeath: t.boolean,
     playerName: t.string,
+    playerAvatar: nullable(t.string),
   })
 ]);
 
