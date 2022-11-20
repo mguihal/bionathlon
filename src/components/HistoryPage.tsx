@@ -5,6 +5,7 @@ import styles from './HistoryPage.module.css';
 import { formatDate, groupByDateTime } from '../helpers';
 import SessionTable from './SessionTable/SessionTable';
 import { Game, useGetPaginatedGames } from '../services/games';
+import EmptyTable from './SessionTable/EmptyTable';
 
 const PAGE_COUNT = 10;
 
@@ -32,12 +33,6 @@ const HistoryPage = () => {
   useEffect(() => {
     onUpdate();
   }, [onUpdate]);
-
-  const ErrorMessage = (props: { message: string }) => (
-    <Typography variant="body2" className={styles.emptyTable}>
-      {props.message}
-    </Typography>
-  );
 
   function renderTables(games: Game[]) {
     const groupedGames = groupByDateTime(games);
@@ -71,10 +66,10 @@ const HistoryPage = () => {
   return (
     <>
       {games.fold(
-        games => games.length === 0 ? <ErrorMessage message="Aucun score" /> : renderTables(games),
-        error => <ErrorMessage message={error.message} />,
-        () => <ErrorMessage message="Aucune donnée" />,
-        () => <ErrorMessage message="Chargement..." />,
+        games => games.length === 0 ? <EmptyTable message="Aucun score" /> : renderTables(games),
+        error => <EmptyTable message={error.message} />,
+        () => <EmptyTable message="Aucune donnée" />,
+        () => <EmptyTable message="Chargement..." />,
       )}
     </>
   );

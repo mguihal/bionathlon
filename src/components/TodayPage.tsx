@@ -14,18 +14,13 @@ import { formatDate, isMidDayGame } from '../helpers';
 import { useGetTodayGames } from '../services/games';
 import Recap from './Recap/Recap';
 import SessionTable from './SessionTable/SessionTable';
+import EmptyTable from './SessionTable/EmptyTable';
 
 const TodayPage = () => {
 
   const [games, fetchTodayGames] = useGetTodayGames();
 
   const [open, setOpen] = React.useState(false);
-
-  const ErrorMessage = (props: {message: string}) => (
-    <Typography variant="body2" className={styles.emptyTable}>
-       {props.message}
-    </Typography>
-  );
 
   const handleOpen = () => {
     setOpen(true);
@@ -78,10 +73,10 @@ const TodayPage = () => {
           {
             games.fold(
               (games) => games.filter(isMidDayGame).length === 0 ?
-                <ErrorMessage message="Aucun score" /> : <SessionTable games={games.filter(isMidDayGame)} onUpdate={onUpdate} />,
-                (error) => <ErrorMessage message={error.message} />,
-              () => <ErrorMessage message="Aucune donnée" />,
-              () => <ErrorMessage message="Chargement..." />,
+                <EmptyTable message="Aucun score" /> : <SessionTable games={games.filter(isMidDayGame)} onUpdate={onUpdate} />,
+                (error) => <EmptyTable message={error.message} />,
+              () => <EmptyTable message="Aucune donnée" />,
+              () => <EmptyTable message="Chargement..." />,
             )
           }
         </div>
@@ -93,10 +88,10 @@ const TodayPage = () => {
           {
             games.fold(
               (games) => games.filter((e) => !isMidDayGame(e)).length === 0 ?
-                <ErrorMessage message="Aucun score" /> : <SessionTable games={games.filter((e) => !isMidDayGame(e))} onUpdate={onUpdate} />,
-              (error) => <ErrorMessage message={error.message} />,
-              () => <ErrorMessage message="Aucune donnée" />,
-              () => <ErrorMessage message="Chargement..." />,
+                <EmptyTable message="Aucun score" /> : <SessionTable games={games.filter((e) => !isMidDayGame(e))} onUpdate={onUpdate} />,
+              (error) => <EmptyTable message={error.message} />,
+              () => <EmptyTable message="Aucune donnée" />,
+              () => <EmptyTable message="Chargement..." />,
             )
           }
         </div>

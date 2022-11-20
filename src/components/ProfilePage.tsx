@@ -1,26 +1,27 @@
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
-import { Avatar } from '@material-ui/core';
+import { Avatar, Button } from '@material-ui/core';
 
 import styles from './ProfilePage.module.css';
 
-import { formatDate, round2, byDateTimeDesc, computeScore } from '../helpers';
+import { round2, byDateTimeDesc, computeScore } from '../helpers';
 
 import ProfileChart from './stats/ProfileChart';
 import { useGetPaginatedGames } from '../services/games';
 import { useAuth } from '../services/auth';
+import PlayerSessionTable from './SessionTable/PlayerSessionTable';
+import EmptyTable from './SessionTable/EmptyTable';
+
+const PAGE_COUNT = 10;
 
 const ProfilePage = () => {
 
   const { playerId } = useParams();
   const [playerGames, fetchGames] = useGetPaginatedGames();
   const { getUser } = useAuth();
+  const [currentPage, setCurrentPage] = useState(0);
 
   const currentUser = getUser();
 
@@ -28,11 +29,15 @@ const ProfilePage = () => {
     fetchGames({ playerId: playerId ? playerId : currentUser.id.toString() });
   }, [fetchGames, playerId, currentUser.id]);
 
-  const ErrorMessage = (props: {message: string}) => (
-    <Typography variant="body2" className={styles.emptyTable}>
-       {props.message}
-    </Typography>
-  );
+  const handleNext = useCallback(() => {
+    setCurrentPage(page => page + 1);
+  }, []);
+
+  const handlePrev = useCallback(() => {
+    setCurrentPage(page => page - 1);
+  }, []);
+
+  const sortedGames = useMemo(() => playerGames.getOrElse([]).slice().sort(byDateTimeDesc), [playerGames]);
 
   return (
     <>
@@ -93,38 +98,33 @@ const ProfilePage = () => {
 
       {playerGames.fold(
         (games) => <ProfileChart playerGames={games} />,
-        (error) => <ErrorMessage message={error.message} />,
-        () => <ErrorMessage message="Aucune donnée" />,
-        () => <ErrorMessage message="Chargement..." />,
+        (error) => <EmptyTable message={error.message} />,
+        () => <EmptyTable message="Aucune donnée" />,
+        () => <EmptyTable message="Chargement..." />,
       )}
 
       <div className={`${styles.tableContainer} ${styles.profileTable}`}>
         {
           playerGames.fold(
             (games) => games.length === 0 ?
-              <ErrorMessage message="Aucun score" /> :
-              <Table aria-label="simple table">
-                <TableBody>
-                  {games.sort(byDateTimeDesc).map(game => (
-                    <TableRow key={game.id}>
-                      <TableCell component="th" scope="row" align="right" style={{width: '50%'}}>
-                        {formatDate(game.date)} - {game.time === 'midday' ? 'midi' : 'soir'}
-                      </TableCell>
-                      <TableCell>
-                        {computeScore(game)}
-                        {game.note && <br/>}
-                        {game.note && <span className={styles.tableNote}>({game.note})</span>}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>,
-            (error) => <ErrorMessage message={error.message} />,
-            () => <ErrorMessage message="Aucune donnée" />,
-            () => <ErrorMessage message="Chargement..." />,
+              <EmptyTable message="Aucun score" /> :
+              <PlayerSessionTable games={sortedGames.slice(currentPage * PAGE_COUNT, currentPage * PAGE_COUNT + PAGE_COUNT)} />,
+            (error) => <EmptyTable message={error.message} />,
+            () => <EmptyTable message="Aucune donnée" />,
+            () => <EmptyTable message="Chargement..." />,
           )
         }
       </div>
+      {currentPage > 0 && (
+        <Button onClick={handlePrev} className={styles.loadMoreButton}>
+          Précédent
+        </Button>
+      )}
+      {sortedGames.slice(currentPage * PAGE_COUNT, currentPage * PAGE_COUNT + PAGE_COUNT).length === PAGE_COUNT && (
+        <Button onClick={handleNext} className={styles.loadMoreButton}>
+          Suivant
+        </Button>
+      )}
     </>
   );
 }

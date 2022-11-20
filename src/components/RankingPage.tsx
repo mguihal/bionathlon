@@ -12,6 +12,7 @@ import styles from './RankingPage.module.css';
 import DateSelect from './stats/DateSelect';
 import Button from '@material-ui/core/Button';
 import { useGetRankings } from '../services/stats';
+import EmptyTable from './SessionTable/EmptyTable';
 
 type RankingType =
   | 'nbMatchs'
@@ -36,12 +37,6 @@ const RankingPage = () => {
   useEffect(() => {
     fetchRankings(dateFilter === 'all' ? {} : { dateFilter });
   }, [dateFilter, fetchRankings]);
-
-  const ErrorMessage = (props: { message: string }) => (
-    <Typography variant="body2" className={styles.emptyTable}>
-      {props.message}
-    </Typography>
-  );
 
   return (
     <>
@@ -72,8 +67,8 @@ const RankingPage = () => {
 
         {rankings.fold(
           rankingsData =>
-            !rankingsData[rankingType] ? (
-              <ErrorMessage message="Aucun score" />
+            rankingsData[rankingType].length === 0 ? (
+              <EmptyTable message="Aucun score" />
             ) : (
               <>
                 {rankingType === 'efficiency' && (
@@ -105,9 +100,9 @@ const RankingPage = () => {
                 </Table>
               </>
             ),
-            error => <ErrorMessage message={error.message} />,
-            () => <ErrorMessage message="Aucune donnée" />,
-            () => <ErrorMessage message="Chargement..." />,
+            error => <EmptyTable message={error.message} />,
+            () => <EmptyTable message="Aucune donnée" />,
+            () => <EmptyTable message="Chargement..." />,
         )}
 
         <div className={styles.reportsLink}>

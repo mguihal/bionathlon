@@ -12,7 +12,7 @@ interface ConnectedProps {
 const ProfileChart: React.FunctionComponent<ConnectedProps> = props => {
   const { playerGames } = props;
 
-  const reversedPlayerGames = playerGames.reverse();
+  const reversedPlayerGames = playerGames.slice().reverse();
 
   const smoothData = (games: Game[]) => {
     return games
