@@ -27,6 +27,7 @@ type GameQueryLine = {
   scoreRightBottle: number | null;
   scoreMalusBottle: number | null;
   playerName: string;
+  playerAvatar: string | null;
   suddenDeath: boolean;
   note: string;
 };
@@ -199,6 +200,7 @@ const routeConfig: RouteConfig = {
             'scoreRightBottle',
             'scoreMalusBottle',
             'name as playerName',
+            'avatar as playerAvatar',
             'suddenDeath',
             'note'
           )

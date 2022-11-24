@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 
 import Typography from '@material-ui/core/Typography';
 import { Avatar, Button } from '@material-ui/core';
@@ -17,11 +17,12 @@ import EmptyTable from './SessionTable/EmptyTable';
 const PAGE_COUNT = 10;
 
 const ProfilePage = () => {
-
   const { playerId } = useParams();
+  const [searchParams, setSearchParams] = useSearchParams();
+
   const [playerGames, fetchGames] = useGetPaginatedGames();
   const { getUser } = useAuth();
-  const [currentPage, setCurrentPage] = useState(0);
+  const [currentPage, setCurrentPage] = useState(Math.max(0, parseInt(searchParams.get('page') || '0', 10) - 1));
 
   const currentUser = getUser();
 
@@ -30,14 +31,22 @@ const ProfilePage = () => {
   }, [fetchGames, playerId, currentUser.id]);
 
   const handleNext = useCallback(() => {
-    setCurrentPage(page => page + 1);
-  }, []);
+    setCurrentPage(page => {
+      setSearchParams({ page: `${page + 2}` });
+      return page + 1;
+    });
+  }, [setSearchParams]);
 
   const handlePrev = useCallback(() => {
-    setCurrentPage(page => page - 1);
-  }, []);
+    setCurrentPage(page => {
+      setSearchParams({ page: `${page}` });
+      return page - 1;
+    });
+  }, [setSearchParams]);
 
-  const sortedGames = useMemo(() => playerGames.getOrElse([]).slice().sort(byDateTimeDesc), [playerGames]);
+  const sortedGames = useMemo(() => {
+    return playerGames.getOrElse([]).slice().sort(byDateTimeDesc).slice(currentPage * PAGE_COUNT, currentPage * PAGE_COUNT + PAGE_COUNT);
+  }, [playerGames, currentPage]);
 
   return (
     <>
@@ -106,9 +115,9 @@ const ProfilePage = () => {
       <div className={`${styles.tableContainer} ${styles.profileTable}`}>
         {
           playerGames.fold(
-            (games) => games.length === 0 ?
+            () => sortedGames.length === 0 ?
               <EmptyTable message="Aucun score" /> :
-              <PlayerSessionTable games={sortedGames.slice(currentPage * PAGE_COUNT, currentPage * PAGE_COUNT + PAGE_COUNT)} />,
+              <PlayerSessionTable games={sortedGames} />,
             (error) => <EmptyTable message={error.message} />,
             () => <EmptyTable message="Aucune donnée" />,
             () => <EmptyTable message="Chargement..." />,
@@ -120,7 +129,7 @@ const ProfilePage = () => {
           Précédent
         </Button>
       )}
-      {sortedGames.slice(currentPage * PAGE_COUNT, currentPage * PAGE_COUNT + PAGE_COUNT).length === PAGE_COUNT && (
+      {sortedGames.length === PAGE_COUNT && (
         <Button onClick={handleNext} className={styles.loadMoreButton}>
           Suivant
         </Button>

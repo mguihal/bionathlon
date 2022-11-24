@@ -6,22 +6,31 @@ import { formatDate, groupByDateTime } from '../helpers';
 import SessionTable from './SessionTable/SessionTable';
 import { Game, useGetPaginatedGames } from '../services/games';
 import EmptyTable from './SessionTable/EmptyTable';
+import { useSearchParams } from 'react-router-dom';
 
 const PAGE_COUNT = 10;
 
 const HistoryPage = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
+
   const [games, fetchGames] = useGetPaginatedGames();
-  const [currentPage, setCurrentPage] = useState(0);
+  const [currentPage, setCurrentPage] = useState(Math.max(0, parseInt(searchParams.get('page') || '0', 10) - 1));
 
   const handleNext = useCallback(() => {
-    setCurrentPage(page => page + 1);
+    setCurrentPage(page => {
+      setSearchParams({ page: `${page + 2}` });
+      return page + 1;
+    });
     window.scrollTo(0, 0);
-  }, []);
+  }, [setSearchParams]);
 
   const handlePrev = useCallback(() => {
-    setCurrentPage(page => page - 1);
+    setCurrentPage(page => {
+      setSearchParams({ page: `${page}` });
+      return page - 1;
+    });
     window.scrollTo(0, 0);
-  }, []);
+  }, [setSearchParams]);
 
   const onUpdate = useCallback(() => {
     fetchGames({ 

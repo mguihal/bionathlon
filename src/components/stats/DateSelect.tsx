@@ -9,7 +9,7 @@ function formatDate(date: Date) {
   }`;
 }
 
-function getSelectItems() {
+export function getSelectItems() {
   const list: { value: string; label: string; year: boolean; }[] = [];
   const months = [
     'Janvier',

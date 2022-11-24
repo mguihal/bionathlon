@@ -9,10 +9,11 @@ import Typography from '@material-ui/core/Typography';
 import Alert from '@material-ui/lab/Alert';
 import React, { useEffect, useState } from 'react';
 import styles from './RankingPage.module.css';
-import DateSelect from './stats/DateSelect';
+import DateSelect, { getSelectItems } from './stats/DateSelect';
 import Button from '@material-ui/core/Button';
 import { useGetRankings } from '../services/stats';
 import EmptyTable from './SessionTable/EmptyTable';
+import { useSearchParams } from 'react-router-dom';
 
 type RankingType =
   | 'nbMatchs'
@@ -24,15 +25,32 @@ type RankingType =
   | 'avgPoints'
   | 'topScore';
 
+  const rankingTypes: Record<RankingType, string> = {
+    'nbPoints': 'Cumul des points',
+    'nbRondelles': 'Cumul des rondelles',
+    'nbMatchs': 'Nombre de matchs joués',
+    'nbWonMatchs': 'Nombre de matchs gagnés',
+    'pctWonMatchs': '% de matchs gagnés',
+    'avgPoints': 'Moyenne par match',
+    'efficiency': 'Efficacité',
+    'topScore' : 'Meilleur score'
+  };
+
 const RankingPage = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [rankings, fetchRankings] = useGetRankings();
 
   const now = new Date();
 
-  const [rankingType, setRankingType] = useState<RankingType>('nbPoints');
-  const [dateFilter, setDateFilter] = useState(
-    `${now.getFullYear()}-${(now.getMonth() + 1 < 10 ? `0${now.getMonth() + 1}` : now.getMonth() + 1)}`,
-  );
+  const queryType = searchParams.get('type') || '';
+  const initialRankingType = Object.keys(rankingTypes).includes(queryType) ? queryType : 'nbPoints';
+
+  const queryDate = searchParams.get('date') || '';
+  const defaultDate = `${now.getFullYear()}-${(now.getMonth() + 1 < 10 ? `0${now.getMonth() + 1}` : now.getMonth() + 1)}`;
+  const initialDate = getSelectItems().map(i => i.value).includes(queryDate) ? queryDate : defaultDate;
+
+  const [rankingType, setRankingType] = useState<RankingType>(initialRankingType as RankingType);
+  const [dateFilter, setDateFilter] = useState(initialDate);
 
   useEffect(() => {
     fetchRankings(dateFilter === 'all' ? {} : { dateFilter });
@@ -46,20 +64,23 @@ const RankingPage = () => {
           <Select
             id="rankingType"
             value={rankingType}
-            onChange={e => setRankingType(e.target.value as RankingType)}
+            onChange={e => {
+              setRankingType(e.target.value as RankingType);
+              setSearchParams({ type: e.target.value as string, date: dateFilter });
+            }}
           >
-            <MenuItem value={'nbMatchs'}>Nombre de matchs joués</MenuItem>
-            <MenuItem value={'nbWonMatchs'}>Nombre de matchs gagnés</MenuItem>
-            <MenuItem value={'pctWonMatchs'}>% de matchs gagnés</MenuItem>
-            <MenuItem value={'nbPoints'}>Cumul des points</MenuItem>
-            <MenuItem value={'nbRondelles'}>Cumul des rondelles</MenuItem>
-            <MenuItem value={'avgPoints'}>Moyenne par match</MenuItem>
-            <MenuItem value={'efficiency'}>Efficacité</MenuItem>
-            <MenuItem value={'topScore'}>Meilleur score</MenuItem>
+            {
+              Object.keys(rankingTypes).map(type => (
+                <MenuItem key={type} value={type}>{rankingTypes[type as RankingType]}</MenuItem>
+              ))
+            }
           </Select>
           <DateSelect 
             value={dateFilter} 
-            onChange={val => setDateFilter(val)}
+            onChange={val => {
+              setDateFilter(val);
+              setSearchParams({ type: rankingType, date: val });
+            }}
           />
         </div>
       </div>
