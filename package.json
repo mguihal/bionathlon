@@ -72,7 +72,7 @@
     "prettier": "^2.7.1",
     "ts-node": "^10.9.1",
     "ts-node-dev": "^2.0.0",
-    "vercel": "^27.1.5"
+    "vercel": "^28.5.6"
   },
   "prettier": {
     "singleQuote": true,

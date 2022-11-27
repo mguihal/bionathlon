@@ -4,7 +4,7 @@ import { useCallback, useState } from 'react';
 import { useAuth } from './auth';
 import { dataError, dataNotFetched, dataPending, DataResponse, dataSuccess, WrapData, wrap } from './remoteData';
 
-const BASE_URL = process.env.REACT_APP_API_HOST;
+const BASE_URL = process.env.REACT_APP_API_HOST || '';
 
 type ApiOptions = { path: string, method?: 'GET' | 'POST' | 'PUT', schema: t.Any, authenticated?: boolean };
 type ApiQueryParams =  Record<string, string>;
