@@ -43,9 +43,17 @@ function formatDateMonth(date: Date) {
   }`;
 }
 
+
 function getWeek(date: Date) {
   const onejan = new Date(date.getFullYear(), 0, 1);
-  return Math.ceil((((date.getTime() - onejan.getTime()) / 86400000) + onejan.getDay() + 1) / 7);
+  return Math.ceil((((date.getTime() - onejan.getTime()) / 86400000) + onejan.getDay() + 1) / 7) - 1;
+}
+
+function formatDateWeek(date: Date) {
+  const week = getWeek(date);
+  return `${date.getFullYear()}-${
+    week < 10 ? `0${week}` : week
+  }`;
 }
 
 function createSessionSamples(chartDate: string) {
@@ -115,7 +123,7 @@ function createWeekSamples(chartDate: string) {
   const result: string[] = [];
 
   while (firstDate <= endDate && firstDate <= now) {
-    result.push(`${firstDate.getFullYear()}-${getWeek(firstDate)}`);
+    result.push(formatDateWeek(firstDate));
     firstDate.setDate(firstDate.getDate() + 7);
   }
 
@@ -223,7 +231,7 @@ const routeConfig: RouteConfig = {
           } else if (query.sampling === 'day') {
             sampleHash = gameDate.toISOString();
           } else if (query.sampling === 'week') {
-            sampleHash = `${gameDate.getFullYear()}-${getWeek(gameDate)}`;
+            sampleHash = formatDateWeek(gameDate);
           } else if (query.sampling === 'month') {
             sampleHash = formatDateMonth(gameDate);
           } else if (query.sampling === 'year') {
