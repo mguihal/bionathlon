@@ -6,7 +6,7 @@ import { dataError, dataNotFetched, dataPending, DataResponse, dataSuccess, Wrap
 
 const BASE_URL = process.env.REACT_APP_API_HOST || '';
 
-type ApiOptions = { path: string, method?: 'GET' | 'POST' | 'PUT', schema: t.Any, authenticated?: boolean };
+type ApiOptions = { path: string, method?: 'GET' | 'POST' | 'PUT' | 'DELETE', schema: t.Any, authenticated?: boolean };
 type ApiQueryParams =  Record<string, string>;
 type ApiPayload = Record<string, any>;
 type ApiResponse<T> = WrapData<T, Error>;

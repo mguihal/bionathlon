@@ -1,13 +1,13 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
 import { groupByDateTime } from '../src/helpers';
-import { sendScoreOnChat, sendSuddenDeathOnChat } from './_bot';
+import { sendDeletionOnChat, sendScoreOnChat, sendSuddenDeathOnChat } from './_bot';
 import { RouteConfig, routeWrapper, withDb } from './_common';
-import { 
-  AddGameResponse, 
-  AddGamePayload, 
-  addGamePayloadSchema, 
-  getGamesQueryParamsSchema, 
-  GetGamesQueryParams, 
+import {
+  AddGameResponse,
+  AddGamePayload,
+  addGamePayloadSchema,
+  getGamesQueryParamsSchema,
+  GetGamesQueryParams,
   GetGamesResponse,
   updateGamePayloadSchema,
   updateGameQueryParamsSchema,
@@ -22,7 +22,7 @@ const routeConfig: RouteConfig = {
       query: getGamesQueryParamsSchema,
     },
     handler: async (res, _, query: GetGamesQueryParams) => {
-      return withDb(async db => {
+      return withDb(async (db) => {
         const gamesQuery = db('game')
           .join('player', 'game.playerId', 'player.id')
           .select(
@@ -66,9 +66,9 @@ const routeConfig: RouteConfig = {
           const sessions = Object.keys(groupedGames)
             .sort()
             .reverse()
-            .slice(offset, (offset) + limit);
+            .slice(offset, offset + limit);
 
-          games = games.filter(game => {
+          games = games.filter((game) => {
             const groupKey = `${new Date(game.date).toISOString()} - ${
               game.time === 'midday' ? 'midi' : 'soir'
             }`;
@@ -87,20 +87,20 @@ const routeConfig: RouteConfig = {
       payload: addGamePayloadSchema,
     },
     handler: async (res, payload: AddGamePayload) => {
-      return withDb(async db => {
+      return withDb(async (db) => {
         try {
           const games = await db('game')
             .insert(payload.data)
             .returning([
-              'date', 
-              'time', 
-              'playerId', 
-              'score', 
-              'scoreLeftBottle', 
-              'scoreMiddleBottle', 
-              'scoreRightBottle', 
-              'scoreMalusBottle', 
-              'note', 
+              'date',
+              'time',
+              'playerId',
+              'score',
+              'scoreLeftBottle',
+              'scoreMiddleBottle',
+              'scoreRightBottle',
+              'scoreMalusBottle',
+              'note',
               'suddenDeath',
             ]);
 
@@ -134,22 +134,26 @@ const routeConfig: RouteConfig = {
       query: updateGameQueryParamsSchema,
       payload: updateGamePayloadSchema,
     },
-    handler: async (res, payload: UpdateGamePayload, query: UpdateGameQueryParams) => {
-      return withDb(async db => {
+    handler: async (
+      res,
+      payload: UpdateGamePayload,
+      query: UpdateGameQueryParams,
+    ) => {
+      return withDb(async (db) => {
         try {
           const games = await db('game')
             .update(payload.data)
             .where('id', query.id)
             .returning([
-              'date', 
-              'time', 
-              'playerId', 
-              'score', 
-              'scoreLeftBottle', 
-              'scoreMiddleBottle', 
-              'scoreRightBottle', 
-              'scoreMalusBottle', 
-              'note', 
+              'date',
+              'time',
+              'playerId',
+              'score',
+              'scoreLeftBottle',
+              'scoreMiddleBottle',
+              'scoreRightBottle',
+              'scoreMalusBottle',
+              'note',
               'suddenDeath',
             ]);
 
@@ -173,8 +177,56 @@ const routeConfig: RouteConfig = {
           });
         }
       });
-    }
-  }
+    },
+  },
+
+  delete: {
+    validate: {
+      query: updateGameQueryParamsSchema,
+    },
+    handler: async (res, _, query: UpdateGameQueryParams, user) => {
+      if (!user?.isAdmin) {
+        return res.status(403).send({
+          error: `Permission nécessaire`,
+        });
+      }
+
+      return withDb(async (db) => {
+        try {
+          const games = await db('game')
+            .join('player', 'game.playerId', 'player.id')
+            .delete()
+            .where('game.id', query.id)
+            .returning([
+              'game.id',
+              'date',
+              'time',
+              'playerId',
+              'score',
+              'scoreLeftBottle',
+              'scoreMiddleBottle',
+              'scoreRightBottle',
+              'scoreMalusBottle',
+              'note',
+              'name as playerName',
+              'avatar as playerAvatar',
+              'suddenDeath',
+            ]);
+
+          await sendDeletionOnChat(games[0], user);
+
+          return res.status(200).send(games);
+        } catch (e) {
+          const error = e as Error;
+          console.error(error.message);
+
+          return res.status(500).send({
+            error: 'Game deletion error',
+          });
+        }
+      });
+    },
+  },
 };
 
 export default (req: VercelRequest, res: VercelResponse) =>

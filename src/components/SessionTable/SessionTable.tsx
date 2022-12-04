@@ -16,15 +16,13 @@ import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 
-import BottleScore from '../BottleScore/BottleScore';
-import MalusBottleScore from '../BottleScore/MalusBottleScore';
-
 import processString from 'react-process-string';
 
 import { byScoreDesc, isWinner, getSuddenDeathGames, computeScore } from '../../helpers';
 
 import styles from './SessionTable.module.css';
 import { Game, useUpdateGame } from '../../services/games';
+import BottleScoreDialog from '../BottleScore/BottleScoreDialog';
 
 type Props = {
   games: Game[];
@@ -113,18 +111,7 @@ const SessionTable = (props: Props) => {
           </Button>
         </DialogActions>
       </Dialog>
-      <Dialog open={openDetails !== null} onClose={() => setOpenDetails(null)} aria-labelledby="form-dialog-title">
-        <DialogContent>
-          <div className={styles.bottlesContainer}>
-            <BottleScore staticScore={openDetails !== null ? openDetails.scoreLeftBottle : undefined} />
-            <div>
-              <MalusBottleScore staticScore={openDetails !== null ? openDetails.scoreMalusBottle : undefined} />
-              <BottleScore staticScore={openDetails !== null ? openDetails.scoreMiddleBottle : undefined} />
-            </div>
-            <BottleScore staticScore={openDetails !== null ? openDetails.scoreRightBottle : undefined} />
-          </div>
-        </DialogContent>
-      </Dialog>
+      <BottleScoreDialog game={openDetails} onClose={() => setOpenDetails(null)} onDelete={onUpdate} />
     </>
   );
 }

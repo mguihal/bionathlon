@@ -81,6 +81,21 @@ export const useUpdateGame = (): ReturnType<typeof useApi<UpdateGameResponse, Up
   return [responseData, fetchApi];
 };
 
+// DELETE GAME
+const deleteGameSchema = t.array(gameUpdatableSchema);
+export type DeleteGameResponse = t.TypeOf<typeof deleteGameSchema>;
+export type DeleteGameQueryParams = t.TypeOf<typeof updateGameQueryParamsSchema>;
+
+export const useDeleteGame = (): ReturnType<typeof useApi<DeleteGameResponse, DeleteGameQueryParams>> => {
+  const [responseData, fetchApi] = useApi<DeleteGameResponse, DeleteGameQueryParams>({
+    path: '/api/game',
+    method: 'DELETE',
+    schema: deleteGameSchema,
+  });
+
+  return [responseData, fetchApi];
+};
+
 // GET GAMES
 const getGamesSchema = t.array(gameSchema);
 export type GetGamesResponse = t.TypeOf<typeof getGamesSchema>;

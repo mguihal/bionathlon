@@ -6,26 +6,22 @@ import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
 import MLink from '@material-ui/core/Link';
 
-import Dialog from '@material-ui/core/Dialog';
-import DialogContent from '@material-ui/core/DialogContent';
-
-import BottleScore from '../BottleScore/BottleScore';
-import MalusBottleScore from '../BottleScore/MalusBottleScore';
-
 import processString from 'react-process-string';
 
 import { computeScore, formatDate } from '../../helpers';
 
 import styles from './SessionTable.module.css';
 import { Game } from '../../services/games';
+import BottleScoreDialog from '../BottleScore/BottleScoreDialog';
 
 type Props = {
   games: Game[];
+  onUpdate: () => void;
 };
 
 const PlayerSessionTable = (props: Props) => {
 
-  const { games } = props;
+  const { games, onUpdate } = props;
 
   const [openDetails, setOpenDetails] = React.useState<Game | null>(null);
 
@@ -62,18 +58,7 @@ const PlayerSessionTable = (props: Props) => {
           ))}
         </TableBody>
       </Table>
-      <Dialog open={openDetails !== null} onClose={() => setOpenDetails(null)} aria-labelledby="form-dialog-title">
-        <DialogContent>
-          <div className={styles.bottlesContainer}>
-            <BottleScore staticScore={openDetails !== null ? openDetails.scoreLeftBottle : undefined} />
-            <div>
-              <MalusBottleScore staticScore={openDetails !== null ? openDetails.scoreMalusBottle : undefined} />
-              <BottleScore staticScore={openDetails !== null ? openDetails.scoreMiddleBottle : undefined} />
-            </div>
-            <BottleScore staticScore={openDetails !== null ? openDetails.scoreRightBottle : undefined} />
-          </div>
-        </DialogContent>
-      </Dialog>
+      <BottleScoreDialog game={openDetails} onClose={() => setOpenDetails(null)} onDelete={onUpdate} /> 
     </>
   );
 }

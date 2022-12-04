@@ -1,5 +1,6 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
 import { GetPlayersResponse, AddPlayerResponse, AddPlayerPayload, addPlayerPayloadSchema } from '../src/services/players';
+import { sendNewPlayerOnChat } from './_bot';
 import { RouteConfig, routeWrapper, withDb } from './_common';
 
 const routeConfig: RouteConfig = {
@@ -18,7 +19,7 @@ const routeConfig: RouteConfig = {
     validate: {
       payload: addPlayerPayloadSchema
     },
-    handler: async (res, payload: AddPlayerPayload) => {
+    handler: async (res, payload: AddPlayerPayload, _, user) => {
       return withDb(async db => {
         try {
           const players = await db('player')
@@ -27,6 +28,10 @@ const routeConfig: RouteConfig = {
               name: payload.data.name,
             })
             .returning(['id', 'email', 'name', 'avatar']);
+
+          if (user) {
+            await sendNewPlayerOnChat(players[0].name, user)
+          }
 
           return res.send(players as AddPlayerResponse);
         } catch (e) {

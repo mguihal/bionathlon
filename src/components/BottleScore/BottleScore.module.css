@@ -1,3 +1,10 @@
+.bottlesContainer {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  text-align: center;
+}
+
 .bottleScore {
   position: relative;
 }
@@ -56,6 +63,14 @@ h6.bottlesScoreLabel {
   border-radius: 5px;
   background-color: #da6345;
   margin-top: 5px;
+}
+
+.bottlesScoreDialog .actions {
+  justify-content: center;
+}
+
+.dangerButton {
+  background-color: rgb(230, 0, 0);
 }
 
 @media screen and (min-width: 768px) {

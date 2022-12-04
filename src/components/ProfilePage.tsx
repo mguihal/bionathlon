@@ -44,6 +44,10 @@ const ProfilePage = () => {
     });
   }, [setSearchParams]);
 
+  const onUpdate = () => {
+    fetchGames({ playerId: playerId ? playerId : currentUser.id.toString() });
+  };
+
   const sortedGames = useMemo(() => {
     return playerGames.getOrElse([]).slice().sort(byDateTimeDesc).slice(currentPage * PAGE_COUNT, currentPage * PAGE_COUNT + PAGE_COUNT);
   }, [playerGames, currentPage]);
@@ -117,7 +121,7 @@ const ProfilePage = () => {
           playerGames.fold(
             () => sortedGames.length === 0 ?
               <EmptyTable message="Aucun score" /> :
-              <PlayerSessionTable games={sortedGames} />,
+              <PlayerSessionTable games={sortedGames} onUpdate={onUpdate} />,
             (error) => <EmptyTable message={error.message} />,
             () => <EmptyTable message="Aucune donnée" />,
             () => <EmptyTable message="Chargement..." />,

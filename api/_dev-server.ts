@@ -21,7 +21,7 @@ const PORT = process.env.PORT;
       'Access-Control-Allow-Headers',
       'Origin, X-Requested-With, Content-Type, Accept, Authorization',
     );
-    res.header('Access-Control-Allow-Methods', 'GET, OPTIONS, PUT, POST');
+    res.header('Access-Control-Allow-Methods', 'GET, OPTIONS, PUT, POST, DELETE');
     next();
   });
 

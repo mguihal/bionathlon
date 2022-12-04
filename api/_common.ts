@@ -1,12 +1,18 @@
 import * as t from 'io-ts';
 import { PathReporter, success } from 'io-ts/lib/PathReporter';
 import { VercelRequest, VercelResponse } from '@vercel/node';
-import jwt, { JsonWebTokenError } from 'jsonwebtoken';
+import jwt, { JsonWebTokenError, JwtPayload } from 'jsonwebtoken';
 import knex, { Knex } from 'knex';
 
 const jwtVersion = '2';
 const jwtSecret = process.env.SECRET || 'secret';
 export const JWT_SECRET = jwtSecret + jwtVersion;
+
+export type TokenPayload = {
+  id: number;
+  name: string;
+  isAdmin: boolean;
+};
 
 export type MethodConfig = {
   validate?: {
@@ -18,6 +24,7 @@ export type MethodConfig = {
     res: VercelResponse,
     payload?: any,
     query?: any,
+    user?: TokenPayload | null,
   ) => Promise<VercelResponse>;
 };
 
@@ -25,6 +32,7 @@ export interface RouteConfig {
   get?: MethodConfig;
   post?: MethodConfig;
   put?: MethodConfig;
+  delete?: MethodConfig;
 }
 
 function withBody(req: VercelRequest) {
@@ -73,15 +81,17 @@ export async function validationWrapper(
       throw new ValidationError(`Format du payload incorrect: ${payloadValidation}`);
     }
 
+    let token: TokenPayload | null = null;
+
     if (config.authenticated !== false && process.env.LOCAL !== 'true') {
       try {
-        const decoded = jwt.verify(req.headers.authorization || '', JWT_SECRET);
+        token = jwt.verify(req.headers.authorization || '', JWT_SECRET) as TokenPayload;
       } catch (err) {
         throw new JsonWebTokenError('Unauthorized token');
       }
     }
 
-    return config.handler(res, req.body, req.query);
+    return config.handler(res, req.body, req.query, token);
   } catch (e) {
     const error = e as Error;
 
@@ -115,6 +125,11 @@ export async function routeWrapper(
     case 'PUT':
       if (config.put) {
         return validationWrapper(req, res, config.put);
+      }
+      break;
+    case 'DELETE':
+      if (config.delete) {
+        return validationWrapper(req, res, config.delete);
       }
       break;
     case 'OPTIONS':

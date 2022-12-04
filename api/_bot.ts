@@ -1,9 +1,10 @@
 import { Knex } from 'knex';
 import { GoogleAuth } from 'google-auth-library';
-import { AddGamePayload, UpdateGamePayload } from '../src/services/games';
+import { AddGamePayload, Game, UpdateGamePayload } from '../src/services/games';
 import { existsSync, writeFileSync } from 'fs';
 import atob from 'atob';
 import { computeScore, formatDate } from '../src/helpers';
+import { TokenPayload } from './_common';
 
 const googlePrivateKeyPath = '/tmp/BionathlonBot.privatekey.json';
 
@@ -75,6 +76,23 @@ export async function sendSuddenDeathOnChat(db: Knex, gameId: string) {
   const threadKey = gameDate + game.time;
 
   const message = `${game.name} gagne la mort subite`;
+
+  await sendChatMessage(process.env.CHATSPACE || null, threadKey, message);
+}
+
+export async function sendDeletionOnChat(game: Game, user: TokenPayload) {
+  const gameDate = (new Date(game.date)).toISOString().split('T')[0];
+  const threadKey = gameDate + game.time;
+
+  const message = `${user.name} a invalidé la partie de ${game.playerName}`;
+
+  await sendChatMessage(process.env.CHATSPACE || null, threadKey, message);
+}
+
+export async function sendNewPlayerOnChat(playerName: string, user: TokenPayload) {
+  const threadKey = 'newPlayers';
+
+  const message = `Bienvenue à ${playerName} ! (ajouté par ${user.name})`;
 
   await sendChatMessage(process.env.CHATSPACE || null, threadKey, message);
 }
