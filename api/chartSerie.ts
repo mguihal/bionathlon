@@ -60,7 +60,7 @@ function createSessionSamples(chartDate: string) {
   const now = new Date();
   let firstDate: Date;
   let endDate: Date = now;
-  
+
   if (chartDate === 'all') {
     firstDate = new Date(2019, 8, 1);
   } else {
@@ -86,7 +86,7 @@ function createDaySamples(chartDate: string) {
   const now = new Date();
   let firstDate: Date;
   let endDate: Date = now;
-  
+
   if (chartDate === 'all') {
     firstDate = new Date(2019, 8, 1);
   } else {
@@ -111,7 +111,7 @@ function createWeekSamples(chartDate: string) {
   const now = new Date();
   let firstDate: Date;
   let endDate: Date = now;
-  
+
   if (chartDate === 'all') {
     firstDate = new Date(2019, 8, 1);
   } else {
@@ -134,7 +134,7 @@ function createMonthSamples(chartDate: string) {
   const now = new Date();
   let firstDate: Date;
   let endDate: Date = now;
-  
+
   if (chartDate === 'all') {
     firstDate = new Date(2019, 8, 1);
   } else {
@@ -157,7 +157,7 @@ function createYearSamples(chartDate: string) {
   const now = new Date();
   let firstDate: Date;
   let endDate: Date = now;
-  
+
   if (chartDate === 'all') {
     firstDate = new Date(2019, 8, 1);
   } else {
@@ -285,14 +285,19 @@ const routeConfig: RouteConfig = {
           sampledData = Array(maxScore - minScore + 1).fill(0).map((e, i) => `${i + minScore}`);
         }
 
-        points = sampledData.map((sample, i) => {          
+        points = sampledData.map((sample, si) => {
           let filteredGames: EnrichedGame[] = enrichedGames.filter(game => {
-            return filterGames(game, sample, query.sampling, query.modifier) && 
+            return filterGames(game, sample, query.sampling, query.modifier) &&
               (query.playerFilter === 'all' || game.playerId.toString() === query.playerFilter);
           });
 
           if (query.sampling === 'playedSession') {
-            filteredGames = filteredGames.filter((g, i) => i === parseInt(sample, 10));
+            const nbSample = parseInt(sample, 10);
+            filteredGames = filteredGames.filter((g, i) => query.modifier === 'cumulated' ? (i <= nbSample) : (i === nbSample));
+
+            if (si > filteredGames.length) {
+              return { key: sample, value: 0, shouldDisplay: false };
+            }
           }
 
           if (filteredGames.length === 0) {
@@ -302,9 +307,9 @@ const routeConfig: RouteConfig = {
           if (query.sampling === 'bottle') {
             const sampleToAttribute = (g: GameQueryLine) => {
               return {
-                'leftBottle': g.scoreLeftBottle, 
-                'middleBottle': g.scoreMiddleBottle, 
-                'rightBottle': g.scoreRightBottle, 
+                'leftBottle': g.scoreLeftBottle,
+                'middleBottle': g.scoreMiddleBottle,
+                'rightBottle': g.scoreRightBottle,
                 'malusBottle': g.scoreMalusBottle
               }[sample] || 0;
             };
@@ -413,8 +418,8 @@ const routeConfig: RouteConfig = {
 
             return {
               key: sample,
-              value: query.playerFilter === 'all' ? 
-                sessionsWithSuddenDeath.reduce((acc, cur) => acc + (cur.length > 0 ? 1 : 0), 0) : 
+              value: query.playerFilter === 'all' ?
+                sessionsWithSuddenDeath.reduce((acc, cur) => acc + (cur.length > 0 ? 1 : 0), 0) :
                 sessionsWithSuddenDeath.reduce((acc, cur) => acc + (cur.filter(g => g.playerId === Number(query.playerFilter)).length > 0 ? 1 : 0), 0)
               ,
               shouldDisplay: true,
@@ -427,8 +432,8 @@ const routeConfig: RouteConfig = {
 
             return {
               key: sample,
-              value: query.playerFilter === 'all' ? 
-                sessionsWithSuddenDeath.reduce((acc, cur) => acc + (cur.length > 0 ? 1 : 0), 0) : 
+              value: query.playerFilter === 'all' ?
+                sessionsWithSuddenDeath.reduce((acc, cur) => acc + (cur.length > 0 ? 1 : 0), 0) :
                 sessionsWithSuddenDeath.reduce((acc, cur, i) => acc + (cur.length > 0 && winnerPlayerIds[i] === Number(query.playerFilter) ? 1 : 0), 0)
               ,
               shouldDisplay: true,
@@ -486,7 +491,7 @@ const routeConfig: RouteConfig = {
           points = points.map((point, index) => {
             if (smoothOn.length === 0) {
               return point;
-            } 
+            }
 
             const mx = smoothOn.reduce((acc, cur, i) => acc + i, 0) / smoothOn.length;
             const my = smoothOn.reduce((acc, cur) => acc + cur, 0) / smoothOn.length;
@@ -496,7 +501,7 @@ const routeConfig: RouteConfig = {
 
             const a = covxy / varx;
             const b = my - a * mx;
-            
+
             return { ...point, value: a*index + b };
           });
         } else if (query.modifier === 'pct') {
@@ -505,7 +510,7 @@ const routeConfig: RouteConfig = {
         }
 
         points = points.map(point => ({...point, value: round2(point.value)}));
-        
+
         return res.send(points as ChartSerieResponse);
       });
     },
