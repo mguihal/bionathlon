@@ -295,7 +295,7 @@ const routeConfig: RouteConfig = {
             const nbSample = parseInt(sample, 10);
             filteredGames = filteredGames.filter((g, i) => query.modifier === 'cumulated' ? (i <= nbSample) : (i === nbSample));
 
-            if (si > filteredGames.length) {
+            if (si > filteredGames.length && query.modifier === 'cumulated') {
               return { key: sample, value: 0, shouldDisplay: false };
             }
           }
