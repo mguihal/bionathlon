@@ -28,7 +28,7 @@ const Scene4 = () => {
   return (
     <div ref={ref} className={`${styles.story} ${stylesScene.scene4}`}>
       <h1 id="title1">Vous avez utilisé votre poignet pour lancer <strong>{data.nbGames * 33}</strong> rondelles cette année !</h1>
-      <h1 id="title2">Soit <strong>{ratio}%</strong> de tous les lancers officiels effectués en 2021 !</h1>
+      <h1 id="title2">Soit <strong>{ratio}%</strong> de tous les lancers officiels effectués en {data.year} !</h1>
       <h1 id="title3">
         C'est én
         <div className={'rondelleO rondelleBorder'} />

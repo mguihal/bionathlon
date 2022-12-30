@@ -25,8 +25,10 @@ const Recap = () => {
 
   const [data, fetchRecap] = useGetRecap();
 
+  const year = 2022;
+
   const openRecap = () => {
-    fetchRecap({ playerId: getUser().id.toString(), year: '2021' }).then(() => {
+    fetchRecap({ playerId: getUser().id.toString(), year: year.toString() }).then(() => {
       setRecapOpen(true);
     });
   };
@@ -44,7 +46,7 @@ const Recap = () => {
 
   const now = (new Date()).toISOString();
 
-  if (now >= '2022-02-01') {
+  if (now < `${year + 1}-01-01` || now >= `${year + 1}-02-01`) {
     return null;
   }
 
@@ -52,27 +54,29 @@ const Recap = () => {
     <div className={styles.recapInfo}>
       <Alert severity="info">
         <div>
-          Votre récapitulatif 2021 est prêt. Cliquez&nbsp;
+          Votre récapitulatif {year} est prêt. Cliquez&nbsp;
           <MLink component="button" variant="body2" onClick={() => openRecap()}>ici</MLink>
           &nbsp;pour le découvrir !
         </div>
       </Alert>
-      <Modal
-        open={recapOpen}
-        onClose={() => setRecapOpen(false)}
-      >
-        <RecapContext.Provider value={data.getOrElse(null)}>
-          <div className={styles.container}>
-            <Stories
-              stories={stories.slice(0)}
-              defaultInterval={1500}
-              width={432}
-              height={768}
-              onAllStoriesEnd={() => setRecapOpen(defaultOpen)}
-            />
-          </div>
-        </RecapContext.Provider>
-      </Modal>
+      {data.getOrElse(null) && (
+        <Modal
+          open={recapOpen}
+          onClose={() => setRecapOpen(false)}
+        >
+          <RecapContext.Provider value={data.getOrElse(null)}>
+            <div className={styles.container}>
+              <Stories
+                stories={stories.slice(0)}
+                defaultInterval={1500}
+                width={432}
+                height={768}
+                onAllStoriesEnd={() => setRecapOpen(defaultOpen)}
+              />
+            </div>
+          </RecapContext.Provider>
+        </Modal>
+      )}
     </div>
   );
 }

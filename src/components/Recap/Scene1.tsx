@@ -1,12 +1,15 @@
 import { gsap } from 'gsap';
 import React, { useLayoutEffect, useRef } from 'react';
 import styles from './Recap.module.css';
+import { useRecapData } from './RecapContext';
 import stylesScene from './Scene1.module.css';
 
 const Scene1 = () => {
   const ref = useRef(null);
   const q = gsap.utils.selector(ref);
   const timeline = useRef<gsap.core.Timeline>();
+
+  const data = useRecapData();
 
   useLayoutEffect(() => {
     timeline.current = gsap.timeline()
@@ -38,7 +41,7 @@ const Scene1 = () => {
 
   return (
     <div ref={ref} className={`${styles.story} ${stylesScene.scene1}`}>
-      <h1 id={'title1'}>Rétrospective 2021</h1>
+      <h1 id={'title1'}>Rétrospective {data.year}</h1>
       <div id={'rondelle'} className={styles.rondelle} />
       <div id={'bg2'} />
       <h2 id={'title2'}>Cette année, vous avez marqué l’histoire du Bionathlon !</h2>

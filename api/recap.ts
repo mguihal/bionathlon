@@ -107,6 +107,7 @@ const routeConfig: RouteConfig = {
         }, {date: '', points: -99, left: 0, middle: 0, right: 0, malus: 0});
 
         const response: RecapResponse = {
+          year,
           nbGames: currentPlayerGames.length,
           nbGamesPreviousYear: parseInt(previousYearGames[0].count as string, 10),
           nbGamesMidday: currentPlayerGames.filter(game => game.time === 'midday').length,

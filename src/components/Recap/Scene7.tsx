@@ -32,7 +32,7 @@ const Scene7 = () => {
 
       <div id="bg2" />
 
-      <h1 id="title1">Le {date.getDate()} {months[date.getMonth()]} 2021</h1>
+      <h1 id="title1">Le {date.getDate()} {months[date.getMonth()]} {date.getFullYear()}</h1>
       <h1 id="title2">Vous souvenez-vous de cette date ?</h1>
       <h1 id="title3">Vous avez battu votre record personnel de l'année !</h1>
       <h1 id="title4">{data.bestPoints} points ! 👏</h1>

@@ -77,7 +77,7 @@ const Scene2 = () => {
         <div />
       </div>
       <h1 id="title1">Ces 12 derniers mois, vous vous êtes positionné <strong>{data.nbGames}</strong> fois derrière la ligne de Vallée</h1>
-      <h1 id="title2">soit {Math.abs(data.nbGames - data.nbGamesPreviousYear)} fois de {data.nbGames > data.nbGamesPreviousYear ? 'plus' : 'moins'} qu'en 2020</h1>
+      <h1 id="title2">soit {Math.abs(data.nbGames - data.nbGamesPreviousYear)} fois de {data.nbGames > data.nbGamesPreviousYear ? 'plus' : 'moins'} qu'en {data.year - 1}</h1>
     </div>
   );
 };

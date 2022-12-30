@@ -2,6 +2,7 @@ import * as t from 'io-ts';
 import { useApi } from './api';
 
 export const recapResponseSchema = t.type({
+  year: t.number,
   nbGames: t.number,
   nbGamesPreviousYear: t.number,
   nbGamesMidday: t.number,
