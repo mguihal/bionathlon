@@ -155,22 +155,20 @@ function createMonthSamples(chartDate: string) {
 
 function createYearSamples(chartDate: string) {
   const now = new Date();
-  let firstDate: Date;
-  let endDate: Date = now;
+  let currentYear = 2019;
+  let endYear = now.getFullYear();
 
-  if (chartDate === 'all') {
-    firstDate = new Date(2019, 8, 1);
-  } else {
-    const [year, month] = chartDate.split('-');
-    firstDate = month ? new Date(parseInt(year, 10), parseInt(month, 10) - 1) : new Date(parseInt(year, 10), 0);
-    endDate = month ? new Date(parseInt(year, 10), parseInt(month, 10)) : new Date(parseInt(year, 10) + 1, 0);
+  if (chartDate !== 'all') {
+    const [year] = chartDate.split('-');
+    currentYear = parseInt(year, 10);
+    endYear = parseInt(year, 10);
   }
 
   const result: string[] = [];
 
-  while (firstDate < endDate && firstDate <= now) {
-    result.push(`${firstDate.getFullYear()}`);
-    firstDate.setFullYear(firstDate.getFullYear() + 1);
+  while (currentYear <= endYear) {
+    result.push(`${currentYear}`);
+    currentYear += 1;
   }
 
   return result;
