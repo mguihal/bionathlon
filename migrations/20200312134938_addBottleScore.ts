@@ -1,6 +1,6 @@
 import { Knex } from 'knex';
 
-export async function up(knex: Knex): Promise<any> {
+export async function up(knex: Knex): Promise<void> {
   return knex.schema.table('game', table => {
     table.integer('score').alter();
     table.integer('scoreLeftBottle');
@@ -11,7 +11,7 @@ export async function up(knex: Knex): Promise<any> {
 }
 
 
-export async function down(knex: Knex): Promise<any> {
+export async function down(knex: Knex): Promise<void> {
   return knex.schema.table('game', table => {
     table.dropColumn('scoreLeftBottle');
     table.dropColumn('scoreMiddleBottle');

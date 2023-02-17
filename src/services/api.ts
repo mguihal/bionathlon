@@ -8,7 +8,7 @@ const BASE_URL = process.env.REACT_APP_API_HOST || '';
 
 type ApiOptions = { path: string, method?: 'GET' | 'POST' | 'PUT' | 'DELETE', schema: t.Any, authenticated?: boolean };
 type ApiQueryParams =  Record<string, string>;
-type ApiPayload = Record<string, any>;
+type ApiPayload = Record<string, unknown>;
 type ApiResponse<T> = WrapData<T, Error>;
 
 type ReturnTypeSimple<T> = [ApiResponse<T>, () => Promise<ApiResponse<T>>];
@@ -19,7 +19,7 @@ function useApi<T>(options: ApiOptions): ReturnTypeSimple<T>;
 function useApi<T, QP extends ApiQueryParams>(options: ApiOptions): ReturnTypeWithQueryParams<T, QP>;
 function useApi<T, QP extends ApiQueryParams, P extends ApiPayload>(options: ApiOptions): ReturnTypeWithQueryParamsAndPayload<T, QP, P>;
 
-function useApi<T, QP extends ApiQueryParams = {}, P extends ApiPayload = {}>(
+function useApi<T, QP extends ApiQueryParams = Record<string, never>, P extends ApiPayload = Record<string, never>>(
   options: ApiOptions
 ): ReturnTypeSimple<T> | ReturnTypeWithQueryParams<T, QP> | ReturnTypeWithQueryParamsAndPayload<T, QP, P> {
 
@@ -32,8 +32,8 @@ function useApi<T, QP extends ApiQueryParams = {}, P extends ApiPayload = {}>(
     const asyncFct = async () => {
       result = dataPending;
       setData(dataPending);
-  
-      try {        
+
+      try {
         const qs = (new URLSearchParams(queryParams || {})).toString();
         const response = await fetch(`${BASE_URL}${options.path}${qs !== '' ? `?${qs}` : ''}`, {
           method: options.method || 'GET',
@@ -42,15 +42,15 @@ function useApi<T, QP extends ApiQueryParams = {}, P extends ApiPayload = {}>(
           },
           body: payload ? JSON.stringify(payload) : null,
         });
-      
+
         if (response.status === 200) {
           const payload = await response.json();
           const validation = PathReporter.report(options.schema.decode(payload))[0];
-      
+
           if (validation !== success()[0]) {
             throw new Error(`Format de réponse incorrect: ${validation}`);
           }
-      
+
           result = dataSuccess(payload);
           setData(dataSuccess(payload));
         } else if (response.status === 400) {
@@ -74,7 +74,7 @@ function useApi<T, QP extends ApiQueryParams = {}, P extends ApiPayload = {}>(
 
       return wrap(result);
     };
-    
+
     return asyncFct();
   }, [options.path, options.schema, options.method, options.authenticated, getToken, logout]);
 

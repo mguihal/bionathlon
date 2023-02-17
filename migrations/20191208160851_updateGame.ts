@@ -1,6 +1,6 @@
 import { Knex } from 'knex';
 
-export async function up(knex: Knex): Promise<any> {
+export async function up(knex: Knex): Promise<void> {
   await knex('game').truncate();
 
   await knex.schema.table('game', table => {
@@ -15,7 +15,7 @@ export async function up(knex: Knex): Promise<any> {
   });
 }
 
-export async function down(knex: Knex): Promise<any> {
+export async function down(knex: Knex): Promise<void> {
   await knex('game').truncate();
 
   await knex.schema.table('game', table => {

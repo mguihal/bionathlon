@@ -12,7 +12,7 @@ export const useAuth = () => {
     return localStorage.getItem(TOKEN_KEY) || '';
   }, []);
 
-  const login = useCallback((token: string, user: any) => {
+  const login = useCallback((token: string, user: unknown) => {
     localStorage.setItem(TOKEN_KEY, token);
     localStorage.setItem('user', JSON.stringify(user));
   }, []);

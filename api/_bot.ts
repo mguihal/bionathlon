@@ -1,6 +1,6 @@
 import { Knex } from 'knex';
 import { GoogleAuth } from 'google-auth-library';
-import { AddGamePayload, Game, UpdateGamePayload } from '../src/services/games';
+import { AddGamePayload, Game } from '../src/services/games';
 import { existsSync, writeFileSync } from 'fs';
 import atob from 'atob';
 import { computeScore, formatDate } from '../src/helpers';
@@ -26,7 +26,7 @@ async function sendChatMessage(spaceId: string | null, thread: string, message: 
     const client = await auth.getClient();
 
     const url = `https://chat.googleapis.com/v1/spaces/${spaceId}/messages?threadKey=${thread}`;
-    const res = await client.request({
+    await client.request({
       url,
       method: 'POST',
       data: {

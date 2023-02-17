@@ -40,8 +40,8 @@ export const addPlayerPayloadSchema = t.type({
 export type AddPlayerResponse = t.TypeOf<typeof playersSchema>;
 export type AddPlayerPayload = t.TypeOf<typeof addPlayerPayloadSchema>;
 
-export const useAddPlayer = (): ReturnType<typeof useApi<AddPlayerResponse, {}, AddPlayerPayload>> => {
-  const [responseData, fetchApi] = useApi<AddPlayerResponse, {}, AddPlayerPayload>({
+export const useAddPlayer = (): ReturnType<typeof useApi<AddPlayerResponse, Record<string, never>, AddPlayerPayload>> => {
+  const [responseData, fetchApi] = useApi<AddPlayerResponse, Record<string, never>, AddPlayerPayload>({
     path: '/api/player',
     method: 'POST',
     schema: playersSchema,

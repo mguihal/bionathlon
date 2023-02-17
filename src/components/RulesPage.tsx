@@ -20,7 +20,9 @@ const RulesPage = () => {
 
   return (
     <div className={styles.rules}>
-      <ReactMarkdown children={rules} remarkPlugins={[remarkGfm]} />
+      <ReactMarkdown remarkPlugins={[remarkGfm]}>
+        {rules}
+      </ReactMarkdown>
     </div>
   );
 };

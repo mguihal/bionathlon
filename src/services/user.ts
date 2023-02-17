@@ -22,8 +22,8 @@ export const loginPayloadSchema = t.type({
 export type LoginResponse = t.TypeOf<typeof loginResponseSchema>;
 export type LoginPayload = t.TypeOf<typeof loginPayloadSchema>;
 
-export const useLogin = (): ReturnType<typeof useApi<LoginResponse, {}, LoginPayload>> => {
-  const [responseData, fetchApi] = useApi<LoginResponse, {}, LoginPayload>({
+export const useLogin = (): ReturnType<typeof useApi<LoginResponse, Record<string, never>, LoginPayload>> => {
+  const [responseData, fetchApi] = useApi<LoginResponse, Record<string, never>, LoginPayload>({
     path: '/api/login',
     method: 'POST',
     schema: loginResponseSchema,

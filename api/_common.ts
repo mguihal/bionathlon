@@ -1,7 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import * as t from 'io-ts';
 import { PathReporter, success } from 'io-ts/lib/PathReporter';
 import { VercelRequest, VercelResponse } from '@vercel/node';
-import jwt, { JsonWebTokenError, JwtPayload } from 'jsonwebtoken';
+import jwt, { JsonWebTokenError } from 'jsonwebtoken';
 import knex, { Knex } from 'knex';
 
 const jwtVersion = '2';
@@ -37,7 +38,7 @@ export interface RouteConfig {
 
 function withBody(req: VercelRequest) {
   return new Promise<VercelRequest>(resolve => {
-    let data: string[] = [];
+    const data: string[] = [];
 
     req.on('data', chunk => data.push(chunk));
     req.on('end', () => {

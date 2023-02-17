@@ -36,7 +36,7 @@ export function groupByPlayer(games: Game[]) {
 }
 
 export function byScoreDesc(
-  a: Pick<Game, 'score' | 'scoreLeftBottle' | 'scoreMiddleBottle' | 'scoreRightBottle' | 'scoreMalusBottle' | 'suddenDeath'>, 
+  a: Pick<Game, 'score' | 'scoreLeftBottle' | 'scoreMiddleBottle' | 'scoreRightBottle' | 'scoreMalusBottle' | 'suddenDeath'>,
   b: Pick<Game, 'score' | 'scoreLeftBottle' | 'scoreMiddleBottle' | 'scoreRightBottle' | 'scoreMalusBottle'>
 ) {
   const scoreA = computeScore(a);
@@ -101,14 +101,14 @@ export function getWinner(games: Game[]) {
   }
 }
 
-export function getSuddenDeathGames(games: Game[], checkIfDone: boolean = true) {
+export function getSuddenDeathGames(games: Game[], checkIfDone = true) {
   if (games.length === 0) {
     return [];
   }
 
   const sorted = games.sort(byScoreDesc);
   let isSuddenDeathDone = false;
-  let suddenDeathGames: Game[] = [];
+  const suddenDeathGames: Game[] = [];
 
   games.forEach(game => {
     if (computeScore(game) === computeScore(sorted[0])) {
@@ -124,7 +124,7 @@ export function getSuddenDeathGames(games: Game[], checkIfDone: boolean = true) 
 
 export function computeScore(
   game: Pick<Game, 'score' | 'scoreLeftBottle' | 'scoreMiddleBottle' | 'scoreRightBottle' | 'scoreMalusBottle'>,
-  onlyScoreWithBottles: boolean = false,
+  onlyScoreWithBottles = false,
 ) {
   const {
     score,
