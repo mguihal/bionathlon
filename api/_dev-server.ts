@@ -15,12 +15,9 @@ const PORT = process.env.PORT;
   const app = express();
   const server = https.createServer(credentials, app);
 
-  app.use(function(req, res, next) {
+  app.use(function (req, res, next) {
     res.header('Access-Control-Allow-Origin', '*');
-    res.header(
-      'Access-Control-Allow-Headers',
-      'Origin, X-Requested-With, Content-Type, Accept, Authorization',
-    );
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
     res.header('Access-Control-Allow-Methods', 'GET, OPTIONS, PUT, POST, DELETE');
     next();
   });
@@ -28,7 +25,7 @@ const PORT = process.env.PORT;
   const files = fs.readdirSync(__dirname);
 
   await Promise.all(
-    files.map(async file => {
+    files.map(async (file) => {
       if (file[0] === '_') return;
 
       const path = file.substr(0, file.length - 3);

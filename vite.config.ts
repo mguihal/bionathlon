@@ -33,7 +33,7 @@ export default defineConfig(({ mode }) => {
       server: {
         port: 3000,
         https: {
-          key: fs.readFileSync(__dirname + '/key2.pem', 'utf8'),
+          key: fs.readFileSync(__dirname + '/key.pem', 'utf8'),
           cert: fs.readFileSync(__dirname + '/cert.pem', 'utf8'),
         },
       },

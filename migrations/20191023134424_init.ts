@@ -1,29 +1,20 @@
 import { Knex } from 'knex';
 
 export async function up(knex: Knex): Promise<void> {
-  await knex.schema.createTable('player', table => {
+  await knex.schema.createTable('player', (table) => {
     table.increments('id');
-    table
-      .text('email')
-      .notNullable()
-      .unique();
+    table.text('email').notNullable().unique();
     table.text('name').notNullable();
   });
 
-  return knex.schema.createTable('game', table => {
+  return knex.schema.createTable('game', (table) => {
     table.increments('id');
-    table
-      .integer('playerId')
-      .unsigned()
-      .notNullable();
+    table.integer('playerId').unsigned().notNullable();
     table.dateTime('date').notNullable();
     table.integer('score').notNullable();
     table.text('note');
 
-    table
-      .foreign('playerId')
-      .references('id')
-      .inTable('player');
+    table.foreign('playerId').references('id').inTable('player');
   });
 }
 

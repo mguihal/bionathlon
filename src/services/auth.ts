@@ -1,11 +1,10 @@
-import { useCallback } from "react";
-import { useNavigate } from "react-router-dom";
-import { LoginResponse } from "./user";
+import { useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { LoginResponse } from './user';
 
 const TOKEN_KEY = 'token';
 
 export const useAuth = () => {
-
   const navigate = useNavigate();
 
   const getToken = useCallback(() => {
@@ -17,14 +16,23 @@ export const useAuth = () => {
     localStorage.setItem('user', JSON.stringify(user));
   }, []);
 
-  const logout = useCallback((expiredSession: boolean) => {
-    localStorage.setItem(TOKEN_KEY, '');
-    navigate(`/login${expiredSession ? '?expired' : ''}`);
-  }, [navigate]);
+  const logout = useCallback(
+    (expiredSession: boolean) => {
+      localStorage.setItem(TOKEN_KEY, '');
+      navigate(`/login${expiredSession ? '?expired' : ''}`);
+    },
+    [navigate],
+  );
 
   const getUser = useCallback((): LoginResponse['user'] => {
     const rawUser = localStorage.getItem('user') || '';
-    const fakeUser = { id: 0, name: '', email: '', avatar: null, isAdmin: false };
+    const fakeUser = {
+      id: 0,
+      name: '',
+      email: '',
+      avatar: null,
+      isAdmin: false,
+    };
 
     try {
       return JSON.parse(rawUser) as LoginResponse['user'];

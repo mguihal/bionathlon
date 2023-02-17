@@ -10,13 +10,13 @@ export const loginResponseSchema = t.type({
     name: t.string,
     avatar: nullable(t.string),
     isAdmin: t.boolean,
-  })
+  }),
 });
 
 export const loginPayloadSchema = t.type({
   data: t.type({
     googleToken: t.string,
-  })
+  }),
 });
 
 export type LoginResponse = t.TypeOf<typeof loginResponseSchema>;

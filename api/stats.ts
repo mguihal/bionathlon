@@ -1,12 +1,5 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
-import {
-  computeRondelles,
-  computeScore,
-  getWinner,
-  groupByDateTime,
-  groupByPlayer,
-  round2,
-} from '../src/helpers';
+import { computeRondelles, computeScore, getWinner, groupByDateTime, groupByPlayer, round2 } from '../src/helpers';
 import { RouteConfig, routeWrapper, withDb } from './_common';
 import { RankingsQueryParams, RankingsResponse, rankingsQueryParamsSchema } from '../src/services/stats';
 
@@ -33,7 +26,7 @@ const routeConfig: RouteConfig = {
       query: rankingsQueryParamsSchema,
     },
     handler: async (res, _, query: RankingsQueryParams) => {
-      return withDb(async db => {
+      return withDb(async (db) => {
         const gamesQuery = db('game')
           .join('player', 'game.playerId', 'player.id')
           .select(
@@ -61,13 +54,13 @@ const routeConfig: RouteConfig = {
         const playerGames = groupByPlayer(games);
         const sessionGames = groupByDateTime(games);
 
-        const winnerPlayerIds = Object.keys(sessionGames).map(session => {
+        const winnerPlayerIds = Object.keys(sessionGames).map((session) => {
           return getWinner(sessionGames[session]);
         });
 
         // nbMatchs
         const nbMatchs = Object.keys(playerGames)
-          .map<Rank>(player => {
+          .map<Rank>((player) => {
             return {
               id: Number(player),
               name: playerGames[player][0].playerName,
@@ -78,29 +71,23 @@ const routeConfig: RouteConfig = {
 
         // nbWonMatchs
         const nbWonMatchs = Object.keys(playerGames)
-          .map<Rank>(player => {
+          .map<Rank>((player) => {
             return {
               id: Number(player),
               name: playerGames[player][0].playerName,
-              score: winnerPlayerIds.reduce<number>(
-                (acc, cur) => acc + (cur === Number(player) ? 1 : 0),
-                0,
-              ),
+              score: winnerPlayerIds.reduce<number>((acc, cur) => acc + (cur === Number(player) ? 1 : 0), 0),
             };
           })
           .sort(byScore);
 
         // pctWonMatchs
         const pctWonMatchs = Object.keys(playerGames)
-          .map<Rank>(player => {
+          .map<Rank>((player) => {
             return {
               id: Number(player),
               name: playerGames[player][0].playerName,
               score: round2(
-                (winnerPlayerIds.reduce<number>(
-                  (acc, cur) => acc + (cur === Number(player) ? 1 : 0),
-                  0,
-                ) /
+                (winnerPlayerIds.reduce<number>((acc, cur) => acc + (cur === Number(player) ? 1 : 0), 0) /
                   playerGames[player].length) *
                   100,
               ),
@@ -111,43 +98,31 @@ const routeConfig: RouteConfig = {
 
         // nbPoints
         const nbPoints = Object.keys(playerGames)
-          .map<Rank>(player => {
+          .map<Rank>((player) => {
             return {
               id: Number(player),
               name: playerGames[player][0].playerName,
-              score: playerGames[player].reduce(
-                (acc, cur) => acc + computeScore(cur),
-                0,
-              ),
+              score: playerGames[player].reduce((acc, cur) => acc + computeScore(cur), 0),
             };
           })
           .sort(byScore);
 
         // nbRondelles
         const nbRondelles = Object.keys(playerGames)
-          .map<Rank>(player => {
+          .map<Rank>((player) => {
             return {
               id: Number(player),
               name: playerGames[player][0].playerName,
-              score: playerGames[player].reduce(
-                (acc, cur) => acc + computeRondelles(cur),
-                0,
-              ),
+              score: playerGames[player].reduce((acc, cur) => acc + computeRondelles(cur), 0),
             };
           })
           .sort(byScore);
 
         // efficiency
         const efficiency = Object.keys(playerGames)
-          .map<Rank>(player => {
-            const pts = playerGames[player].reduce(
-              (acc, cur) => acc + computeScore(cur, true),
-              0,
-            );
-            const rondelles = playerGames[player].reduce(
-              (acc, cur) => acc + computeRondelles(cur),
-              0,
-            );
+          .map<Rank>((player) => {
+            const pts = playerGames[player].reduce((acc, cur) => acc + computeScore(cur, true), 0);
+            const rondelles = playerGames[player].reduce((acc, cur) => acc + computeRondelles(cur), 0);
 
             return {
               id: Number(player),
@@ -159,15 +134,12 @@ const routeConfig: RouteConfig = {
 
         // avgPoints
         const avgPoints = Object.keys(playerGames)
-          .map<Rank>(player => {
+          .map<Rank>((player) => {
             return {
               id: Number(player),
               name: playerGames[player][0].playerName,
               score: round2(
-                playerGames[player].reduce(
-                  (acc, cur) => acc + computeScore(cur),
-                  0,
-                ) / playerGames[player].length,
+                playerGames[player].reduce((acc, cur) => acc + computeScore(cur), 0) / playerGames[player].length,
               ),
             };
           })
@@ -175,13 +147,12 @@ const routeConfig: RouteConfig = {
 
         // topScore
         const topScore = Object.keys(playerGames)
-          .map<Rank>(player => {
+          .map<Rank>((player) => {
             return {
               id: Number(player),
               name: playerGames[player][0].playerName,
               score: playerGames[player].reduce(
-                (acc, cur) =>
-                  computeScore(cur) > acc ? computeScore(cur) : acc,
+                (acc, cur) => (computeScore(cur) > acc ? computeScore(cur) : acc),
                 -999,
               ),
             };
@@ -203,5 +174,4 @@ const routeConfig: RouteConfig = {
   },
 };
 
-export default (req: VercelRequest, res: VercelResponse) =>
-  routeWrapper(req, res, routeConfig);
+export default (req: VercelRequest, res: VercelResponse) => routeWrapper(req, res, routeConfig);

@@ -25,7 +25,7 @@ const gameSchema = t.intersection([
     suddenDeath: t.boolean,
     playerName: t.string,
     playerAvatar: nullable(t.string),
-  })
+  }),
 ]);
 
 export const addGamePayloadSchema = t.type({
@@ -71,7 +71,9 @@ export type UpdateGameResponse = t.TypeOf<typeof updateGameSchema>;
 export type UpdateGameQueryParams = t.TypeOf<typeof updateGameQueryParamsSchema>;
 export type UpdateGamePayload = t.TypeOf<typeof updateGamePayloadSchema>;
 
-export const useUpdateGame = (): ReturnType<typeof useApi<UpdateGameResponse, UpdateGameQueryParams, UpdateGamePayload>> => {
+export const useUpdateGame = (): ReturnType<
+  typeof useApi<UpdateGameResponse, UpdateGameQueryParams, UpdateGamePayload>
+> => {
   const [responseData, fetchApi] = useApi<UpdateGameResponse, UpdateGameQueryParams, UpdateGamePayload>({
     path: '/api/game',
     method: 'PUT',
