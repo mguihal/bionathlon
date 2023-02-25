@@ -1,15 +1,18 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
-import { GetPlayersResponse, AddPlayerResponse, AddPlayerPayload, addPlayerPayloadSchema } from '../src/services/players';
+import {
+  GetPlayersResponse,
+  AddPlayerResponse,
+  AddPlayerPayload,
+  addPlayerPayloadSchema,
+} from '../src/services/players';
 import { sendNewPlayerOnChat } from './_bot';
 import { RouteConfig, routeWrapper, withDb } from './_common';
 
 const routeConfig: RouteConfig = {
   get: {
-    handler: async res => {
-      return withDb(async db => {
-        const players = await db('player')
-          .orderBy('id')
-          .select('id', 'email', 'name', 'avatar');
+    handler: async (res) => {
+      return withDb(async (db) => {
+        const players = await db('player').orderBy('id').select('id', 'email', 'name', 'avatar');
         return res.send(players as GetPlayersResponse);
       });
     },
@@ -17,10 +20,10 @@ const routeConfig: RouteConfig = {
 
   post: {
     validate: {
-      payload: addPlayerPayloadSchema
+      payload: addPlayerPayloadSchema,
     },
     handler: async (res, payload: AddPlayerPayload, _, user) => {
-      return withDb(async db => {
+      return withDb(async (db) => {
         try {
           const players = await db('player')
             .insert({
@@ -30,7 +33,7 @@ const routeConfig: RouteConfig = {
             .returning(['id', 'email', 'name', 'avatar']);
 
           if (user) {
-            await sendNewPlayerOnChat(players[0].name, user)
+            await sendNewPlayerOnChat(players[0].name, user);
           }
 
           return res.send(players as AddPlayerResponse);
@@ -53,5 +56,4 @@ const routeConfig: RouteConfig = {
   },
 };
 
-export default (req: VercelRequest, res: VercelResponse) =>
-  routeWrapper(req, res, routeConfig);
+export default (req: VercelRequest, res: VercelResponse) => routeWrapper(req, res, routeConfig);

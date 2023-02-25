@@ -9,7 +9,7 @@ export const playersSchema = t.array(
     email: t.string,
     name: t.string,
     avatar: nullable(t.string),
-  })
+  }),
 );
 
 export type GetPlayersResponse = t.TypeOf<typeof playersSchema>;
@@ -34,14 +34,16 @@ export const addPlayerPayloadSchema = t.type({
   data: t.type({
     email: t.string,
     name: t.string,
-  })
+  }),
 });
 
 export type AddPlayerResponse = t.TypeOf<typeof playersSchema>;
 export type AddPlayerPayload = t.TypeOf<typeof addPlayerPayloadSchema>;
 
-export const useAddPlayer = (): ReturnType<typeof useApi<AddPlayerResponse, {}, AddPlayerPayload>> => {
-  const [responseData, fetchApi] = useApi<AddPlayerResponse, {}, AddPlayerPayload>({
+export const useAddPlayer = (): ReturnType<
+  typeof useApi<AddPlayerResponse, Record<string, never>, AddPlayerPayload>
+> => {
+  const [responseData, fetchApi] = useApi<AddPlayerResponse, Record<string, never>, AddPlayerPayload>({
     path: '/api/player',
     method: 'POST',
     schema: playersSchema,

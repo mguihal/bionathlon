@@ -69,9 +69,7 @@ const routeConfig: RouteConfig = {
             .slice(offset, offset + limit);
 
           games = games.filter((game) => {
-            const groupKey = `${new Date(game.date).toISOString()} - ${
-              game.time === 'midday' ? 'midi' : 'soir'
-            }`;
+            const groupKey = `${new Date(game.date).toISOString()} - ${game.time === 'midday' ? 'midi' : 'soir'}`;
 
             return sessions.includes(groupKey);
           });
@@ -134,11 +132,7 @@ const routeConfig: RouteConfig = {
       query: updateGameQueryParamsSchema,
       payload: updateGamePayloadSchema,
     },
-    handler: async (
-      res,
-      payload: UpdateGamePayload,
-      query: UpdateGameQueryParams,
-    ) => {
+    handler: async (res, payload: UpdateGamePayload, query: UpdateGameQueryParams) => {
       return withDb(async (db) => {
         try {
           const games = await db('game')
@@ -229,5 +223,4 @@ const routeConfig: RouteConfig = {
   },
 };
 
-export default (req: VercelRequest, res: VercelResponse) =>
-  routeWrapper(req, res, routeConfig);
+export default (req: VercelRequest, res: VercelResponse) => routeWrapper(req, res, routeConfig);

@@ -4,12 +4,12 @@ import { useApi } from './api';
 
 // GET Stats
 const rankingSchema = t.array(
-  t.type({ 
-    id: t.number, 
-    name: t.string, 
-    score: t.number, 
-    suffix: t.union([t.string, t.undefined]) 
-  })
+  t.type({
+    id: t.number,
+    name: t.string,
+    score: t.number,
+    suffix: t.union([t.string, t.undefined]),
+  }),
 );
 
 export const rankingsSchema = t.type({
@@ -24,7 +24,7 @@ export const rankingsSchema = t.type({
 });
 
 export const rankingsQueryParamsSchema = t.partial({
-  dateFilter: t.string
+  dateFilter: t.string,
 });
 
 export type RankingsResponse = t.TypeOf<typeof rankingsSchema>;
@@ -41,51 +41,51 @@ export const useGetRankings = (): ReturnType<typeof useApi<RankingsResponse, Ran
 
 // GET ChartSerie
 const samplingSchema = t.keyof({
-  'none': null, 
-  'session': null, 
-  'playedSession': null, 
-  'day': null,
-  'week': null,
-  'month': null,
-  'year': null,
-  'time': null,
-  'weekDay': null,
-  'monthName': null,
-  'player': null,
-  'bottle': null,
-  'score': null,
+  none: null,
+  session: null,
+  playedSession: null,
+  day: null,
+  week: null,
+  month: null,
+  year: null,
+  time: null,
+  weekDay: null,
+  monthName: null,
+  player: null,
+  bottle: null,
+  score: null,
 });
 
 export type Sampling = t.TypeOf<typeof samplingSchema>;
 
 const serieTypeSchema = t.keyof({
-  'nbPoints': null,
-  'nbRondelles': null,
-  'nbMatchs': null,
-  'nbWonMatchs': null,
-  'pctWonMatchs': null,
-  'avgPoints': null,
-  'efficiency': null,
-  'topScore': null,
-  'worstScore': null,
-  'nbPlayers': null,
-  'nbSuddenDeath': null,
-  'nbWonSuddenDeath': null,
-  'nbBonus': null,
+  nbPoints: null,
+  nbRondelles: null,
+  nbMatchs: null,
+  nbWonMatchs: null,
+  pctWonMatchs: null,
+  avgPoints: null,
+  efficiency: null,
+  topScore: null,
+  worstScore: null,
+  nbPlayers: null,
+  nbSuddenDeath: null,
+  nbWonSuddenDeath: null,
+  nbBonus: null,
 });
 
 export type SerieType = t.TypeOf<typeof serieTypeSchema>;
 
 const serieModifierSchema = t.keyof({
-  'none': null, 
-  'cumulated': null,
-  'pct': null,
-  'smooth': null,
-  'minimum': null,
-  'maximum': null,
-  'mean': null,
-  'median': null,
-  'regression': null,
+  none: null,
+  cumulated: null,
+  pct: null,
+  smooth: null,
+  minimum: null,
+  maximum: null,
+  mean: null,
+  median: null,
+  regression: null,
 });
 
 export type SerieModifier = t.TypeOf<typeof serieModifierSchema>;
@@ -95,7 +95,7 @@ export const chartSerieSchema = t.array(
     key: t.string,
     shouldDisplay: t.boolean,
     value: t.number,
-  })
+  }),
 );
 
 export const chartSerieQueryParamsSchema = t.type({

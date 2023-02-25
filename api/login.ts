@@ -1,11 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { VercelRequest, VercelResponse } from '@vercel/node';
 import axios from 'axios';
 import jwt from 'jsonwebtoken';
-import {
-  LoginPayload,
-  loginPayloadSchema,
-  LoginResponse,
-} from '../src/services/user';
+import { LoginPayload, loginPayloadSchema, LoginResponse } from '../src/services/user';
 
 import { RouteConfig, routeWrapper, JWT_SECRET, withDb } from './_common';
 
@@ -31,14 +28,11 @@ type PlayerQuery = {
 async function loginHandler(res: VercelResponse, payload: LoginPayload) {
   try {
     const googleToken = payload.data.googleToken;
-    const response = await axios.get<GoogleResponse>(
-      `https://www.googleapis.com/oauth2/v2/userinfo`,
-      {
-        headers: {
-          Authorization: `Bearer ${googleToken}`,
-        },
+    const response = await axios.get<GoogleResponse>(`https://www.googleapis.com/oauth2/v2/userinfo`, {
+      headers: {
+        Authorization: `Bearer ${googleToken}`,
       },
-    );
+    });
 
     const player: PlayerQuery = await withDb(async (db) => {
       return db('player').first().where({ email: response.data.email });
@@ -98,5 +92,4 @@ const routeConfig: RouteConfig = {
   },
 };
 
-export default (req: VercelRequest, res: VercelResponse) =>
-  routeWrapper(req, res, routeConfig);
+export default (req: VercelRequest, res: VercelResponse) => routeWrapper(req, res, routeConfig);

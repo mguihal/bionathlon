@@ -19,13 +19,13 @@ const gameUpdatableAttributes = {
 
 const gameUpdatableSchema = t.type(gameUpdatableAttributes);
 const gameSchema = t.intersection([
-  gameUpdatableSchema, 
-  t.type({ 
+  gameUpdatableSchema,
+  t.type({
     id: t.number,
     suddenDeath: t.boolean,
     playerName: t.string,
     playerAvatar: nullable(t.string),
-  })
+  }),
 ]);
 
 export const addGamePayloadSchema = t.type({
@@ -55,8 +55,8 @@ const addGameSchema = t.array(gameUpdatableSchema);
 export type AddGameResponse = t.TypeOf<typeof addGameSchema>;
 export type AddGamePayload = t.TypeOf<typeof addGamePayloadSchema>;
 
-export const useAddGame = (): ReturnType<typeof useApi<AddGameResponse, {}, AddGamePayload>> => {
-  const [responseData, fetchApi] = useApi<AddGameResponse, {}, AddGamePayload>({
+export const useAddGame = (): ReturnType<typeof useApi<AddGameResponse, Record<string, never>, AddGamePayload>> => {
+  const [responseData, fetchApi] = useApi<AddGameResponse, Record<string, never>, AddGamePayload>({
     path: '/api/game',
     method: 'POST',
     schema: addGameSchema,
@@ -71,7 +71,9 @@ export type UpdateGameResponse = t.TypeOf<typeof updateGameSchema>;
 export type UpdateGameQueryParams = t.TypeOf<typeof updateGameQueryParamsSchema>;
 export type UpdateGamePayload = t.TypeOf<typeof updateGamePayloadSchema>;
 
-export const useUpdateGame = (): ReturnType<typeof useApi<UpdateGameResponse, UpdateGameQueryParams, UpdateGamePayload>> => {
+export const useUpdateGame = (): ReturnType<
+  typeof useApi<UpdateGameResponse, UpdateGameQueryParams, UpdateGamePayload>
+> => {
   const [responseData, fetchApi] = useApi<UpdateGameResponse, UpdateGameQueryParams, UpdateGamePayload>({
     path: '/api/game',
     method: 'PUT',

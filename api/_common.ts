@@ -1,7 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import * as t from 'io-ts';
 import { PathReporter, success } from 'io-ts/lib/PathReporter';
 import { VercelRequest, VercelResponse } from '@vercel/node';
-import jwt, { JsonWebTokenError, JwtPayload } from 'jsonwebtoken';
+import jwt, { JsonWebTokenError } from 'jsonwebtoken';
 import knex, { Knex } from 'knex';
 
 const jwtVersion = '2';
@@ -20,12 +21,7 @@ export type MethodConfig = {
     query?: t.Any;
   };
   authenticated?: boolean;
-  handler: (
-    res: VercelResponse,
-    payload?: any,
-    query?: any,
-    user?: TokenPayload | null,
-  ) => Promise<VercelResponse>;
+  handler: (res: VercelResponse, payload?: any, query?: any, user?: TokenPayload | null) => Promise<VercelResponse>;
 };
 
 export interface RouteConfig {
@@ -36,10 +32,10 @@ export interface RouteConfig {
 }
 
 function withBody(req: VercelRequest) {
-  return new Promise<VercelRequest>(resolve => {
-    let data: string[] = [];
+  return new Promise<VercelRequest>((resolve) => {
+    const data: string[] = [];
 
-    req.on('data', chunk => data.push(chunk));
+    req.on('data', (chunk) => data.push(chunk));
     req.on('end', () => {
       try {
         req.body = JSON.parse(data.join(''));
@@ -54,16 +50,12 @@ function withBody(req: VercelRequest) {
 class ValidationError extends Error {
   constructor(message: string) {
     super(message);
-    this.name = "ValidationError";
+    this.name = 'ValidationError';
     Object.setPrototypeOf(this, ValidationError.prototype);
   }
 }
 
-export async function validationWrapper(
-  req: VercelRequest,
-  res: VercelResponse,
-  config: MethodConfig,
-) {
+export async function validationWrapper(req: VercelRequest, res: VercelResponse, config: MethodConfig) {
   try {
     req = await withBody(req);
 
@@ -106,11 +98,7 @@ export async function validationWrapper(
   }
 }
 
-export async function routeWrapper(
-  req: VercelRequest,
-  res: VercelResponse,
-  config: RouteConfig,
-) {
+export async function routeWrapper(req: VercelRequest, res: VercelResponse, config: RouteConfig) {
   switch (req.method) {
     case 'GET':
       if (config.get) {

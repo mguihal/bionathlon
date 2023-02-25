@@ -1,9 +1,7 @@
 import { Game } from './services/games';
 
 export function getTZDate(date: Date = new Date()) {
-  return new Date(date.getTime() - date.getTimezoneOffset() * 60 * 1000)
-    .toISOString()
-    .split('T')[0];
+  return new Date(date.getTime() - date.getTimezoneOffset() * 60 * 1000).toISOString().split('T')[0];
 }
 
 export function formatDate(date: string = new Date().toISOString()) {
@@ -18,10 +16,8 @@ export function formatDate(date: string = new Date().toISOString()) {
 }
 
 export function groupByDateTime(games: Game[]) {
-  return games.reduce<{ [key: string]: Game[] }>(function(groups, game) {
-    const groupKey = `${(new Date(game.date)).toISOString()} - ${
-      game.time === 'midday' ? 'midi' : 'soir'
-    }`;
+  return games.reduce<{ [key: string]: Game[] }>(function (groups, game) {
+    const groupKey = `${new Date(game.date).toISOString()} - ${game.time === 'midday' ? 'midi' : 'soir'}`;
     (groups[groupKey] = groups[groupKey] || []).push(game);
 
     return groups;
@@ -29,15 +25,18 @@ export function groupByDateTime(games: Game[]) {
 }
 
 export function groupByPlayer(games: Game[]) {
-  return games.reduce<{ [key: string]: Game[] }>(function(groups, game) {
+  return games.reduce<{ [key: string]: Game[] }>(function (groups, game) {
     (groups[game.playerId] = groups[game.playerId] || []).push(game);
     return groups;
   }, {});
 }
 
 export function byScoreDesc(
-  a: Pick<Game, 'score' | 'scoreLeftBottle' | 'scoreMiddleBottle' | 'scoreRightBottle' | 'scoreMalusBottle' | 'suddenDeath'>, 
-  b: Pick<Game, 'score' | 'scoreLeftBottle' | 'scoreMiddleBottle' | 'scoreRightBottle' | 'scoreMalusBottle'>
+  a: Pick<
+    Game,
+    'score' | 'scoreLeftBottle' | 'scoreMiddleBottle' | 'scoreRightBottle' | 'scoreMalusBottle' | 'suddenDeath'
+  >,
+  b: Pick<Game, 'score' | 'scoreLeftBottle' | 'scoreMiddleBottle' | 'scoreRightBottle' | 'scoreMalusBottle'>,
 ) {
   const scoreA = computeScore(a);
   const scoreB = computeScore(b);
@@ -73,7 +72,7 @@ export function isMidDayGame(game: Game) {
 }
 
 export function isWinner(game: Game, games: Game[]) {
-  return games.every(otherGame => {
+  return games.every((otherGame) => {
     if (otherGame.playerId === game.playerId) {
       return true;
     } else if (computeScore(otherGame) < computeScore(game)) {
@@ -91,9 +90,7 @@ export function getWinner(games: Game[]) {
 
   if (
     sorted.length === 0 ||
-    (sorted.length > 1 &&
-      computeScore(sorted[0]) === computeScore(sorted[1]) &&
-      !sorted[0].suddenDeath)
+    (sorted.length > 1 && computeScore(sorted[0]) === computeScore(sorted[1]) && !sorted[0].suddenDeath)
   ) {
     return null;
   } else {
@@ -101,78 +98,48 @@ export function getWinner(games: Game[]) {
   }
 }
 
-export function getSuddenDeathGames(games: Game[], checkIfDone: boolean = true) {
+export function getSuddenDeathGames(games: Game[], checkIfDone = true) {
   if (games.length === 0) {
     return [];
   }
 
   const sorted = games.sort(byScoreDesc);
   let isSuddenDeathDone = false;
-  let suddenDeathGames: Game[] = [];
+  const suddenDeathGames: Game[] = [];
 
-  games.forEach(game => {
+  games.forEach((game) => {
     if (computeScore(game) === computeScore(sorted[0])) {
       suddenDeathGames.push(game);
       isSuddenDeathDone = isSuddenDeathDone || game.suddenDeath;
     }
   });
 
-  return (checkIfDone && isSuddenDeathDone) || suddenDeathGames.length === 1
-    ? []
-    : suddenDeathGames;
+  return (checkIfDone && isSuddenDeathDone) || suddenDeathGames.length === 1 ? [] : suddenDeathGames;
 }
 
 export function computeScore(
   game: Pick<Game, 'score' | 'scoreLeftBottle' | 'scoreMiddleBottle' | 'scoreRightBottle' | 'scoreMalusBottle'>,
-  onlyScoreWithBottles: boolean = false,
+  onlyScoreWithBottles = false,
 ) {
-  const {
-    score,
-    scoreLeftBottle,
-    scoreMiddleBottle,
-    scoreRightBottle,
-    scoreMalusBottle,
-  } = game;
+  const { score, scoreLeftBottle, scoreMiddleBottle, scoreRightBottle, scoreMalusBottle } = game;
 
   if (score !== null && score !== undefined) {
     return onlyScoreWithBottles ? 0 : score;
   }
 
-  const bonus =
-    Math.min(
-      scoreLeftBottle || 0,
-      scoreMiddleBottle || 0,
-      scoreRightBottle || 0,
-    ) * 3;
+  const bonus = Math.min(scoreLeftBottle || 0, scoreMiddleBottle || 0, scoreRightBottle || 0) * 3;
 
-  return (
-    bonus +
-    (scoreLeftBottle || 0) +
-    (scoreMiddleBottle || 0) +
-    (scoreRightBottle || 0) -
-    (scoreMalusBottle || 0)
-  );
+  return bonus + (scoreLeftBottle || 0) + (scoreMiddleBottle || 0) + (scoreRightBottle || 0) - (scoreMalusBottle || 0);
 }
 
 export function computeRondelles(
   game: Pick<Game, 'score' | 'scoreLeftBottle' | 'scoreMiddleBottle' | 'scoreRightBottle' | 'scoreMalusBottle'>,
 ) {
-  const {
-    score,
-    scoreLeftBottle,
-    scoreMiddleBottle,
-    scoreRightBottle,
-    scoreMalusBottle,
-  } = game;
+  const { score, scoreLeftBottle, scoreMiddleBottle, scoreRightBottle, scoreMalusBottle } = game;
 
   if (score !== null && score !== undefined) {
     return 0;
   }
 
-  return (
-    (scoreLeftBottle || 0) +
-    (scoreMiddleBottle || 0) +
-    (scoreRightBottle || 0) +
-    (scoreMalusBottle || 0)
-  );
+  return (scoreLeftBottle || 0) + (scoreMiddleBottle || 0) + (scoreRightBottle || 0) + (scoreMalusBottle || 0);
 }
