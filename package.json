@@ -20,7 +20,6 @@
     "@material-ui/pickers": "^3.3.10",
     "@react-oauth/google": "^0.7.0",
     "@types/atob": "^2.1.2",
-    "@types/jest": "28.1.6",
     "@types/jsonwebtoken": "^8.5.8",
     "@types/node": "^18.0.6",
     "@types/react": "18.0.15",
@@ -32,12 +31,10 @@
     "axios": "^0.27.2",
     "date-fns": "^2.28.0",
     "dotenv": "^16.0.1",
-    "fp-ts": "^2.12.2",
     "google-auth-library": "^8.1.1",
     "gsap": "^3.10.4",
     "highcharts": "^10.2.0",
     "highcharts-react-official": "^3.1.0",
-    "io-ts": "^2.2.17",
     "jsonwebtoken": "^8.5.1",
     "knex": "^2.1.0",
     "pg": "^8.7.3",
@@ -50,7 +47,8 @@
     "remark-gfm": "^3.0.1",
     "typescript": "4.7.4",
     "vite": "^4.1.1",
-    "vite-plugin-checker": "^0.5.5"
+    "vite-plugin-checker": "^0.5.5",
+    "zod": "^3.20.6"
   },
   "devDependencies": {
     "@types/express": "^4.17.13",
@@ -79,8 +77,7 @@
       "plugin:react/recommended",
       "plugin:@typescript-eslint/recommended"
     ],
-    "overrides": [
-    ],
+    "overrides": [],
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
       "ecmaVersion": "latest",

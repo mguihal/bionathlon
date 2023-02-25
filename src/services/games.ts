@@ -1,59 +1,58 @@
-import * as t from 'io-ts';
-import { nullable } from 'io-ts/lib/Type';
+import z from 'zod';
 import { useCallback, useEffect } from 'react';
 import { getTZDate } from '../helpers';
 import { useApi } from './api';
 
-const gameUpdatableAttributes = {
-  date: t.string,
-  time: t.union([t.literal('midday'), t.literal('evening')]),
-  playerId: t.number,
-  score: nullable(t.number),
-  scoreLeftBottle: nullable(t.number),
-  scoreMiddleBottle: nullable(t.number),
-  scoreRightBottle: nullable(t.number),
-  scoreMalusBottle: nullable(t.number),
-  note: nullable(t.string),
-  suddenDeath: t.boolean,
-};
+const gameUpdatableSchema = z.object({
+  date: z.string(),
+  time: z.enum(['midday', 'evening']),
+  playerId: z.number(),
+  score: z.nullable(z.number()),
+  scoreLeftBottle: z.nullable(z.number()),
+  scoreMiddleBottle: z.nullable(z.number()),
+  scoreRightBottle: z.nullable(z.number()),
+  scoreMalusBottle: z.nullable(z.number()),
+  note: z.nullable(z.string()),
+  suddenDeath: z.boolean(),
+});
 
-const gameUpdatableSchema = t.type(gameUpdatableAttributes);
-const gameSchema = t.intersection([
-  gameUpdatableSchema,
-  t.type({
-    id: t.number,
-    suddenDeath: t.boolean,
-    playerName: t.string,
-    playerAvatar: nullable(t.string),
+const gameSchema = gameUpdatableSchema.and(
+  z.object({
+    id: z.number(),
+    suddenDeath: z.boolean(),
+    playerName: z.string(),
+    playerAvatar: z.nullable(z.string()),
   }),
-]);
+);
 
-export const addGamePayloadSchema = t.type({
+export const addGamePayloadSchema = z.object({
   data: gameUpdatableSchema,
 });
 
-export const updateGamePayloadSchema = t.type({
-  data: t.partial(gameUpdatableAttributes),
+export const updateGamePayloadSchema = z.object({
+  data: gameUpdatableSchema.partial(),
 });
 
-export const updateGameQueryParamsSchema = t.type({
-  id: t.string,
+export const updateGameQueryParamsSchema = z.object({
+  id: z.string(),
 });
 
-export const getGamesQueryParamsSchema = t.partial({
-  date: t.string,
-  playerId: t.string,
-  month: t.string,
-  offset: t.string,
-  limit: t.string,
-});
+export const getGamesQueryParamsSchema = z
+  .object({
+    date: z.string(),
+    playerId: z.string(),
+    month: z.string(),
+    offset: z.string(),
+    limit: z.string(),
+  })
+  .partial();
 
-export type Game = t.TypeOf<typeof gameSchema>;
+export type Game = z.infer<typeof gameSchema>;
 
 // ADD GAME
-const addGameSchema = t.array(gameUpdatableSchema);
-export type AddGameResponse = t.TypeOf<typeof addGameSchema>;
-export type AddGamePayload = t.TypeOf<typeof addGamePayloadSchema>;
+const addGameSchema = z.array(gameUpdatableSchema);
+export type AddGameResponse = z.infer<typeof addGameSchema>;
+export type AddGamePayload = z.infer<typeof addGamePayloadSchema>;
 
 export const useAddGame = (): ReturnType<typeof useApi<AddGameResponse, Record<string, never>, AddGamePayload>> => {
   const [responseData, fetchApi] = useApi<AddGameResponse, Record<string, never>, AddGamePayload>({
@@ -66,10 +65,10 @@ export const useAddGame = (): ReturnType<typeof useApi<AddGameResponse, Record<s
 };
 
 // UPDATE GAME
-const updateGameSchema = t.array(gameUpdatableSchema);
-export type UpdateGameResponse = t.TypeOf<typeof updateGameSchema>;
-export type UpdateGameQueryParams = t.TypeOf<typeof updateGameQueryParamsSchema>;
-export type UpdateGamePayload = t.TypeOf<typeof updateGamePayloadSchema>;
+const updateGameSchema = z.array(gameUpdatableSchema);
+export type UpdateGameResponse = z.infer<typeof updateGameSchema>;
+export type UpdateGameQueryParams = z.infer<typeof updateGameQueryParamsSchema>;
+export type UpdateGamePayload = z.infer<typeof updateGamePayloadSchema>;
 
 export const useUpdateGame = (): ReturnType<
   typeof useApi<UpdateGameResponse, UpdateGameQueryParams, UpdateGamePayload>
@@ -84,9 +83,9 @@ export const useUpdateGame = (): ReturnType<
 };
 
 // DELETE GAME
-const deleteGameSchema = t.array(gameUpdatableSchema);
-export type DeleteGameResponse = t.TypeOf<typeof deleteGameSchema>;
-export type DeleteGameQueryParams = t.TypeOf<typeof updateGameQueryParamsSchema>;
+const deleteGameSchema = z.array(gameUpdatableSchema);
+export type DeleteGameResponse = z.infer<typeof deleteGameSchema>;
+export type DeleteGameQueryParams = z.infer<typeof updateGameQueryParamsSchema>;
 
 export const useDeleteGame = (): ReturnType<typeof useApi<DeleteGameResponse, DeleteGameQueryParams>> => {
   const [responseData, fetchApi] = useApi<DeleteGameResponse, DeleteGameQueryParams>({
@@ -99,9 +98,9 @@ export const useDeleteGame = (): ReturnType<typeof useApi<DeleteGameResponse, De
 };
 
 // GET GAMES
-const getGamesSchema = t.array(gameSchema);
-export type GetGamesResponse = t.TypeOf<typeof getGamesSchema>;
-export type GetGamesQueryParams = t.TypeOf<typeof getGamesQueryParamsSchema>;
+const getGamesSchema = z.array(gameSchema);
+export type GetGamesResponse = z.infer<typeof getGamesSchema>;
+export type GetGamesQueryParams = z.infer<typeof getGamesQueryParamsSchema>;
 
 export const useGetPaginatedGames = (): ReturnType<typeof useApi<GetGamesResponse, GetGamesQueryParams>> => {
   const [responseData, fetchApi] = useApi<GetGamesResponse, GetGamesQueryParams>({

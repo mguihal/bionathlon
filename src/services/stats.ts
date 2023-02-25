@@ -1,18 +1,17 @@
-import * as t from 'io-ts';
-
+import z from 'zod';
 import { useApi } from './api';
 
 // GET Stats
-const rankingSchema = t.array(
-  t.type({
-    id: t.number,
-    name: t.string,
-    score: t.number,
-    suffix: t.union([t.string, t.undefined]),
+const rankingSchema = z.array(
+  z.object({
+    id: z.number(),
+    name: z.string(),
+    score: z.number(),
+    suffix: z.optional(z.string()),
   }),
 );
 
-export const rankingsSchema = t.type({
+export const rankingsSchema = z.object({
   nbMatchs: rankingSchema,
   nbWonMatchs: rankingSchema,
   pctWonMatchs: rankingSchema,
@@ -23,12 +22,14 @@ export const rankingsSchema = t.type({
   topScore: rankingSchema,
 });
 
-export const rankingsQueryParamsSchema = t.partial({
-  dateFilter: t.string,
-});
+export const rankingsQueryParamsSchema = z
+  .object({
+    dateFilter: z.string(),
+  })
+  .partial();
 
-export type RankingsResponse = t.TypeOf<typeof rankingsSchema>;
-export type RankingsQueryParams = t.TypeOf<typeof rankingsQueryParamsSchema>;
+export type RankingsResponse = z.infer<typeof rankingsSchema>;
+export type RankingsQueryParams = z.infer<typeof rankingsQueryParamsSchema>;
 
 export const useGetRankings = (): ReturnType<typeof useApi<RankingsResponse, RankingsQueryParams>> => {
   const [responseData, fetchApi] = useApi<RankingsResponse, RankingsQueryParams>({
@@ -40,83 +41,75 @@ export const useGetRankings = (): ReturnType<typeof useApi<RankingsResponse, Ran
 };
 
 // GET ChartSerie
-const samplingSchema = t.keyof({
-  none: null,
-  session: null,
-  playedSession: null,
-  day: null,
-  week: null,
-  month: null,
-  year: null,
-  time: null,
-  weekDay: null,
-  monthName: null,
-  player: null,
-  bottle: null,
-  score: null,
-});
+const samplingSchema = z.enum([
+  'none',
+  'session',
+  'playedSession',
+  'day',
+  'week',
+  'month',
+  'year',
+  'time',
+  'weekDay',
+  'monthName',
+  'player',
+  'bottle',
+  'score',
+]);
 
-export type Sampling = t.TypeOf<typeof samplingSchema>;
+export type Sampling = z.infer<typeof samplingSchema>;
 
-const serieTypeSchema = t.keyof({
-  nbPoints: null,
-  nbRondelles: null,
-  nbMatchs: null,
-  nbWonMatchs: null,
-  pctWonMatchs: null,
-  avgPoints: null,
-  efficiency: null,
-  topScore: null,
-  worstScore: null,
-  nbPlayers: null,
-  nbSuddenDeath: null,
-  nbWonSuddenDeath: null,
-  nbBonus: null,
-});
+const serieTypeSchema = z.enum([
+  'nbPoints',
+  'nbRondelles',
+  'nbMatchs',
+  'nbWonMatchs',
+  'pctWonMatchs',
+  'avgPoints',
+  'efficiency',
+  'topScore',
+  'worstScore',
+  'nbPlayers',
+  'nbSuddenDeath',
+  'nbWonSuddenDeath',
+  'nbBonus',
+]);
 
-export type SerieType = t.TypeOf<typeof serieTypeSchema>;
+export type SerieType = z.infer<typeof serieTypeSchema>;
 
-const serieModifierSchema = t.keyof({
-  none: null,
-  cumulated: null,
-  pct: null,
-  smooth: null,
-  minimum: null,
-  maximum: null,
-  mean: null,
-  median: null,
-  regression: null,
-});
+const serieModifierSchema = z.enum([
+  'none',
+  'cumulated',
+  'pct',
+  'smooth',
+  'minimum',
+  'maximum',
+  'mean',
+  'median',
+  'regression',
+]);
 
-export type SerieModifier = t.TypeOf<typeof serieModifierSchema>;
+export type SerieModifier = z.infer<typeof serieModifierSchema>;
 
-export const chartSerieSchema = t.array(
-  t.type({
-    key: t.string,
-    shouldDisplay: t.boolean,
-    value: t.number,
+export const chartSerieSchema = z.array(
+  z.object({
+    key: z.string(),
+    shouldDisplay: z.boolean(),
+    value: z.number(),
   }),
 );
 
-export const chartSerieQueryParamsSchema = t.type({
+export const chartSerieQueryParamsSchema = z.object({
   type: serieTypeSchema,
-  date: t.string,
+  date: z.string(),
   modifier: serieModifierSchema,
-  playerFilter: t.string,
+  playerFilter: z.string(),
   sampling: samplingSchema,
-  chartDate: t.string,
+  chartDate: z.string(),
 });
 
-export type ChartSerieResponse = t.TypeOf<typeof chartSerieSchema>;
-
-export type ChartSerieQueryParams = {
-  type: SerieType;
-  date: string;
-  modifier: SerieModifier;
-  playerFilter: string;
-  sampling: Sampling;
-  chartDate: string;
-};
+export type ChartSerieResponse = z.infer<typeof chartSerieSchema>;
+export type ChartSerieQueryParams = z.infer<typeof chartSerieQueryParamsSchema>;
 
 export const useGetChartSerie = (): ReturnType<typeof useApi<ChartSerieResponse, ChartSerieQueryParams>> => {
   const [responseData, fetchApi] = useApi<ChartSerieResponse, ChartSerieQueryParams>({

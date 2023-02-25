@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import * as t from 'io-ts';
-import { PathReporter, success } from 'io-ts/lib/PathReporter';
+import z from 'zod';
 import { VercelRequest, VercelResponse } from '@vercel/node';
 import jwt, { JsonWebTokenError } from 'jsonwebtoken';
 import knex, { Knex } from 'knex';
@@ -17,8 +16,8 @@ export type TokenPayload = {
 
 export type MethodConfig = {
   validate?: {
-    payload?: t.Any;
-    query?: t.Any;
+    payload?: z.ZodTypeAny;
+    query?: z.ZodTypeAny;
   };
   authenticated?: boolean;
   handler: (res: VercelResponse, payload?: any, query?: any, user?: TokenPayload | null) => Promise<VercelResponse>;
@@ -59,18 +58,20 @@ export async function validationWrapper(req: VercelRequest, res: VercelResponse,
   try {
     req = await withBody(req);
 
-    const queryValidator2 = config.validate?.query || t.unknown;
-    const queryValidation = PathReporter.report(queryValidator2.decode(req.query))[0];
+    if (config.validate?.query) {
+      const queryValidation = config.validate?.query.safeParse(req.query);
 
-    if (queryValidation !== success()[0]) {
-      throw new ValidationError(`Format des queryParams incorrect: ${queryValidation}`);
+      if (!queryValidation.success) {
+        throw new Error(`Format de réponse incorrect: ${queryValidation.error.message}`);
+      }
     }
 
-    const payloadValidator2 = config.validate?.payload || t.unknown;
-    const payloadValidation = PathReporter.report(payloadValidator2.decode(req.body))[0];
+    if (config.validate?.payload) {
+      const payloadValidation = config.validate?.payload.safeParse(req.body);
 
-    if (payloadValidation !== success()[0]) {
-      throw new ValidationError(`Format du payload incorrect: ${payloadValidation}`);
+      if (!payloadValidation.success) {
+        throw new ValidationError(`Format du payload incorrect: ${payloadValidation}`);
+      }
     }
 
     let token: TokenPayload | null = null;

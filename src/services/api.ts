@@ -1,6 +1,5 @@
-import * as t from 'io-ts';
-import { PathReporter, success } from 'io-ts/lib/PathReporter';
 import { useCallback, useState } from 'react';
+import { z } from 'zod';
 import { useAuth } from './auth';
 import { dataError, dataNotFetched, dataPending, DataResponse, dataSuccess, WrapData, wrap } from './remoteData';
 
@@ -9,7 +8,7 @@ const BASE_URL = process.env.REACT_APP_API_HOST || '';
 type ApiOptions = {
   path: string;
   method?: 'GET' | 'POST' | 'PUT' | 'DELETE';
-  schema: t.Any;
+  schema: z.ZodTypeAny;
   authenticated?: boolean;
 };
 type ApiQueryParams = Record<string, string>;
@@ -58,10 +57,10 @@ function useApi<T, QP extends ApiQueryParams = Record<string, never>, P extends 
 
           if (response.status === 200) {
             const payload = await response.json();
-            const validation = PathReporter.report(options.schema.decode(payload))[0];
+            const validation = options.schema.safeParse(payload);
 
-            if (validation !== success()[0]) {
-              throw new Error(`Format de réponse incorrect: ${validation}`);
+            if (!validation.success) {
+              throw new Error(`Format de réponse incorrect: ${validation.error.message}`);
             }
 
             result = dataSuccess(payload);
