@@ -6,6 +6,7 @@ const rankingSchema = z.array(
   z.object({
     id: z.number(),
     name: z.string(),
+    avatar: z.nullable(z.string()),
     score: z.number(),
     suffix: z.optional(z.string()),
   }),
