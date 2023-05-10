@@ -41,6 +41,7 @@ const routeConfig: RouteConfig = {
             'scoreMalusBottle',
             'note',
             'name as playerName',
+            'avatar as playerAvatar',
             'suddenDeath',
           );
 
@@ -64,6 +65,7 @@ const routeConfig: RouteConfig = {
             return {
               id: Number(player),
               name: playerGames[player][0].playerName,
+              avatar: playerGames[player][0].playerAvatar,
               score: playerGames[player].length,
             };
           })
@@ -75,6 +77,7 @@ const routeConfig: RouteConfig = {
             return {
               id: Number(player),
               name: playerGames[player][0].playerName,
+              avatar: playerGames[player][0].playerAvatar,
               score: winnerPlayerIds.reduce<number>((acc, cur) => acc + (cur === Number(player) ? 1 : 0), 0),
             };
           })
@@ -86,6 +89,7 @@ const routeConfig: RouteConfig = {
             return {
               id: Number(player),
               name: playerGames[player][0].playerName,
+              avatar: playerGames[player][0].playerAvatar,
               score: round2(
                 (winnerPlayerIds.reduce<number>((acc, cur) => acc + (cur === Number(player) ? 1 : 0), 0) /
                   playerGames[player].length) *
@@ -102,6 +106,7 @@ const routeConfig: RouteConfig = {
             return {
               id: Number(player),
               name: playerGames[player][0].playerName,
+              avatar: playerGames[player][0].playerAvatar,
               score: playerGames[player].reduce((acc, cur) => acc + computeScore(cur), 0),
             };
           })
@@ -113,6 +118,7 @@ const routeConfig: RouteConfig = {
             return {
               id: Number(player),
               name: playerGames[player][0].playerName,
+              avatar: playerGames[player][0].playerAvatar,
               score: playerGames[player].reduce((acc, cur) => acc + computeRondelles(cur), 0),
             };
           })
@@ -127,6 +133,7 @@ const routeConfig: RouteConfig = {
             return {
               id: Number(player),
               name: playerGames[player][0].playerName,
+              avatar: playerGames[player][0].playerAvatar,
               score: rondelles > 0 ? round2(pts / rondelles) : 0,
             };
           })
@@ -138,6 +145,7 @@ const routeConfig: RouteConfig = {
             return {
               id: Number(player),
               name: playerGames[player][0].playerName,
+              avatar: playerGames[player][0].playerAvatar,
               score: round2(
                 playerGames[player].reduce((acc, cur) => acc + computeScore(cur), 0) / playerGames[player].length,
               ),
@@ -151,6 +159,7 @@ const routeConfig: RouteConfig = {
             return {
               id: Number(player),
               name: playerGames[player][0].playerName,
+              avatar: playerGames[player][0].playerAvatar,
               score: playerGames[player].reduce(
                 (acc, cur) => (computeScore(cur) > acc ? computeScore(cur) : acc),
                 -999,
