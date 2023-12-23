@@ -25,7 +25,7 @@ const Recap = () => {
 
   const [data, fetchRecap] = useGetRecap();
 
-  const year = 2022;
+  const year = (new Date()).getFullYear() - 1;
 
   const openRecap = () => {
     fetchRecap({ playerId: getUser().id.toString(), year: year.toString() }).then(() => {
