@@ -31,7 +31,7 @@
     "axios": "^0.27.2",
     "date-fns": "^2.28.0",
     "dotenv": "^16.0.1",
-    "google-auth-library": "^8.1.1",
+    "google-auth-library": "^9.6.3",
     "gsap": "^3.10.4",
     "highcharts": "^10.2.0",
     "highcharts-react-official": "^3.1.0",

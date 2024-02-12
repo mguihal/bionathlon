@@ -14,23 +14,28 @@ if (!existsSync(googlePrivateKeyPath)) {
 
 process.env.GOOGLE_APPLICATION_CREDENTIALS = googlePrivateKeyPath;
 
-async function sendChatMessage(spaceId: string | null, thread: string, message: string) {
+export async function sendChatMessage(spaceId: string | null, thread: string, message: string) {
   if (!spaceId) {
     return;
   }
 
   try {
     const auth = new GoogleAuth({
+      // keyFilename: __dirname + '/credentials.json',
       scopes: 'https://www.googleapis.com/auth/chat.bot',
     });
     const client = await auth.getClient();
 
-    const url = `https://chat.googleapis.com/v1/spaces/${spaceId}/messages?threadKey=${thread}`;
-    await client.request({
+    const url = `https://chat.googleapis.com/v1/spaces/${spaceId}/messages?messageReplyOption=REPLY_MESSAGE_FALLBACK_TO_NEW_THREAD&threadKey=${thread}`;
+    const result = await client.request({
       url,
       method: 'POST',
       data: {
         text: message,
+        thread: {
+          threadKey: thread,
+        },
+        threadReply: true,
       },
     });
   } catch (error) {
