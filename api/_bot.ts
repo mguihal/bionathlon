@@ -1,9 +1,10 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Knex } from 'knex';
 import { GoogleAuth } from 'google-auth-library';
 import { AddGamePayload, Game } from '../src/services/games';
 import { existsSync, writeFileSync } from 'fs';
 import atob from 'atob';
-import { computeScore, formatDate } from '../src/helpers';
+import { byScoreDesc, computeScore, formatDate, round2 } from '../src/helpers';
 import { TokenPayload } from './_common';
 
 const googlePrivateKeyPath = '/tmp/BionathlonBot.privatekey.json';
@@ -14,7 +15,7 @@ if (!existsSync(googlePrivateKeyPath)) {
 
 process.env.GOOGLE_APPLICATION_CREDENTIALS = googlePrivateKeyPath;
 
-export async function sendChatMessage(spaceId: string | null, thread: string, message: string) {
+export async function sendChatMessage(spaceId: string | null, thread: string, message: string, messageId?: string) {
   if (!spaceId) {
     return;
   }
@@ -26,7 +27,12 @@ export async function sendChatMessage(spaceId: string | null, thread: string, me
     });
     const client = await auth.getClient();
 
-    const url = `https://chat.googleapis.com/v1/spaces/${spaceId}/messages?messageReplyOption=REPLY_MESSAGE_FALLBACK_TO_NEW_THREAD&threadKey=${thread}`;
+    let url = `https://chat.googleapis.com/v1/spaces/${spaceId}/messages?messageReplyOption=REPLY_MESSAGE_FALLBACK_TO_NEW_THREAD&threadKey=${thread}`;
+
+    if (messageId) {
+      url = url + `&messageId=client-${messageId}`;
+    }
+
     const result = await client.request({
       url,
       method: 'POST',
@@ -36,6 +42,32 @@ export async function sendChatMessage(spaceId: string | null, thread: string, me
           threadKey: thread,
         },
         threadReply: true,
+      },
+    });
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export async function updateChatMessage(spaceId: string | null, thread: string, messageId: string, message: string) {
+  if (!spaceId) {
+    return;
+  }
+
+  try {
+    const auth = new GoogleAuth({
+      keyFilename: __dirname + '/credentials.json',
+      scopes: 'https://www.googleapis.com/auth/chat.bot',
+    });
+    const client = await auth.getClient();
+
+    const url = `https://chat.googleapis.com/v1/spaces/${spaceId}/messages/client-${messageId}?updateMask=text`;
+
+    const result = await client.request({
+      url,
+      method: 'PATCH',
+      data: {
+        text: message,
       },
     });
   } catch (error) {
@@ -54,16 +86,42 @@ export async function sendScoreOnChat(db: Knex, payload: AddGamePayload) {
     .andWhere('time', payload.data.time)
     .andWhereNot('playerId', payload.data.playerId);
 
+  const sessionGames = await db('game')
+    .select()
+    .join('player', 'game.playerId', 'player.id')
+    .whereRaw(`CAST(date AS DATE) = ?`, [payloadDate])
+    .andWhere('time', payload.data.time);
+
+  const nbPlayers = sessionGames.length;
+  const bestScore = sessionGames.sort(byScoreDesc);
+  const average = sessionGames.reduce((acc, g) => acc + computeScore(g), 0) / nbPlayers;
+
+  const score = computeScore(payload.data);
+
   if (otherGames.length === 0) {
     const welcomeMessage = `*Match du ${formatDate(payload.data.date)} - ${
       payload.data.time === 'midday' ? 'midi' : 'soir'
     }*
 N'oubliez pas d'ajouter vos scores sur https://bionathlon.com !
+
+Joueurs : ${nbPlayers}
+Record : ${computeScore(bestScore[0])} (${bestScore[0].name})
+Moyenne : ${round2(average)}
     `;
-    await sendChatMessage(process.env.CHATSPACE || null, threadKey, welcomeMessage);
+    await sendChatMessage(process.env.CHATSPACE || null, threadKey, welcomeMessage, `${threadKey}-welcome`);
+  } else {
+    const welcomeMessage = `*Match du ${formatDate(payload.data.date)} - ${
+      payload.data.time === 'midday' ? 'midi' : 'soir'
+    }*
+N'oubliez pas d'ajouter vos scores sur https://bionathlon.com !
+
+Joueurs : ${nbPlayers}
+Record : ${computeScore(bestScore[0])} (${bestScore[0].name})
+Moyenne : ${round2(average)}
+    `;
+    await updateChatMessage(process.env.CHATSPACE || null, threadKey, `${threadKey}-welcome`, welcomeMessage);
   }
 
-  const score = computeScore(payload.data);
   const chatNote = payload.data.note ? '(' + payload.data.note + ')' : '';
   const message = `- ${player.name} : ${score === 0 ? '⭕️' : score} ${chatNote}`;
 
