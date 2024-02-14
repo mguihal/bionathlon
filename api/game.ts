@@ -207,7 +207,7 @@ const routeConfig: RouteConfig = {
               'suddenDeath',
             ]);
 
-          await sendDeletionOnChat(games[0], user);
+          await sendDeletionOnChat(db, games[0], user);
 
           return res.status(200).send(games);
         } catch (e) {

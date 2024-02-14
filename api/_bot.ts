@@ -141,13 +141,34 @@ export async function sendSuddenDeathOnChat(db: Knex, gameId: string) {
   await sendChatMessage(process.env.CHATSPACE || null, threadKey, message);
 }
 
-export async function sendDeletionOnChat(game: Game, user: TokenPayload) {
+export async function sendDeletionOnChat(db: Knex, game: Game, user: TokenPayload) {
   const gameDate = new Date(game.date).toISOString().split('T')[0];
   const threadKey = gameDate + game.time;
 
   const message = `${user.name} a invalidé la partie de ${game.playerName}`;
 
   await sendChatMessage(process.env.CHATSPACE || null, threadKey, message);
+
+  const sessionGames = await db('game')
+    .select()
+    .join('player', 'game.playerId', 'player.id')
+    .whereRaw(`CAST(date AS DATE) = ?`, [game.date])
+    .andWhere('time', game.time);
+
+  const nbPlayers = sessionGames.length;
+  const bestScore = sessionGames.sort(byScoreDesc);
+  const average = sessionGames.reduce((acc, g) => acc + computeScore(g), 0) / nbPlayers;
+
+  const welcomeMessage = `*Match du ${formatDate(game.date)} - ${
+    game.time === 'midday' ? 'midi' : 'soir'
+  }*
+N'oubliez pas d'ajouter vos scores sur https://bionathlon.com !
+
+Joueurs : ${nbPlayers}
+Record : ${computeScore(bestScore[0])} (${bestScore[0].name})
+Moyenne : ${round2(average)}`;
+
+  await updateChatMessage(process.env.CHATSPACE || null, threadKey, `${threadKey}-welcome`, welcomeMessage);
 }
 
 export async function sendNewPlayerOnChat(playerName: string, user: TokenPayload) {
