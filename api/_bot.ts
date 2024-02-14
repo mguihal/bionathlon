@@ -56,7 +56,7 @@ export async function updateChatMessage(spaceId: string | null, thread: string, 
 
   try {
     const auth = new GoogleAuth({
-      keyFilename: __dirname + '/credentials.json',
+      // keyFilename: __dirname + '/credentials.json',
       scopes: 'https://www.googleapis.com/auth/chat.bot',
     });
     const client = await auth.getClient();
@@ -106,8 +106,7 @@ N'oubliez pas d'ajouter vos scores sur https://bionathlon.com !
 
 Joueurs : ${nbPlayers}
 Record : ${computeScore(bestScore[0])} (${bestScore[0].name})
-Moyenne : ${round2(average)}
-    `;
+Moyenne : ${round2(average)}`;
     await sendChatMessage(process.env.CHATSPACE || null, threadKey, welcomeMessage, `${threadKey}-welcome`);
   } else {
     const welcomeMessage = `*Match du ${formatDate(payload.data.date)} - ${
@@ -117,8 +116,7 @@ N'oubliez pas d'ajouter vos scores sur https://bionathlon.com !
 
 Joueurs : ${nbPlayers}
 Record : ${computeScore(bestScore[0])} (${bestScore[0].name})
-Moyenne : ${round2(average)}
-    `;
+Moyenne : ${round2(average)}`;
     await updateChatMessage(process.env.CHATSPACE || null, threadKey, `${threadKey}-welcome`, welcomeMessage);
   }
 
